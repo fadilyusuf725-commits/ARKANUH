@@ -26,10 +26,10 @@ export function HomePage() {
     <main className="page-shell">
       <section className="hero-card">
         <p className="eyebrow">ARKANUH v2</p>
-        <h1>Flipbook AR Kisah Nabi Nuh</h1>
+        <h1>Flipbook Pop-up 3D Kisah Nabi Nuh</h1>
         <p className="subtitle">Menu utama pembelajaran interaktif PAI kelas 2 SD</p>
         <p>
-          Pilih menu belajar yang tersedia. Pretest wajib selesai sebelum menu Mulai membuka flipbook AR 10 halaman.
+          Pilih menu belajar yang tersedia. Pretest wajib selesai sebelum menu Mulai membuka flipbook 10 halaman.
         </p>
       </section>
 
@@ -61,7 +61,7 @@ export function HomePage() {
         <article className="menu-card">
           <p className="eyebrow">Menu</p>
           <h3>Mulai Flipbook</h3>
-          <p>Masuk ke halaman cerita AR 1-10. Terkunci jika pretest belum selesai.</p>
+          <p>Masuk ke halaman cerita 1-10 dengan pop-up 3D. Terkunci jika pretest belum selesai.</p>
           <div className="menu-card-foot">
             {!pretestDone && <span className="lock-badge">Terkunci</span>}
             <Link to={pretestDone ? "/mulai" : "/pretest"} className="btn btn-primary inline-btn-link">

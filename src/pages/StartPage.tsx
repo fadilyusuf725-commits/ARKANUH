@@ -31,7 +31,7 @@ export function StartPage() {
       <section className="hero-card">
         <p className="eyebrow">Mulai Flipbook</p>
         <h1>Perjalanan Nabi Nuh</h1>
-        <p className="subtitle">Halaman AR akan tampil satu per satu seperti flipbook interaktif.</p>
+        <p className="subtitle">Halaman pop-up 3D tampil seperti flipbook interaktif tanpa kamera.</p>
       </section>
 
       <section className="card">

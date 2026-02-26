@@ -1,46 +1,73 @@
-import { TouchEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { ArMarkerView } from "../components/ArMarkerView";
+import { BookPageFlip } from "../components/BookPageFlip";
+import { DropInBookShell } from "../components/DropInBookShell";
+import { FloatingSideText } from "../components/FloatingSideText";
 import { InteractionCard } from "../components/InteractionCard";
+import { PopupBookStage3D } from "../components/PopupBookStage3D";
 import { ProgressTracker } from "../components/ProgressTracker";
 import { VoiceNarration } from "../components/VoiceNarration";
-import {
-  flipbookPageMap,
-  flipbookPages,
-  getNextFlipbookPageId,
-  getPrevFlipbookPageId,
-  totalFlipbookPages
-} from "../data/flipbookPages";
+import { flipbookPageMap, flipbookPages, totalFlipbookPages } from "../data/flipbookPages";
 import { useSessionContext } from "../state/SessionContext";
-
-const SWIPE_THRESHOLD = 45;
 
 export function FlipbookReaderPage() {
   const { pageId } = useParams<{ pageId: string }>();
   const navigate = useNavigate();
-  const touchStartX = useRef<number | null>(null);
   const { session, markFlipbookPageCompleted } = useSessionContext();
-  const [interactionComplete, setInteractionComplete] = useState(false);
 
-  const page = pageId ? flipbookPageMap.get(pageId) : undefined;
+  if (!session.pretest.completed) {
+    return <Navigate to="/pretest" replace />;
+  }
+
+  if (!pageId) {
+    return <Navigate to="/404" replace />;
+  }
+
+  const page = flipbookPageMap.get(pageId);
+  if (!page) {
+    return <Navigate to="/404" replace />;
+  }
+
+  const currentIndex = flipbookPages.findIndex((item) => item.id === page.id);
+  if (currentIndex < 0) {
+    return <Navigate to="/404" replace />;
+  }
+
   const firstIncomplete = flipbookPages.find((item) => !session.flipbook.completedPages.includes(item.id));
+  if (firstIncomplete && Number(pageId) > Number(firstIncomplete.id)) {
+    return <Navigate to={`/flipbook/${firstIncomplete.id}`} replace />;
+  }
 
-  useEffect(() => {
-    if (!page) {
-      setInteractionComplete(false);
+  const interactionComplete = session.flipbook.completedPages.includes(page.id);
+  const canGoPrev = currentIndex > 0;
+  const canGoNext = interactionComplete;
+  const isLastPage = currentIndex === totalFlipbookPages - 1;
+
+  const goToIndex = (nextIndex: number) => {
+    const targetPage = flipbookPages[nextIndex];
+    if (!targetPage) {
       return;
     }
-    setInteractionComplete(session.flipbook.completedPages.includes(page.id));
-  }, [page, session.flipbook.completedPages]);
 
-  const nextPageId = useMemo(() => (page ? getNextFlipbookPageId(page.id) : null), [page]);
-  const prevPageId = useMemo(() => (page ? getPrevFlipbookPageId(page.id) : null), [page]);
-  const isLastPage = page ? page.id === String(totalFlipbookPages) : false;
-  const canGoNext = interactionComplete;
-  const canGoPrev = Boolean(prevPageId);
+    if (nextIndex > currentIndex && !canGoNext) {
+      return;
+    }
+
+    if (nextIndex > currentIndex && canGoNext) {
+      markFlipbookPageCompleted(page.id, totalFlipbookPages);
+    }
+
+    navigate(`/flipbook/${targetPage.id}`);
+  };
+
+  const goPrev = () => {
+    if (!canGoPrev) {
+      return;
+    }
+    goToIndex(currentIndex - 1);
+  };
 
   const goNext = () => {
-    if (!page || !canGoNext) {
+    if (!canGoNext) {
       return;
     }
 
@@ -51,67 +78,15 @@ export function FlipbookReaderPage() {
       return;
     }
 
-    if (nextPageId) {
-      navigate(`/flipbook/${nextPageId}`);
-    }
+    goToIndex(currentIndex + 1);
   };
-
-  const goPrev = () => {
-    if (!prevPageId) {
-      return;
-    }
-    navigate(`/flipbook/${prevPageId}`);
-  };
-
-  const onTouchStart = (event: TouchEvent<HTMLElement>) => {
-    touchStartX.current = event.changedTouches[0]?.clientX ?? null;
-  };
-
-  const onTouchEnd = (event: TouchEvent<HTMLElement>) => {
-    if (touchStartX.current === null) {
-      return;
-    }
-
-    const endX = event.changedTouches[0]?.clientX;
-    if (typeof endX !== "number") {
-      touchStartX.current = null;
-      return;
-    }
-
-    const distance = touchStartX.current - endX;
-    touchStartX.current = null;
-
-    if (Math.abs(distance) < SWIPE_THRESHOLD) {
-      return;
-    }
-
-    if (distance > 0) {
-      goNext();
-      return;
-    }
-
-    goPrev();
-  };
-
-  if (!session.pretest.completed) {
-    return <Navigate to="/pretest" replace />;
-  }
-
-  if (!pageId || !page) {
-    return <Navigate to="/404" replace />;
-  }
-
-  if (firstIncomplete && Number(pageId) > Number(firstIncomplete.id)) {
-    return <Navigate to={`/flipbook/${firstIncomplete.id}`} replace />;
-  }
 
   return (
-    <main className="page-shell" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+    <main className="page-shell">
       <section className="story-header card">
         <p className="eyebrow">Flipbook Halaman {page.id} dari 10</p>
         <h1>{page.title}</h1>
         <p className="subtitle">{page.objective}</p>
-        <p className="muted">Geser layar kanan/kiri atau gunakan tombol navigasi di bawah.</p>
       </section>
 
       <ProgressTracker
@@ -119,9 +94,30 @@ export function FlipbookReaderPage() {
         currentPageId={page.id}
         totalPages={totalFlipbookPages}
       />
-      <ArMarkerView page={page} />
+
+      <section className="flipbook-layout">
+        <div className="flipbook-main">
+          <DropInBookShell>
+            <BookPageFlip
+              pages={flipbookPages}
+              currentPageIndex={currentIndex}
+              canAdvance={canGoNext}
+              onTurnRequest={(index) => {
+                if (index === currentIndex + 1 && isLastPage && canGoNext) {
+                  goNext();
+                  return;
+                }
+                goToIndex(index);
+              }}
+            />
+          </DropInBookShell>
+          <PopupBookStage3D page={page} />
+        </div>
+        <FloatingSideText page={page} />
+      </section>
+
       <VoiceNarration text={page.narration} title={page.title} />
-      <InteractionCard page={page} isCompleted={interactionComplete} onComplete={() => setInteractionComplete(true)} />
+      <InteractionCard page={page} isCompleted={interactionComplete} onComplete={() => markFlipbookPageCompleted(page.id, totalFlipbookPages)} />
 
       <section className="card sticky-action">
         <div className="button-row">

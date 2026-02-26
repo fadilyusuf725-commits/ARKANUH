@@ -1,6 +1,7 @@
 export type InteractionType = "tap" | "drag" | "choice";
 export type CompetencyTag = "iman" | "taat" | "sabar" | "akhlak";
 export type AssessmentPhase = "pretest" | "posttest";
+export type PopupTemplate = "ark" | "rain" | "mountain" | "wave" | "light";
 
 export type StudentProfile = {
   nickname: string;
@@ -11,7 +12,6 @@ export type FlipbookPage = {
   title: string;
   objective: string;
   narration: string;
-  markerImage: string;
   arAsset: string;
   voAudio: string;
   interactionType: InteractionType;
@@ -20,6 +20,15 @@ export type FlipbookPage = {
   interactionChoices?: string[];
   correctChoiceIndex?: number;
   interactionItems?: string[];
+  popupTemplate: PopupTemplate;
+  floatingText: string;
+  popupAccent: string;
+};
+
+export type PopupViewState = {
+  yaw: number;
+  pitch: number;
+  autoRotate: boolean;
 };
 
 export type AssessmentQuestion = {

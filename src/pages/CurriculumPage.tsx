@@ -71,7 +71,7 @@ export function CurriculumPage() {
             <h2>Alur Tujuan Pembelajaran (ATP)</h2>
             <ol>
               <li>Aktivasi pengetahuan awal melalui pretest.</li>
-              <li>Eksplorasi cerita Nabi Nuh lewat flipbook AR 10 halaman.</li>
+              <li>Eksplorasi cerita Nabi Nuh lewat flipbook pop-up 3D 10 halaman.</li>
               <li>Penguatan pemahaman dengan aktivitas interaktif dan voice over.</li>
               <li>Evaluasi akhir melalui posttest dan refleksi hasil belajar.</li>
             </ol>

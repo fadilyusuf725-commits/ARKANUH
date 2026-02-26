@@ -55,7 +55,7 @@ export function InteractionCard({ page, isCompleted, onComplete }: InteractionCa
 
       {page.interactionType === "tap" && (
         <button type="button" className="btn btn-primary" onClick={() => setTapDone(true)} disabled={completed}>
-          Ketuk Objek AR
+          Ketuk Objek Pop-up
         </button>
       )}
 

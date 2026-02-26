@@ -1,4 +1,4 @@
-# ARKANUH v2 - Flipbook AR Kisah Nabi Nuh
+# ARKANUH v2 - Flipbook Pop-up 3D Kisah Nabi Nuh
 
 Website mobile-first untuk pembelajaran interaktif PAI kelas 2 SD berbasis Kurikulum Merdeka.
 
@@ -10,7 +10,7 @@ Website mobile-first untuk pembelajaran interaktif PAI kelas 2 SD berbasis Kurik
    - CP/TP/ATP
    - Pretest
 2. Pretest 10 soal (`/pretest`) wajib selesai sebelum akses flipbook.
-3. Flipbook AR 10 halaman (`/flipbook/:pageId`) dengan voice over dan aktivitas.
+3. Flipbook pop-up 3D 10 halaman (`/flipbook/:pageId`) dengan voice over dan aktivitas.
 4. Setelah halaman 10, siswa lanjut posttest 10 soal (`/posttest`).
 5. Hasil akhir (`/hasil-akhir`) menampilkan perbandingan pretest vs posttest.
 
@@ -52,8 +52,8 @@ npm run dev
 npm run build
 ```
 
-## Catatan AR
+## Catatan Flipbook 3D
 
-- Mode AR: marker-based (A-Frame + AR.js).
-- Marker demo: `public/assets/markers/hiro.png`.
-- Buka di Chrome Android dan izinkan kamera.
+- Flipbook memakai efek page-turn ala buku digital (tanpa kamera).
+- Pop-up 3D memakai Three.js dan dapat diputar 360 derajat.
+- Teks mengambang tampil di samping pada desktop dan otomatis pindah ke bawah pada mobile.
