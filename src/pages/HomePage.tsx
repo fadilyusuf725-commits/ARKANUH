@@ -1,7 +1,38 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { flipbookPages } from "../data/flipbookPages";
 import { useSessionContext } from "../state/SessionContext";
+
+type MenuIconCardProps = {
+  icon: string;
+  label: string;
+  to?: string;
+  locked?: boolean;
+  lockText?: string;
+};
+
+function MenuIconCard({ icon, label, to, locked, lockText }: MenuIconCardProps) {
+  if (!to || locked) {
+    return (
+      <button type="button" className="icon-menu-card is-locked" disabled aria-label={`${label} terkunci`}>
+        <span className="icon-emoji" aria-hidden="true">
+          {icon}
+        </span>
+        <span className="icon-label">{label}</span>
+        <span className="icon-lock-text">{lockText ?? "Terkunci"}</span>
+      </button>
+    );
+  }
+
+  return (
+    <Link to={to} className="icon-menu-card" aria-label={`Buka menu ${label}`}>
+      <span className="icon-emoji" aria-hidden="true">
+        {icon}
+      </span>
+      <span className="icon-label">{label}</span>
+    </Link>
+  );
+}
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -22,33 +53,69 @@ export function HomePage() {
     navigate("/");
   };
 
-  return (
-    <main className="page-shell">
-      <section className="hero-card">
-        <p className="eyebrow">ARKANUH v2</p>
-        <h1>Flipbook Pop-up 3D Kisah Nabi Nuh</h1>
-        <p className="subtitle">Menu utama pembelajaran interaktif PAI kelas 2 SD</p>
-        <p>
-          Pilih menu belajar yang tersedia. Pretest wajib selesai sebelum menu Mulai membuka flipbook 10 halaman.
-        </p>
-      </section>
+  const menuCards = useMemo(
+    () => [
+      {
+        icon: "📘",
+        label: "Mulai",
+        to: pretestDone ? "/mulai" : undefined,
+        locked: !pretestDone,
+        lockText: "Pretest dulu"
+      },
+      {
+        icon: "✍️",
+        label: "Biodata",
+        to: "/biodata-penulis"
+      },
+      {
+        icon: "🧠",
+        label: "Pretest",
+        to: "/pretest"
+      },
+      {
+        icon: "🏁",
+        label: "Posttest",
+        to: flipbookDone ? "/posttest" : undefined,
+        locked: !flipbookDone,
+        lockText: "Selesaikan buku"
+      },
+      {
+        icon: "📚",
+        label: "CP TP ATP",
+        to: "/cp-tp-atp"
+      },
+      {
+        icon: "🏆",
+        label: "Hasil",
+        to: posttestDone ? "/hasil-akhir" : undefined,
+        locked: !posttestDone,
+        lockText: "Posttest dulu"
+      }
+    ],
+    [flipbookDone, posttestDone, pretestDone]
+  );
 
-      <section className="card">
-        <h2>Identitas Sesi</h2>
-        <form className="stack-form" onSubmit={onSaveIdentity}>
-          <label htmlFor="nickname">Nama panggilan siswa</label>
+  return (
+    <main className="home-shell">
+      <section className="home-topbar">
+        <div className="home-brand">
+          <h1>ARKANUH</h1>
+          <p>Flipbook Pop-up 3D</p>
+        </div>
+        <form className="mini-identity-form" onSubmit={onSaveIdentity}>
+          <label htmlFor="nickname">Nama</label>
           <input
             id="nickname"
             name="nickname"
             type="text"
             value={nicknameInput}
             onChange={(event) => setNicknameInput(event.target.value)}
-            placeholder="Contoh: Aisyah"
             maxLength={24}
+            placeholder="Nama panggilan"
           />
           <div className="button-row">
             <button type="submit" className="btn btn-primary">
-              Simpan Nama
+              Simpan
             </button>
             <button type="button" className="btn btn-outline" onClick={onStartNewSession}>
               Sesi Baru
@@ -57,63 +124,29 @@ export function HomePage() {
         </form>
       </section>
 
-      <section className="menu-grid">
-        <article className="menu-card">
-          <p className="eyebrow">Menu</p>
-          <h3>Mulai Flipbook</h3>
-          <p>Masuk ke halaman cerita 1-10 dengan pop-up 3D. Terkunci jika pretest belum selesai.</p>
-          <div className="menu-card-foot">
-            {!pretestDone && <span className="lock-badge">Terkunci</span>}
-            <Link to={pretestDone ? "/mulai" : "/pretest"} className="btn btn-primary inline-btn-link">
-              {pretestDone ? "Masuk" : "Kerjakan Pretest"}
-            </Link>
-          </div>
-        </article>
-
-        <article className="menu-card">
-          <p className="eyebrow">Menu</p>
-          <h3>Biodata Penulis</h3>
-          <p>Lihat profil penulis dan informasi hak cipta aset pembelajaran.</p>
-          <div className="menu-card-foot">
-            <Link to="/biodata-penulis" className="btn btn-outline inline-btn-link">
-              Buka
-            </Link>
-          </div>
-        </article>
-
-        <article className="menu-card">
-          <p className="eyebrow">Menu</p>
-          <h3>CP / TP / ATP</h3>
-          <p>Ringkasan kurikulum merdeka PAI kelas 2 terkait materi kisah Nabi Nuh.</p>
-          <div className="menu-card-foot">
-            <Link to="/cp-tp-atp" className="btn btn-outline inline-btn-link">
-              Buka
-            </Link>
-          </div>
-        </article>
-
-        <article className="menu-card">
-          <p className="eyebrow">Menu</p>
-          <h3>Pretest 10 Soal</h3>
-          <p>Evaluasi awal sebelum memulai flipbook. Urutan soal diacak setiap sesi baru.</p>
-          <div className="menu-card-foot">
-            <Link to="/pretest" className="btn btn-primary inline-btn-link">
-              {pretestDone ? "Lihat Hasil Pretest" : "Mulai Pretest"}
-            </Link>
-          </div>
-        </article>
+      <section className="icon-menu-grid" aria-label="Menu utama">
+        {menuCards.map((menu) => (
+          <MenuIconCard
+            key={menu.label}
+            icon={menu.icon}
+            label={menu.label}
+            to={menu.to}
+            locked={menu.locked}
+            lockText={menu.lockText}
+          />
+        ))}
       </section>
 
-      <section className="card">
-        <h2>Status Belajar</h2>
-        <ul>
-          <li>Pretest: {pretestDone ? `Selesai (${session.pretest.score}/10)` : "Belum selesai"}</li>
-          <li>
-            Flipbook: {session.flipbook.completedPages.length}/{flipbookPages.length} halaman{" "}
-            {flipbookDone ? "(Selesai)" : ""}
-          </li>
-          <li>Posttest: {posttestDone ? `Selesai (${session.posttest.score}/10)` : "Belum selesai"}</li>
-        </ul>
+      <section className="home-status-strip">
+        <p>
+          <strong>Pretest:</strong> {pretestDone ? `${session.pretest.score}/10` : "-"}
+        </p>
+        <p>
+          <strong>Cerita:</strong> {session.flipbook.completedPages.length}/{flipbookPages.length}
+        </p>
+        <p>
+          <strong>Posttest:</strong> {posttestDone ? `${session.posttest.score}/10` : "-"}
+        </p>
       </section>
     </main>
   );

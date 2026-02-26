@@ -29,9 +29,9 @@ export function StartPage() {
   return (
     <main className="page-shell">
       <section className="hero-card">
-        <p className="eyebrow">Mulai Flipbook</p>
-        <h1>Perjalanan Nabi Nuh</h1>
-        <p className="subtitle">Halaman pop-up 3D tampil seperti flipbook interaktif tanpa kamera.</p>
+        <p className="eyebrow">Mulai</p>
+        <h1>Buku 3D Perjalanan Nabi Nuh</h1>
+        <p className="subtitle">Cover akan tampil dulu, lalu buku turun dan siap di-flip satu per satu.</p>
       </section>
 
       <section className="card">
@@ -49,7 +49,7 @@ export function StartPage() {
       <section className="card">
         <div className="button-row">
           <button type="button" className="btn btn-primary" onClick={onEnter}>
-            {session.posttest.completed ? "Lihat Hasil Akhir" : "Masuk Flipbook"}
+            {session.posttest.completed ? "Lihat Hasil" : "Buka Buku"}
           </button>
           <button type="button" className="btn btn-outline" onClick={() => navigate("/")}>
             Kembali ke Menu

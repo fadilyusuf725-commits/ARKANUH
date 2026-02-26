@@ -1,9 +1,8 @@
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { BookPageFlip } from "../components/BookPageFlip";
-import { DropInBookShell } from "../components/DropInBookShell";
+import { BookSceneCanvas } from "../components/BookSceneCanvas";
 import { FloatingSideText } from "../components/FloatingSideText";
 import { InteractionCard } from "../components/InteractionCard";
-import { PopupBookStage3D } from "../components/PopupBookStage3D";
 import { ProgressTracker } from "../components/ProgressTracker";
 import { VoiceNarration } from "../components/VoiceNarration";
 import { flipbookPageMap, flipbookPages, totalFlipbookPages } from "../data/flipbookPages";
@@ -13,6 +12,11 @@ export function FlipbookReaderPage() {
   const { pageId } = useParams<{ pageId: string }>();
   const navigate = useNavigate();
   const { session, markFlipbookPageCompleted } = useSessionContext();
+  const [isFinalClosing, setIsFinalClosing] = useState(false);
+
+  useEffect(() => {
+    setIsFinalClosing(false);
+  }, [pageId]);
 
   if (!session.pretest.completed) {
     return <Navigate to="/pretest" replace />;
@@ -41,6 +45,7 @@ export function FlipbookReaderPage() {
   const canGoPrev = currentIndex > 0;
   const canGoNext = interactionComplete;
   const isLastPage = currentIndex === totalFlipbookPages - 1;
+  const nextPage = currentIndex < totalFlipbookPages - 1 ? flipbookPages[currentIndex + 1] : undefined;
 
   const goToIndex = (nextIndex: number) => {
     const targetPage = flipbookPages[nextIndex];
@@ -67,14 +72,14 @@ export function FlipbookReaderPage() {
   };
 
   const goNext = () => {
-    if (!canGoNext) {
+    if (!canGoNext || isFinalClosing) {
       return;
     }
 
     markFlipbookPageCompleted(page.id, totalFlipbookPages);
 
     if (isLastPage) {
-      navigate("/posttest");
+      setIsFinalClosing(true);
       return;
     }
 
@@ -97,35 +102,31 @@ export function FlipbookReaderPage() {
 
       <section className="flipbook-layout">
         <div className="flipbook-main">
-          <DropInBookShell>
-            <BookPageFlip
-              pages={flipbookPages}
-              currentPageIndex={currentIndex}
-              canAdvance={canGoNext}
-              onTurnRequest={(index) => {
-                if (index === currentIndex + 1 && isLastPage && canGoNext) {
-                  goNext();
-                  return;
-                }
-                goToIndex(index);
-              }}
-            />
-          </DropInBookShell>
-          <PopupBookStage3D page={page} />
+          <BookSceneCanvas
+            page={page}
+            currentIndex={currentIndex}
+            totalPages={totalFlipbookPages}
+            triggerFinalClose={isFinalClosing}
+            onFinalCloseComplete={() => navigate("/posttest")}
+          />
         </div>
         <FloatingSideText page={page} />
       </section>
 
-      <VoiceNarration text={page.narration} title={page.title} />
-      <InteractionCard page={page} isCompleted={interactionComplete} onComplete={() => markFlipbookPageCompleted(page.id, totalFlipbookPages)} />
+      <VoiceNarration text={page.narration} title={page.title} audioSrc={page.voAudio} nextAudioSrc={nextPage?.voAudio} />
+      <InteractionCard
+        page={page}
+        isCompleted={interactionComplete}
+        onComplete={() => markFlipbookPageCompleted(page.id, totalFlipbookPages)}
+      />
 
       <section className="card sticky-action">
         <div className="button-row">
-          <button type="button" className="btn btn-outline" onClick={goPrev} disabled={!canGoPrev}>
+          <button type="button" className="btn btn-outline" onClick={goPrev} disabled={!canGoPrev || isFinalClosing}>
             Sebelumnya
           </button>
-          <button type="button" className="btn btn-primary" onClick={goNext} disabled={!canGoNext}>
-            {isLastPage ? "Lanjut Posttest" : "Berikutnya"}
+          <button type="button" className="btn btn-primary" onClick={goNext} disabled={!canGoNext || isFinalClosing}>
+            {isFinalClosing ? "Menutup Buku..." : isLastPage ? "Tutup Buku & Posttest" : "Berikutnya"}
           </button>
         </div>
       </section>

@@ -2,6 +2,7 @@ export type InteractionType = "tap" | "drag" | "choice";
 export type CompetencyTag = "iman" | "taat" | "sabar" | "akhlak";
 export type AssessmentPhase = "pretest" | "posttest";
 export type PopupTemplate = "ark" | "rain" | "mountain" | "wave" | "light";
+export type BookAnimState = "cover_intro" | "drop_in" | "idle" | "flipping" | "final_close";
 
 export type StudentProfile = {
   nickname: string;
@@ -23,6 +24,8 @@ export type FlipbookPage = {
   popupTemplate: PopupTemplate;
   floatingText: string;
   popupAccent: string;
+  coverTitle?: string;
+  backCoverSummary?: string[];
 };
 
 export type PopupViewState = {
