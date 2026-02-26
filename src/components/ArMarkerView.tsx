@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { StoryPage } from "../types/domain";
+import { FlipbookPage } from "../types/domain";
 
 type ArMarkerViewProps = {
-  page: StoryPage;
+  page: FlipbookPage;
 };
 
 const scriptPromises = new Map<string, Promise<void>>();
@@ -49,7 +49,7 @@ async function ensureArLibraries() {
   await loadScript("arjs-lib", "https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js");
 }
 
-function buildArEntity(page: StoryPage): string {
+function buildArEntity(page: FlipbookPage): string {
   if (page.interactionType === "drag") {
     return `<a-cylinder color="#4A90E2" radius="0.35" height="0.55" position="0 0.6 0">
       <a-animation attribute="rotation" to="0 360 0" dur="4500" repeat="indefinite"></a-animation>
@@ -67,7 +67,7 @@ function buildArEntity(page: StoryPage): string {
   </a-box>`;
 }
 
-function buildSceneMarkup(page: StoryPage): string {
+function buildSceneMarkup(page: FlipbookPage): string {
   return `
     <a-scene
       embedded

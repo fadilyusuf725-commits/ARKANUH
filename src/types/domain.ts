@@ -1,37 +1,60 @@
 export type InteractionType = "tap" | "drag" | "choice";
 export type CompetencyTag = "iman" | "taat" | "sabar" | "akhlak";
+export type AssessmentPhase = "pretest" | "posttest";
 
-export type StoryPage = {
+export type StudentProfile = {
+  nickname: string;
+};
+
+export type FlipbookPage = {
   id: string;
   title: string;
   objective: string;
+  narration: string;
   markerImage: string;
   arAsset: string;
   voAudio: string;
   interactionType: InteractionType;
   interactionPrompt: string;
   completionRule: string;
-  narration: string;
   interactionChoices?: string[];
   correctChoiceIndex?: number;
   interactionItems?: string[];
 };
 
-export type QuizQuestion = {
+export type AssessmentQuestion = {
   id: string;
-  pageId: string;
+  phase: AssessmentPhase;
+  competencyTag: CompetencyTag;
   question: string;
   options: string[];
   correctIndex: number;
-  competencyTag: CompetencyTag;
 };
 
-export type LearningSession = {
-  sessionId: string;
-  nickname: string;
-  startedAt: string;
+export type AssessmentState = {
+  completed: boolean;
+  score: number | null;
+  answers: number[];
+  order: string[];
+  completedAt?: string;
+};
+
+export type FlipbookState = {
   completedPages: string[];
-  quizScore: number | null;
-  quizAnswers: number[];
-  finalizedAt?: string;
+  completed: boolean;
+};
+
+export type SessionReport = {
+  deltaScore: number;
+  summary: string;
+};
+
+export type LearningSessionV2 = {
+  sessionId: string;
+  profile: StudentProfile;
+  startedAt: string;
+  pretest: AssessmentState;
+  flipbook: FlipbookState;
+  posttest: AssessmentState;
+  report?: SessionReport;
 };

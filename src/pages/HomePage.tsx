@@ -1,42 +1,41 @@
-import { FormEvent, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { storyPages } from "../data/storyPages";
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { flipbookPages } from "../data/flipbookPages";
 import { useSessionContext } from "../state/SessionContext";
 
 export function HomePage() {
   const navigate = useNavigate();
-  const { session, history, setNickname } = useSessionContext();
-  const [nicknameInput, setNicknameInput] = useState(session.nickname);
+  const { session, setNickname, restartSession } = useSessionContext();
+  const [nicknameInput, setNicknameInput] = useState(session.profile.nickname);
 
-  const continuePath = useMemo(() => {
-    if (session.quizScore !== null) {
-      return "/hasil";
-    }
-    const firstIncomplete = storyPages.find((page) => !session.completedPages.includes(page.id));
-    return firstIncomplete ? `/buku/${firstIncomplete.id}` : "/kuis";
-  }, [session.completedPages, session.quizScore]);
+  const pretestDone = session.pretest.completed;
+  const flipbookDone = session.flipbook.completed;
+  const posttestDone = session.posttest.completed;
 
-  const onStart = (event: FormEvent) => {
+  const onSaveIdentity = (event: FormEvent) => {
     event.preventDefault();
     setNickname(nicknameInput);
-    navigate(continuePath);
+  };
+
+  const onStartNewSession = () => {
+    restartSession(nicknameInput);
+    navigate("/");
   };
 
   return (
     <main className="page-shell">
       <section className="hero-card">
-        <p className="eyebrow">Media Pembelajaran Interaktif</p>
-        <h1>ARKANUH</h1>
-        <p className="subtitle">Augmented Reality Arka Nuh untuk siswa kelas 2 SD</p>
+        <p className="eyebrow">ARKANUH v2</p>
+        <h1>Flipbook AR Kisah Nabi Nuh</h1>
+        <p className="subtitle">Menu utama pembelajaran interaktif PAI kelas 2 SD</p>
         <p>
-          Petualangan pop-up book ini mengajakmu belajar kisah Nabi Nuh dengan AR marker-based, narasi suara, aktivitas
-          sederhana, dan kuis pemahaman.
+          Pilih menu belajar yang tersedia. Pretest wajib selesai sebelum menu Mulai membuka flipbook AR 10 halaman.
         </p>
       </section>
 
       <section className="card">
-        <h2>Mulai Belajar</h2>
-        <form className="stack-form" onSubmit={onStart}>
+        <h2>Identitas Sesi</h2>
+        <form className="stack-form" onSubmit={onSaveIdentity}>
           <label htmlFor="nickname">Nama panggilan siswa</label>
           <input
             id="nickname"
@@ -47,24 +46,74 @@ export function HomePage() {
             placeholder="Contoh: Aisyah"
             maxLength={24}
           />
-          <button type="submit" className="btn btn-primary">
-            {session.completedPages.length > 0 ? "Lanjutkan Belajar" : "Mulai dari Halaman 1"}
-          </button>
+          <div className="button-row">
+            <button type="submit" className="btn btn-primary">
+              Simpan Nama
+            </button>
+            <button type="button" className="btn btn-outline" onClick={onStartNewSession}>
+              Sesi Baru
+            </button>
+          </div>
         </form>
-        <div className="quick-stats">
-          <span>Halaman selesai: {session.completedPages.length}/10</span>
-          <span>Riwayat sesi: {history.length}</span>
-        </div>
+      </section>
+
+      <section className="menu-grid">
+        <article className="menu-card">
+          <p className="eyebrow">Menu</p>
+          <h3>Mulai Flipbook</h3>
+          <p>Masuk ke halaman cerita AR 1-10. Terkunci jika pretest belum selesai.</p>
+          <div className="menu-card-foot">
+            {!pretestDone && <span className="lock-badge">Terkunci</span>}
+            <Link to={pretestDone ? "/mulai" : "/pretest"} className="btn btn-primary inline-btn-link">
+              {pretestDone ? "Masuk" : "Kerjakan Pretest"}
+            </Link>
+          </div>
+        </article>
+
+        <article className="menu-card">
+          <p className="eyebrow">Menu</p>
+          <h3>Biodata Penulis</h3>
+          <p>Lihat profil penulis dan informasi hak cipta aset pembelajaran.</p>
+          <div className="menu-card-foot">
+            <Link to="/biodata-penulis" className="btn btn-outline inline-btn-link">
+              Buka
+            </Link>
+          </div>
+        </article>
+
+        <article className="menu-card">
+          <p className="eyebrow">Menu</p>
+          <h3>CP / TP / ATP</h3>
+          <p>Ringkasan kurikulum merdeka PAI kelas 2 terkait materi kisah Nabi Nuh.</p>
+          <div className="menu-card-foot">
+            <Link to="/cp-tp-atp" className="btn btn-outline inline-btn-link">
+              Buka
+            </Link>
+          </div>
+        </article>
+
+        <article className="menu-card">
+          <p className="eyebrow">Menu</p>
+          <h3>Pretest 10 Soal</h3>
+          <p>Evaluasi awal sebelum memulai flipbook. Urutan soal diacak setiap sesi baru.</p>
+          <div className="menu-card-foot">
+            <Link to="/pretest" className="btn btn-primary inline-btn-link">
+              {pretestDone ? "Lihat Hasil Pretest" : "Mulai Pretest"}
+            </Link>
+          </div>
+        </article>
       </section>
 
       <section className="card">
-        <h2>Petunjuk Singkat</h2>
-        <ol>
-          <li>Buka setiap halaman cerita dan aktifkan kamera AR.</li>
-          <li>Selesaikan aktivitas halaman agar tombol Lanjut terbuka.</li>
-          <li>Dengarkan narasi suara untuk memperkuat pemahaman.</li>
-          <li>Setelah halaman 10, kerjakan kuis dan lihat hasilmu.</li>
-        </ol>
+        <h2>Status Belajar</h2>
+        <ul>
+          <li>Pretest: {pretestDone ? `Selesai (${session.pretest.score}/10)` : "Belum selesai"}</li>
+          <li>
+            Flipbook: {session.flipbook.completedPages.length}/{flipbookPages.length} halaman{" "}
+            {flipbookDone ? "(Selesai)" : ""}
+          </li>
+          <li>Posttest: {posttestDone ? `Selesai (${session.posttest.score}/10)` : "Belum selesai"}</li>
+        </ul>
       </section>
     </main>
   );

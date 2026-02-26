@@ -1,35 +1,46 @@
-# ARKANUH - Augmented Reality Arka Nuh
+# ARKANUH v2 - Flipbook AR Kisah Nabi Nuh
 
-Website mobile-first untuk pembelajaran interaktif kisah Nabi Nuh (PAI Kelas 2, Kurikulum Merdeka) dengan:
+Website mobile-first untuk pembelajaran interaktif PAI kelas 2 SD berbasis Kurikulum Merdeka.
 
-- 10 halaman cerita interaktif
-- AR marker-based di setiap halaman
-- Voice over berbasis browser TTS (Bahasa Indonesia)
-- Kuis formatif 10 soal
-- Penyimpanan sesi lokal (`localStorage`)
+## Alur Utama
 
-## Rute Utama
+1. Menu utama (`/`) menampilkan 4 menu:
+   - Mulai
+   - Biodata Penulis
+   - CP/TP/ATP
+   - Pretest
+2. Pretest 10 soal (`/pretest`) wajib selesai sebelum akses flipbook.
+3. Flipbook AR 10 halaman (`/flipbook/:pageId`) dengan voice over dan aktivitas.
+4. Setelah halaman 10, siswa lanjut posttest 10 soal (`/posttest`).
+5. Hasil akhir (`/hasil-akhir`) menampilkan perbandingan pretest vs posttest.
 
-- `/` beranda dan petunjuk singkat
-- `/buku/:pageId` halaman cerita 1-10
-- `/kuis` kuis formatif
-- `/hasil` skor akhir dan ringkasan sesi
+## Routes
 
-## Kontrak Penyimpanan Lokal
+- `/` menu hub
+- `/pretest`
+- `/biodata-penulis`
+- `/cp-tp-atp`
+- `/mulai`
+- `/flipbook/:pageId`
+- `/posttest`
+- `/hasil-akhir`
+- `/404`
 
-- `localStorage["arkanuh_session_current"]`
-- `localStorage["arkanuh_session_history"]`
+## Kontrak Penyimpanan Lokal v2
+
+- `localStorage["arkanuh_v2_session_current"]`
+- `localStorage["arkanuh_v2_session_history"]`
 
 ## Jalankan Proyek
 
-1. Install Node.js (versi 18+ direkomendasikan).
+1. Install Node.js 18+.
 2. Install dependency:
 
 ```bash
 npm install
 ```
 
-3. Jalankan mode development:
+3. Development:
 
 ```bash
 npm run dev
@@ -41,8 +52,8 @@ npm run dev
 npm run build
 ```
 
-## Catatan AR Marker
+## Catatan AR
 
-- Aplikasi memakai mode marker-based melalui A-Frame + AR.js.
-- Untuk pengujian, gunakan marker HIRO yang sudah disediakan di `public/assets/markers/hiro.png`.
-- File marker `page-01.svg` s.d. `page-10.svg` disediakan sebagai placeholder visual per halaman dan dapat diganti marker final.
+- Mode AR: marker-based (A-Frame + AR.js).
+- Marker demo: `public/assets/markers/hiro.png`.
+- Buka di Chrome Android dan izinkan kamera.

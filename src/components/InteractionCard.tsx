@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { StoryPage } from "../types/domain";
+import { FlipbookPage } from "../types/domain";
 
 type InteractionCardProps = {
-  page: StoryPage;
+  page: FlipbookPage;
   isCompleted: boolean;
   onComplete: () => void;
 };
@@ -23,7 +23,6 @@ export function InteractionCard({ page, isCompleted, onComplete }: InteractionCa
   }, [page.id]);
 
   const dragItems = useMemo(() => page.interactionItems ?? ["Kayu", "Tali", "Paku"], [page.interactionItems]);
-
   const isDragComplete = dragItems.every((item) => placedItems.includes(item));
   const isChoiceComplete = selectedChoice !== null && selectedChoice === page.correctChoiceIndex;
   const completed = isCompleted || tapDone || isDragComplete || isChoiceComplete;
@@ -73,7 +72,7 @@ export function InteractionCard({ page, isCompleted, onComplete }: InteractionCa
                   disabled={placedItems.includes(item) || completed}
                   onClick={() => placeItem(item)}
                 >
-                  {placedItems.includes(item) ? `✓ ${item}` : `Pindahkan ${item}`}
+                  {placedItems.includes(item) ? `[OK] ${item}` : `Pindahkan ${item}`}
                 </button>
               ))}
             </div>

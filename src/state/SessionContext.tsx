@@ -1,95 +1,159 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
+  createReport,
   createNewSession,
   loadCurrentSession,
   loadSessionHistory,
   normalizeNickname,
-  removeSessionHistoryById,
   saveCurrentSession,
   upsertSessionHistory
 } from "../lib/storage";
-import { LearningSession } from "../types/domain";
+import { AssessmentPhase, LearningSessionV2 } from "../types/domain";
 
 type SessionContextValue = {
-  session: LearningSession;
-  history: LearningSession[];
+  session: LearningSessionV2;
+  history: LearningSessionV2[];
   setNickname: (nickname: string) => void;
-  markPageCompleted: (pageId: string) => void;
-  setQuizResult: (score: number, answers: number[]) => void;
-  clearQuizResult: () => void;
+  ensureAssessmentOrder: (phase: AssessmentPhase, questionIds: string[]) => void;
+  setAssessmentAnswer: (phase: AssessmentPhase, index: number, answer: number) => void;
+  finalizeAssessment: (phase: AssessmentPhase, score: number) => void;
+  markFlipbookPageCompleted: (pageId: string, totalPages: number) => void;
   restartSession: (nickname?: string) => void;
 };
 
 const SessionContext = createContext<SessionContextValue | undefined>(undefined);
 
+function shuffleIds(ids: string[]): string[] {
+  const copy = [...ids];
+  for (let index = copy.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    const temp = copy[index];
+    copy[index] = copy[swapIndex];
+    copy[swapIndex] = temp;
+  }
+  return copy;
+}
+
 export function SessionProvider({ children }: PropsWithChildren) {
-  const [session, setSession] = useState<LearningSession>(() => loadCurrentSession() ?? createNewSession());
-  const [history, setHistory] = useState<LearningSession[]>(() => loadSessionHistory());
+  const [session, setSession] = useState<LearningSessionV2>(() => loadCurrentSession() ?? createNewSession());
+  const [history, setHistory] = useState<LearningSessionV2[]>(() => loadSessionHistory());
 
   useEffect(() => {
     saveCurrentSession(session);
   }, [session]);
 
-  const setNickname = (nickname: string) => {
-    setSession((prev) => ({ ...prev, nickname: normalizeNickname(nickname) }));
-  };
+  const setNickname = useCallback((nickname: string) => {
+    setSession((prev) => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        nickname: normalizeNickname(nickname)
+      }
+    }));
+  }, []);
 
-  const markPageCompleted = (pageId: string) => {
+  const ensureAssessmentOrder = useCallback((phase: AssessmentPhase, questionIds: string[]) => {
     setSession((prev) => {
-      if (prev.completedPages.includes(pageId)) {
+      const current = prev[phase];
+      if (current.order.length > 0) {
         return prev;
       }
 
       return {
         ...prev,
-        completedPages: [...prev.completedPages, pageId].sort((a, b) => Number(a) - Number(b))
+        [phase]: {
+          ...current,
+          order: shuffleIds(questionIds),
+          answers: Array.from({ length: questionIds.length }, () => -1)
+        }
       };
     });
-  };
+  }, []);
 
-  const setQuizResult = (score: number, answers: number[]) => {
+  const setAssessmentAnswer = useCallback((phase: AssessmentPhase, index: number, answer: number) => {
     setSession((prev) => {
-      const finalizedSession: LearningSession = {
-        ...prev,
-        quizScore: score,
-        quizAnswers: answers,
-        finalizedAt: new Date().toISOString()
-      };
-      setHistory(upsertSessionHistory(finalizedSession));
-      return finalizedSession;
-    });
-  };
-
-  const clearQuizResult = () => {
-    setSession((prev) => {
-      if (prev.quizScore !== null) {
-        setHistory(removeSessionHistoryById(prev.sessionId));
+      const current = prev[phase];
+      const answers = [...current.answers];
+      while (answers.length <= index) {
+        answers.push(-1);
       }
+      answers[index] = answer;
       return {
         ...prev,
-        quizScore: null,
-        quizAnswers: [],
-        finalizedAt: undefined
+        [phase]: {
+          ...current,
+          answers
+        }
       };
     });
-  };
+  }, []);
 
-  const restartSession = (nickname?: string) => {
-    const nextNickname = nickname ? normalizeNickname(nickname) : session.nickname;
+  const finalizeAssessment = useCallback((phase: AssessmentPhase, score: number) => {
+    setSession((prev) => {
+      const updated: LearningSessionV2 = {
+        ...prev,
+        [phase]: {
+          ...prev[phase],
+          completed: true,
+          score,
+          completedAt: new Date().toISOString()
+        }
+      };
+
+      if (phase === "posttest") {
+        const pretestScore = updated.pretest.score ?? 0;
+        const posttestScore = updated.posttest.score ?? 0;
+        updated.report = createReport(pretestScore, posttestScore);
+        setHistory(upsertSessionHistory(updated));
+      }
+
+      return updated;
+    });
+  }, []);
+
+  const markFlipbookPageCompleted = useCallback((pageId: string, totalPages: number) => {
+    setSession((prev) => {
+      if (prev.flipbook.completedPages.includes(pageId)) {
+        return prev;
+      }
+
+      const completedPages = [...prev.flipbook.completedPages, pageId].sort((a, b) => Number(a) - Number(b));
+      return {
+        ...prev,
+        flipbook: {
+          completedPages,
+          completed: completedPages.length >= totalPages
+        }
+      };
+    });
+  }, []);
+
+  const restartSession = useCallback((nickname?: string) => {
+    const nextNickname = nickname ? normalizeNickname(nickname) : session.profile.nickname;
     setSession(createNewSession(nextNickname));
-  };
+  }, [session.profile.nickname]);
 
   const value = useMemo(
     () => ({
       session,
       history,
       setNickname,
-      markPageCompleted,
-      setQuizResult,
-      clearQuizResult,
+      ensureAssessmentOrder,
+      setAssessmentAnswer,
+      finalizeAssessment,
+      markFlipbookPageCompleted,
       restartSession
     }),
-    [history, session]
+    [
+      ensureAssessmentOrder,
+      finalizeAssessment,
+      history,
+      markFlipbookPageCompleted,
+      restartSession,
+      session,
+      setAssessmentAnswer,
+      setNickname
+    ]
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

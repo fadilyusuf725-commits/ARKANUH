@@ -1,6 +1,6 @@
-﻿import { StoryPage } from "../types/domain";
+import { FlipbookPage } from "../types/domain";
 
-export const storyPages: StoryPage[] = [
+export const flipbookPages: FlipbookPage[] = [
   {
     id: "1",
     title: "Nabi Nuh Berdakwah",
@@ -39,8 +39,7 @@ export const storyPages: StoryPage[] = [
     interactionType: "tap",
     interactionPrompt: "Ketuk objek untuk menyalakan semangat sabar.",
     completionRule: "Siswa menekan tombol semangat sabar.",
-    narration:
-      "Nabi Nuh tidak menyerah walaupun banyak yang menolak. Nabi Nuh tetap sabar dan terus berdoa."
+    narration: "Nabi Nuh tidak menyerah walaupun banyak yang menolak. Nabi Nuh tetap sabar dan terus berdoa."
   },
   {
     id: "4",
@@ -52,8 +51,7 @@ export const storyPages: StoryPage[] = [
     interactionType: "choice",
     interactionPrompt: "Pilih tindakan yang menunjukkan taat kepada Allah.",
     completionRule: "Siswa memilih jawaban tindakan taat.",
-    narration:
-      "Allah memerintahkan Nabi Nuh membuat bahtera. Nabi Nuh langsung taat melaksanakan perintah itu.",
+    narration: "Allah memerintahkan Nabi Nuh membuat bahtera. Nabi Nuh langsung taat melaksanakan perintah itu.",
     interactionChoices: ["Segera membuat bahtera", "Mengabaikan perintah"],
     correctChoiceIndex: 0
   },
@@ -67,8 +65,7 @@ export const storyPages: StoryPage[] = [
     interactionType: "drag",
     interactionPrompt: "Seret (simulasi ketuk) bagian bahtera ke tempatnya.",
     completionRule: "Siswa memindahkan semua bagian bahtera.",
-    narration:
-      "Bahtera disiapkan dengan sungguh-sungguh. Persiapan yang baik membantu kita menghadapi keadaan sulit.",
+    narration: "Bahtera disiapkan dengan sungguh-sungguh. Persiapan yang baik membantu kita menghadapi keadaan sulit.",
     interactionItems: ["Kayu", "Paku", "Tali"]
   },
   {
@@ -81,8 +78,7 @@ export const storyPages: StoryPage[] = [
     interactionType: "tap",
     interactionPrompt: "Ketuk objek air untuk melihat banjir mulai naik.",
     completionRule: "Siswa menekan tombol simulasi banjir.",
-    narration:
-      "Ketika banjir besar datang, bahtera Nabi Nuh menjadi tempat keselamatan bagi yang beriman."
+    narration: "Ketika banjir besar datang, bahtera Nabi Nuh menjadi tempat keselamatan bagi yang beriman."
   },
   {
     id: "7",
@@ -108,8 +104,7 @@ export const storyPages: StoryPage[] = [
     interactionType: "choice",
     interactionPrompt: "Pilih sikap yang membawa kebaikan.",
     completionRule: "Siswa memilih jawaban akhlak yang tepat.",
-    narration:
-      "Allah menolong Nabi Nuh dan orang-orang beriman. Kita diajak untuk selalu taat dan berbuat baik.",
+    narration: "Allah menolong Nabi Nuh dan orang-orang beriman. Kita diajak untuk selalu taat dan berbuat baik.",
     interactionChoices: ["Taat dan berdoa", "Membangkang dan sombong"],
     correctChoiceIndex: 0
   },
@@ -123,8 +118,7 @@ export const storyPages: StoryPage[] = [
     interactionType: "tap",
     interactionPrompt: "Ketuk objek matahari untuk menandai banjir surut.",
     completionRule: "Siswa menekan tombol simbol surut.",
-    narration:
-      "Setelah waktu yang ditetapkan, banjir mulai surut. Bahtera berhenti di tempat yang aman."
+    narration: "Setelah waktu yang ditetapkan, banjir mulai surut. Bahtera berhenti di tempat yang aman."
   },
   {
     id: "10",
@@ -136,20 +130,27 @@ export const storyPages: StoryPage[] = [
     interactionType: "choice",
     interactionPrompt: "Pilih nilai teladan yang tepat untuk kehidupan sehari-hari.",
     completionRule: "Siswa memilih nilai teladan yang benar.",
-    narration:
-      "Kisah Nabi Nuh mengajarkan kita untuk beriman, sabar, taat kepada Allah, dan berkata jujur.",
+    narration: "Kisah Nabi Nuh mengajarkan kita untuk beriman, sabar, taat kepada Allah, dan berkata jujur.",
     interactionChoices: ["Sabar, jujur, dan taat", "Mudah marah dan mengejek"],
     correctChoiceIndex: 0
   }
 ];
 
-export const totalStoryPages = storyPages.length;
-export const storyPageMap = new Map(storyPages.map((page) => [page.id, page]));
+export const totalFlipbookPages = flipbookPages.length;
+export const flipbookPageMap = new Map(flipbookPages.map((page) => [page.id, page]));
 
-export function getNextPageId(pageId: string): string | null {
-  const index = storyPages.findIndex((page) => page.id === pageId);
-  if (index === -1 || index === storyPages.length - 1) {
+export function getNextFlipbookPageId(pageId: string): string | null {
+  const index = flipbookPages.findIndex((page) => page.id === pageId);
+  if (index === -1 || index === flipbookPages.length - 1) {
     return null;
   }
-  return storyPages[index + 1].id;
+  return flipbookPages[index + 1].id;
+}
+
+export function getPrevFlipbookPageId(pageId: string): string | null {
+  const index = flipbookPages.findIndex((page) => page.id === pageId);
+  if (index <= 0) {
+    return null;
+  }
+  return flipbookPages[index - 1].id;
 }

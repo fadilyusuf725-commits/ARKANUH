@@ -6,7 +6,7 @@ export function NotFoundPage() {
       <section className="card">
         <p className="eyebrow">404</p>
         <h1>Halaman Tidak Ditemukan</h1>
-        <p>Rute yang kamu buka tidak tersedia di ARKANUH.</p>
+        <p>Rute yang kamu buka tidak tersedia di ARKANUH v2.</p>
         <Link to="/" className="btn btn-primary inline-btn-link">
           Kembali ke Beranda
         </Link>
