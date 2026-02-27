@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlipbookPage, UnityPagePayload } from "../types/domain";
+import { withBasePath } from "../lib/assetPaths";
 import {
   buildUnityPagePayload,
   emitUnityEvent,
@@ -9,12 +10,12 @@ import {
   UnityInstance
 } from "../lib/unityBridge";
 
-const UNITY_LOADER_SRC = "/unity/Build/ARKANUHBook.loader.js";
+const UNITY_LOADER_SRC = withBasePath("unity/Build/ARKANUHBook.loader.js");
 const UNITY_CONFIG = {
-  dataUrl: "/unity/Build/ARKANUHBook.data.unityweb",
-  frameworkUrl: "/unity/Build/ARKANUHBook.framework.js.unityweb",
-  codeUrl: "/unity/Build/ARKANUHBook.wasm.unityweb",
-  streamingAssetsUrl: "/unity/StreamingAssets",
+  dataUrl: withBasePath("unity/Build/ARKANUHBook.data.unityweb"),
+  frameworkUrl: withBasePath("unity/Build/ARKANUHBook.framework.js.unityweb"),
+  codeUrl: withBasePath("unity/Build/ARKANUHBook.wasm.unityweb"),
+  streamingAssetsUrl: withBasePath("unity/StreamingAssets"),
   companyName: "ARKANUH",
   productName: "ARKANUHBook",
   productVersion: "4.0.0"
@@ -228,7 +229,7 @@ export function UnityFlipbookCanvas({
             {status === "loading" && <p className="muted">Progress: {Math.round(progress * 100)}%</p>}
             {status === "error" && (
               <p className="muted">
-                Struktur Unity WebGL belum lengkap. Tambahkan build final ke folder <code>public/unity/Build</code>.
+                Build Unity WebGL belum terbaca. Jalankan <code>npm run unity:build:release</code> lalu refresh halaman.
               </p>
             )}
           </div>

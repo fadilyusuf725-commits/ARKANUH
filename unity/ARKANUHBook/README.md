@@ -1,16 +1,20 @@
-# Unity Project Workspace (ARKANUHBook)
+# Unity Source Project (ARKANUHBook)
 
-Direktori ini disiapkan untuk project Unity LTS (URP) sumber scene flipbook ARKANUH v4.
+Project Unity source untuk modul flipbook ARKANUH v4.
 
-Rencana isi project:
+Komponen utama:
 
-- Scene `FlipbookMain.unity`
-- Script bridge `ReactBridge.cs`
-- Script gesture swipe + state animator
-- Material stylized PBR untuk pop-up book
-- WebGL build profile dengan compression aktif
+- Scene: `Assets/Scenes/FlipbookMain.unity`
+- Bridge C#: `Assets/Scripts/Bridge/*`
+- Runtime visual: `Assets/Scripts/Runtime/*`
+- Build pipeline: `Assets/Editor/BuildWebGL.cs`
 
-Catatan:
+Build WebGL:
 
-- File build final dikeluarkan ke `public/unity/Build`.
-- React tetap menjadi pengendali progres dan guard belajar.
+- Development dan Release dijalankan lewat `scripts/unity-build.ps1`
+- Output otomatis ke `public/unity`
+
+Kontrak integrasi:
+
+- Menerima command React melalui `ReactBridge.OnReactCommand`
+- Mengirim event kembali ke browser via `Assets/Plugins/WebGL/WebBridge.jslib`

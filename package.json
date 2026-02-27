@@ -8,7 +8,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "voice:edge": "powershell -ExecutionPolicy Bypass -File ./scripts/generate-voice-edge.ps1",
-    "voice:process": "powershell -ExecutionPolicy Bypass -File ./scripts/process-voice.ps1"
+    "voice:process": "powershell -ExecutionPolicy Bypass -File ./scripts/process-voice.ps1",
+    "unity:build:dev": "powershell -ExecutionPolicy Bypass -File ./scripts/unity-build.ps1 -Mode dev",
+    "unity:build:release": "powershell -ExecutionPolicy Bypass -File ./scripts/unity-build.ps1 -Mode release",
+    "unity:build:all": "powershell -ExecutionPolicy Bypass -File ./scripts/unity-build.ps1 -Mode all"
   },
   "dependencies": {
     "react": "^18.3.1",

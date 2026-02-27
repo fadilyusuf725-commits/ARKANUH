@@ -36,8 +36,6 @@ File default yang dipakai loader:
 - `ARKANUHBook.framework.js.unityweb`
 - `ARKANUHBook.wasm.unityweb`
 
-Saat ini repo menyediakan placeholder/mock loader agar integrasi React-Unity bisa diuji. Ganti file tersebut dengan hasil export Unity final.
-
 ## Bridge React-Unity
 
 Kontrak command (React -> Unity):
@@ -58,6 +56,33 @@ Implementasi bridge ada di:
 
 - `src/lib/unityBridge.ts`
 - `src/components/UnityFlipbookCanvas.tsx`
+
+Source Unity ada di:
+
+- `unity/ARKANUHBook/Assets/*`
+- `unity/ARKANUHBook/Packages/*`
+- `unity/ARKANUHBook/ProjectSettings/*`
+
+## Build Unity WebGL
+
+Build dari command line:
+
+```bash
+npm run unity:build:dev
+npm run unity:build:release
+npm run unity:build:all
+```
+
+Script build:
+
+- `scripts/unity-build.ps1`
+- `unity/ARKANUHBook/Assets/Editor/BuildWebGL.cs`
+
+Output build:
+
+- `public/unity/Build/*`
+- `public/unity/TemplateData/*`
+- `public/unity/index.html`
 
 ## Voice Over Rekaman Pribadi
 
@@ -105,3 +130,15 @@ npm run build
 ```
 
 Deploy GitHub Pages tetap menggunakan `base: /ARKANUH/`.
+
+## Troubleshooting Unity
+
+1. Jika batch build gagal:
+   - pastikan Unity Editor path benar: `C:\Program Files\Unity\Hub\Editor\6000.3.7f1\Editor\Unity.exe`
+   - cek log di `unity/Logs/unity-build-*.log`
+2. Jika loader React gagal:
+   - pastikan file `ARKANUHBook.*` ada di `public/unity/Build/`
+   - jalankan ulang `npm run unity:build:release`
+3. Jika audio VO terlalu kecil/berisik:
+   - simpan raw audio di `voice-raw/`
+   - jalankan `npm run voice:process`
