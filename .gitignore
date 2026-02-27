@@ -3,3 +3,12 @@ dist/
 .DS_Store
 *.log
 *.tsbuildinfo
+unity/ARKANUHBook/Library/
+unity/ARKANUHBook/Temp/
+unity/ARKANUHBook/UserSettings/
+unity/ARKANUHBook/Logs/
+unity/ARKANUHBook/.vs/
+unity/ARKANUHBook/.vscode/
+unity/ARKANUHBook/*.csproj
+unity/ARKANUHBook/*.sln
+unity/ARKANUHBook/*.slnx
