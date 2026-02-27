@@ -31,7 +31,7 @@ export function StartPage() {
       <section className="hero-card">
         <p className="eyebrow">Mulai</p>
         <h1>Buku 3D Perjalanan Nabi Nuh</h1>
-        <p className="subtitle">Cover akan tampil dulu, lalu buku turun dan siap di-flip satu per satu.</p>
+        <p className="subtitle">Renderer Unity WebGL akan memuat scene buku, lalu halaman dapat di-flip satu per satu.</p>
       </section>
 
       <section className="card">

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { BookSceneCanvas } from "../components/BookSceneCanvas";
 import { FloatingSideText } from "../components/FloatingSideText";
 import { InteractionCard } from "../components/InteractionCard";
 import { ProgressTracker } from "../components/ProgressTracker";
+import { UnityFlipbookCanvas } from "../components/UnityFlipbookCanvas";
 import { VoiceNarration } from "../components/VoiceNarration";
 import { flipbookPageMap, flipbookPages, totalFlipbookPages } from "../data/flipbookPages";
+import { getVoiceAssetByPageId } from "../data/voiceManifest";
 import { useSessionContext } from "../state/SessionContext";
 
 export function FlipbookReaderPage() {
@@ -46,6 +47,8 @@ export function FlipbookReaderPage() {
   const canGoNext = interactionComplete;
   const isLastPage = currentIndex === totalFlipbookPages - 1;
   const nextPage = currentIndex < totalFlipbookPages - 1 ? flipbookPages[currentIndex + 1] : undefined;
+  const voiceAsset = getVoiceAssetByPageId(page.id);
+  const nextVoiceAsset = nextPage ? getVoiceAssetByPageId(nextPage.id) : undefined;
 
   const goToIndex = (nextIndex: number) => {
     const targetPage = flipbookPages[nextIndex];
@@ -102,18 +105,26 @@ export function FlipbookReaderPage() {
 
       <section className="flipbook-layout">
         <div className="flipbook-main">
-          <BookSceneCanvas
+          <UnityFlipbookCanvas
             page={page}
             currentIndex={currentIndex}
             totalPages={totalFlipbookPages}
+            canAdvance={canGoNext}
             triggerFinalClose={isFinalClosing}
-            onFinalCloseComplete={() => navigate("/posttest")}
+            onRequestNext={goNext}
+            onRequestPrev={goPrev}
+            onFinalCloseComplete={() => navigate("/posttest", { replace: true })}
           />
         </div>
         <FloatingSideText page={page} />
       </section>
 
-      <VoiceNarration text={page.narration} title={page.title} audioSrc={page.voAudio} nextAudioSrc={nextPage?.voAudio} />
+      <VoiceNarration
+        text={page.narration}
+        title={page.title}
+        audioSrc={voiceAsset?.src ?? page.voAudio}
+        nextAudioSrc={nextVoiceAsset?.src ?? nextPage?.voAudio}
+      />
       <InteractionCard
         page={page}
         isCompleted={interactionComplete}

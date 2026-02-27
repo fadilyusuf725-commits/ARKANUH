@@ -1,71 +1,95 @@
-# ARKANUH v3 - Single-Canvas Flipbook Pop-up 3D
+# ARKANUH v4 - Unity WebGL Hybrid + React Learning Flow
 
-Website mobile-first untuk pembelajaran PAI kelas 2 SD (Kurikulum Merdeka) dengan alur:
-Pretest wajib -> Flipbook 10 halaman -> Posttest -> Hasil akhir.
+ARKANUH v4 memakai arsitektur **hybrid**:
+
+- React tetap memegang alur pembelajaran (menu, pretest, posttest, hasil, guard, storage).
+- Unity WebGL menjadi renderer utama untuk flipbook 3D.
+
+Target utama: kualitas visual lebih baik di HP Android dengan performa stabil (30-45 FPS).
 
 ## Alur Utama
 
-1. Beranda (`/`) menampilkan dashboard ikon 2x3:
+1. Beranda (`/`) menampilkan menu ikon:
    - Mulai
    - Pretest
-   - Posttest (locked sampai flipbook selesai)
+   - Posttest (locked)
    - CP TP ATP
    - Biodata
    - Hasil
-2. Pretest 10 soal (`/pretest`) wajib selesai sebelum membuka menu Mulai.
-3. Flipbook (`/flipbook/:pageId`) memakai satu kanvas 3D:
-   - cover intro
-   - animasi buku turun
-   - 1 flip = 1 halaman
-   - halaman terakhir animasi buku berdiri dan menutup (back cover kesimpulan)
-4. Posttest 10 soal (`/posttest`) hanya terbuka setelah 10 halaman selesai.
-5. Hasil akhir (`/hasil-akhir`) menampilkan perbandingan pretest vs posttest.
+2. Pretest wajib selesai sebelum masuk flipbook.
+3. Flipbook 10 halaman di `/flipbook/:pageId` memakai Unity WebGL canvas.
+4. Aktivitas halaman tetap di React (`InteractionCard`) sebagai pengunci lanjut.
+5. Halaman 10 menutup buku (final close), lalu lanjut ke posttest.
+6. Hasil akhir membandingkan skor pretest vs posttest.
 
-## Fitur Flipbook v3
+## Struktur Unity WebGL
 
-- Tanpa kamera/marker.
-- Semua elemen buku + popup berada dalam satu WebGL canvas (`three` + `@react-three/fiber` + `@react-three/drei`).
-- Popup 3D dapat dilihat 360 derajat (drag + auto rotate + reset view).
-- Narasi per halaman 40-55 kata.
-- Voice over prioritas file audio prerender, fallback ke browser TTS jika file belum tersedia.
+Build Unity diletakkan di:
 
-## Voice Over Gratis (Edge-TTS)
+- `public/unity/Build/*`
+- `public/unity/StreamingAssets/*` (opsional)
 
-Generate file audio ke `public/assets/voice/page-01.mp3` s.d `page-10.mp3`:
+File default yang dipakai loader:
+
+- `ARKANUHBook.loader.js`
+- `ARKANUHBook.data.unityweb`
+- `ARKANUHBook.framework.js.unityweb`
+- `ARKANUHBook.wasm.unityweb`
+
+Saat ini repo menyediakan placeholder/mock loader agar integrasi React-Unity bisa diuji. Ganti file tersebut dengan hasil export Unity final.
+
+## Bridge React-Unity
+
+Kontrak command (React -> Unity):
+
+- `LOAD_PAGE`
+- `SET_CAN_ADVANCE`
+- `RESET_VIEW`
+- `PLAY_FINAL_CLOSE`
+
+Kontrak event (Unity -> React):
+
+- `UNITY_READY`
+- `REQUEST_NEXT_PAGE`
+- `REQUEST_PREV_PAGE`
+- `FINAL_CLOSE_DONE`
+
+Implementasi bridge ada di:
+
+- `src/lib/unityBridge.ts`
+- `src/components/UnityFlipbookCanvas.tsx`
+
+## Voice Over Rekaman Pribadi
+
+Format target:
+
+- `public/assets/voice/page-01.mp3` sampai `page-10.mp3`
+
+Player:
+
+- Prioritas audio file MP3
+- Fallback ke browser TTS jika file tidak ada/rusak
+
+### Proses Audio Rekaman (Normalisasi + Noise Reduction Ringan)
+
+Siapkan rekaman mentah di folder `voice-raw` lalu jalankan:
 
 ```bash
-npm run voice:edge
+npm run voice:process
 ```
 
-Prasyarat:
+Script:
 
-1. Python 3.10+ terpasang.
-2. Paket `edge-tts` terpasang:
+- `scripts/process-voice.ps1`
 
-```bash
-pip install edge-tts
-```
-
-Script generator: `scripts/generate-voice-edge.ps1`.
-
-## Routes
-
-- `/`
-- `/pretest`
-- `/biodata-penulis`
-- `/cp-tp-atp`
-- `/mulai`
-- `/flipbook/:pageId`
-- `/posttest`
-- `/hasil-akhir`
-- `/404`
+Butuh `ffmpeg` terpasang.
 
 ## Kontrak Penyimpanan Lokal
 
 - `localStorage["arkanuh_v2_session_current"]`
 - `localStorage["arkanuh_v2_session_history"]`
 
-Riwayat disimpan maksimal 25 sesi terbaru.
+Riwayat maksimal 25 sesi terbaru.
 
 ## Jalankan Proyek
 
@@ -80,4 +104,4 @@ Build produksi:
 npm run build
 ```
 
-Konfigurasi deploy GitHub Pages tetap kompatibel dengan `base: /ARKANUH/`.
+Deploy GitHub Pages tetap menggunakan `base: /ARKANUH/`.

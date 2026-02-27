@@ -7,15 +7,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "voice:edge": "powershell -ExecutionPolicy Bypass -File ./scripts/generate-voice-edge.ps1"
+    "voice:edge": "powershell -ExecutionPolicy Bypass -File ./scripts/generate-voice-edge.ps1",
+    "voice:process": "powershell -ExecutionPolicy Bypass -File ./scripts/process-voice.ps1"
   },
   "dependencies": {
-    "@react-three/drei": "^9.122.0",
-    "@react-three/fiber": "^8.17.12",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.30.1",
-    "three": "^0.172.0"
+    "react-router-dom": "^6.30.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.11",

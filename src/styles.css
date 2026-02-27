@@ -355,11 +355,11 @@ input[type="text"] {
   display: grid;
 }
 
-.book-scene-card {
+.unity-stage-card {
   background: #f2faff;
 }
 
-.book-scene-toolbar {
+.unity-stage-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -367,7 +367,7 @@ input[type="text"] {
   margin-bottom: 10px;
 }
 
-.book-scene-wrap {
+.unity-canvas-wrap {
   width: 100%;
   height: min(72dvh, 560px);
   min-height: 360px;
@@ -376,6 +376,27 @@ input[type="text"] {
   border: 1px solid var(--line);
   background: var(--bg-plain);
   position: relative;
+}
+
+.unity-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.unity-status {
+  position: absolute;
+  inset: auto 12px 12px 12px;
+  border: 1px solid #9bcdf0;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow);
+  padding: 10px 12px;
+}
+
+.unity-status.is-error {
+  border-color: #e6a8b4;
+  background: rgba(255, 245, 247, 0.97);
 }
 
 .back-cover-summary {
