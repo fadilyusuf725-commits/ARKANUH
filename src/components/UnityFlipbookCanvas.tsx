@@ -301,7 +301,7 @@ export function UnityFlipbookCanvas({
       </div>
 
       <div className="unity-canvas-wrap">
-        <canvas ref={canvasRef} className="unity-canvas" />
+        <canvas id="unity-canvas" ref={canvasRef} className="unity-canvas" tabIndex={-1} />
         {status !== "ready" && (
           <div className={`unity-status ${status === "error" ? "is-error" : ""}`}>
             <p>{statusMessage}</p>
