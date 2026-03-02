@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { FloatingSideText } from "../components/FloatingSideText";
 import { InteractionCard } from "../components/InteractionCard";
+import { PageTabRail } from "../components/PageTabRail";
+import { PptStoryFrame } from "../components/PptStoryFrame";
 import { ProgressTracker } from "../components/ProgressTracker";
 import { UnityFlipbookCanvas } from "../components/UnityFlipbookCanvas";
 import { VoiceNarration } from "../components/VoiceNarration";
@@ -37,9 +38,12 @@ export function FlipbookReaderPage() {
     return <Navigate to="/404" replace />;
   }
 
-  const firstIncomplete = flipbookPages.find((item) => !session.flipbook.completedPages.includes(item.id));
-  if (firstIncomplete && Number(pageId) > Number(firstIncomplete.id)) {
-    return <Navigate to={`/flipbook/${firstIncomplete.id}`} replace />;
+  const firstIncompleteIndex = flipbookPages.findIndex((item) => !session.flipbook.completedPages.includes(item.id));
+  const maxReachableIndex = firstIncompleteIndex === -1 ? totalFlipbookPages - 1 : firstIncompleteIndex;
+  const firstIncompleteId = firstIncompleteIndex >= 0 ? flipbookPages[firstIncompleteIndex].id : null;
+
+  if (firstIncompleteId && Number(pageId) > Number(firstIncompleteId)) {
+    return <Navigate to={`/flipbook/${firstIncompleteId}`} replace />;
   }
 
   const interactionComplete = session.flipbook.completedPages.includes(page.id);
@@ -52,7 +56,7 @@ export function FlipbookReaderPage() {
 
   const goToIndex = (nextIndex: number) => {
     const targetPage = flipbookPages[nextIndex];
-    if (!targetPage) {
+    if (!targetPage || nextIndex > maxReachableIndex) {
       return;
     }
 
@@ -89,22 +93,27 @@ export function FlipbookReaderPage() {
     goToIndex(currentIndex + 1);
   };
 
+  const pageIds = useMemo(() => flipbookPages.map((item) => item.id), []);
+
   return (
     <main className="page-shell">
-      <section className="story-header card">
-        <p className="eyebrow">Flipbook Halaman {page.id} dari 10</p>
-        <h1>{page.title}</h1>
-        <p className="subtitle">{page.objective}</p>
-      </section>
+      <section className="ppt-flipbook-shell">
+        <PageTabRail
+          pageIds={pageIds}
+          currentPageId={page.id}
+          maxReachableIndex={maxReachableIndex}
+          completedPages={session.flipbook.completedPages}
+          onSelect={(targetId) => {
+            const index = flipbookPages.findIndex((item) => item.id === targetId);
+            if (index >= 0) {
+              goToIndex(index);
+            }
+          }}
+        />
 
-      <ProgressTracker
-        completedPages={session.flipbook.completedPages}
-        currentPageId={page.id}
-        totalPages={totalFlipbookPages}
-      />
+        <div className="ppt-main-column">
+          <PptStoryFrame page={page} />
 
-      <section className="flipbook-layout">
-        <div className="flipbook-main">
           <UnityFlipbookCanvas
             page={page}
             currentIndex={currentIndex}
@@ -114,10 +123,16 @@ export function FlipbookReaderPage() {
             onRequestNext={goNext}
             onRequestPrev={goPrev}
             onFinalCloseComplete={() => navigate("/posttest", { replace: true })}
+            compact
           />
         </div>
-        <FloatingSideText page={page} />
       </section>
+
+      <ProgressTracker
+        completedPages={session.flipbook.completedPages}
+        currentPageId={page.id}
+        totalPages={totalFlipbookPages}
+      />
 
       <VoiceNarration
         text={page.narration}
@@ -125,6 +140,7 @@ export function FlipbookReaderPage() {
         audioSrc={voiceAsset?.src ?? page.voAudio}
         nextAudioSrc={nextVoiceAsset?.src ?? nextPage?.voAudio}
       />
+
       <InteractionCard
         page={page}
         isCompleted={interactionComplete}

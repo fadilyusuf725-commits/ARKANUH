@@ -43,7 +43,10 @@ namespace Arkanuh.UnityBridge
                 return;
             }
 
-            visualBuilder.SetPopupSpin(Mathf.Repeat(Time.time * 18f, 360f));
+            if (visualBuilder != null)
+            {
+                visualBuilder.SetPopupSpin(Mathf.Repeat(Time.time * 18f, 360f));
+            }
 
             HandleSwipeInput();
         }
@@ -96,8 +99,8 @@ namespace Arkanuh.UnityBridge
                 return;
             }
 
-            mainCamera.transform.position = new Vector3(0f, 2.8f, -9f);
-            mainCamera.transform.rotation = Quaternion.Euler(14f, 0f, 0f);
+            mainCamera.transform.position = new Vector3(0f, 1.8f, -6f);
+            mainCamera.transform.rotation = Quaternion.Euler(10f, 0f, 0f);
         }
 
         public void PlayFinalClose()
@@ -113,14 +116,14 @@ namespace Arkanuh.UnityBridge
         {
             introPlayed = true;
 
-            var duration = 0.9f;
+            var duration = 0.55f;
             var elapsed = 0f;
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
                 var t = Mathf.Clamp01(elapsed / duration);
-                var lift = Mathf.Lerp(1.4f, 0f, EaseOutCubic(t));
-                var tilt = Mathf.Lerp(-4f, 0f, t);
+                var lift = Mathf.Lerp(0.45f, 0f, EaseOutCubic(t));
+                var tilt = Mathf.Lerp(-3f, 0f, t);
                 visualBuilder.ApplyBookTransform(lift, tilt);
                 yield return null;
             }
@@ -130,7 +133,7 @@ namespace Arkanuh.UnityBridge
 
         private IEnumerator PlayFlipAnimation()
         {
-            var duration = 0.45f;
+            var duration = 0.36f;
             var elapsed = 0f;
             while (elapsed < duration)
             {
@@ -148,14 +151,14 @@ namespace Arkanuh.UnityBridge
         {
             isFinalClosing = true;
 
-            var duration = 1.25f;
+            var duration = 0.95f;
             var elapsed = 0f;
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
                 var t = Mathf.Clamp01(elapsed / duration);
-                var lift = Mathf.Lerp(0f, 0.3f, t);
-                var tilt = Mathf.Lerp(0f, -14f, t);
+                var lift = Mathf.Lerp(0f, 0.15f, t);
+                var tilt = Mathf.Lerp(0f, -8f, t);
                 visualBuilder.ApplyBookTransform(lift, tilt);
                 visualBuilder.SetFlipProgress(Mathf.Lerp(0f, 1f, t));
                 yield return null;
@@ -243,7 +246,7 @@ namespace Arkanuh.UnityBridge
                 var lightGo = new GameObject("Directional Light");
                 var light = lightGo.AddComponent<Light>();
                 light.type = LightType.Directional;
-                light.intensity = 1.18f;
+                light.intensity = 1.1f;
                 lightGo.transform.rotation = Quaternion.Euler(46f, -32f, 0f);
             }
 

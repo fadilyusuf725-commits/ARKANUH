@@ -1,5 +1,6 @@
 import { FlipbookPage } from "../types/domain";
 import { withBasePath } from "../lib/assetPaths";
+import { getPptSlideLayout } from "./pptSlideAssets";
 
 export const flipbookPages: FlipbookPage[] = [
   {
@@ -16,7 +17,8 @@ export const flipbookPages: FlipbookPage[] = [
     popupTemplate: "ark",
     floatingText: "Nabi Nuh mengajak dengan kata-kata baik, lembut, dan penuh kesabaran.",
     popupAccent: "#2f9bff",
-    coverTitle: "ARKANUH - Perjalanan Nabi Nuh"
+    coverTitle: "ARKANUH - Perjalanan Nabi Nuh",
+    slideLayout: getPptSlideLayout("1")
   },
   {
     id: "2",
@@ -33,7 +35,8 @@ export const flipbookPages: FlipbookPage[] = [
     correctChoiceIndex: 0,
     popupTemplate: "rain",
     floatingText: "Ketika ditolak, Nabi Nuh tetap sabar dan tidak membalas dengan keburukan.",
-    popupAccent: "#1669c1"
+    popupAccent: "#1669c1",
+    slideLayout: getPptSlideLayout("2")
   },
   {
     id: "3",
@@ -48,7 +51,8 @@ export const flipbookPages: FlipbookPage[] = [
       "Waktu terus berjalan, tantangan semakin banyak, tetapi Nabi Nuh tidak menyerah. Beliau tetap teguh karena yakin Allah selalu melihat usaha yang baik. Dari kisah ini kita belajar bahwa kesabaran membuat hati kuat, dan orang yang sabar akan lebih mudah berbuat benar.",
     popupTemplate: "light",
     floatingText: "Keteguhan hati tumbuh dari iman, doa, dan kesabaran setiap hari.",
-    popupAccent: "#71c7ff"
+    popupAccent: "#71c7ff",
+    slideLayout: getPptSlideLayout("3")
   },
   {
     id: "4",
@@ -65,7 +69,8 @@ export const flipbookPages: FlipbookPage[] = [
     correctChoiceIndex: 0,
     popupTemplate: "ark",
     floatingText: "Taat berarti segera melakukan kebaikan tanpa menunda.",
-    popupAccent: "#2f9bff"
+    popupAccent: "#2f9bff",
+    slideLayout: getPptSlideLayout("4")
   },
   {
     id: "5",
@@ -81,7 +86,8 @@ export const flipbookPages: FlipbookPage[] = [
     interactionItems: ["Kayu", "Paku", "Tali"],
     popupTemplate: "mountain",
     floatingText: "Kerja tekun dan tertib membuat hasil menjadi kuat dan aman.",
-    popupAccent: "#3f8cff"
+    popupAccent: "#3f8cff",
+    slideLayout: getPptSlideLayout("5")
   },
   {
     id: "6",
@@ -96,7 +102,8 @@ export const flipbookPages: FlipbookPage[] = [
       "Akhirnya banjir besar datang seperti yang telah diperingatkan. Air naik perlahan lalu semakin tinggi. Bahtera yang sudah dipersiapkan menjadi tempat perlindungan bagi orang beriman. Dari peristiwa ini kita memahami bahwa nasihat baik perlu didengar sebelum keadaan menjadi sulit.",
     popupTemplate: "wave",
     floatingText: "Bahtera menjadi tempat aman saat gelombang semakin tinggi.",
-    popupAccent: "#59b3ff"
+    popupAccent: "#59b3ff",
+    slideLayout: getPptSlideLayout("6")
   },
   {
     id: "7",
@@ -112,7 +119,8 @@ export const flipbookPages: FlipbookPage[] = [
     interactionItems: ["Burung", "Kambing", "Kucing"],
     popupTemplate: "ark",
     floatingText: "Tertib dan patuh membuat perjalanan bersama menjadi selamat.",
-    popupAccent: "#2f9bff"
+    popupAccent: "#2f9bff",
+    slideLayout: getPptSlideLayout("7")
   },
   {
     id: "8",
@@ -129,7 +137,8 @@ export const flipbookPages: FlipbookPage[] = [
     correctChoiceIndex: 0,
     popupTemplate: "light",
     floatingText: "Iman terlihat dari doa, taat, dan sikap saling menolong.",
-    popupAccent: "#89d2ff"
+    popupAccent: "#89d2ff",
+    slideLayout: getPptSlideLayout("8")
   },
   {
     id: "9",
@@ -144,7 +153,8 @@ export const flipbookPages: FlipbookPage[] = [
       "Setelah masa yang ditentukan, air banjir mulai surut. Langit perlahan cerah, dan bahtera berhenti di tempat aman. Semua yang ada di bahtera merasa lega dan bersyukur. Dari sini kita memahami bahwa pertolongan Allah datang tepat waktu bagi orang yang sabar dan percaya.",
     popupTemplate: "mountain",
     floatingText: "Saat air surut, rasa syukur tumbuh karena pertolongan Allah datang tepat waktu.",
-    popupAccent: "#2f9bff"
+    popupAccent: "#2f9bff",
+    slideLayout: getPptSlideLayout("9")
   },
   {
     id: "10",
@@ -162,7 +172,8 @@ export const flipbookPages: FlipbookPage[] = [
     popupTemplate: "light",
     floatingText: "Akhir cerita mengingatkan kita untuk hidup dengan iman, sabar, taat, dan jujur.",
     popupAccent: "#1669c1",
-    backCoverSummary: ["Iman kepada Allah", "Sabar dalam ujian", "Taat pada kebaikan", "Jujur dalam ucapan"]
+    backCoverSummary: ["Iman kepada Allah", "Sabar dalam ujian", "Taat pada kebaikan", "Jujur dalam ucapan"],
+    slideLayout: getPptSlideLayout("10")
   }
 ];
 

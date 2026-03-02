@@ -24,7 +24,7 @@ type UnityBuildVariant = {
   };
 };
 
-const UNITY_ASSET_VERSION = "20260302c";
+const UNITY_ASSET_VERSION = "20260302d";
 const withUnityAssetVersion = (path: string) => `${withBasePath(path)}?v=${UNITY_ASSET_VERSION}`;
 
 const UNITY_BUILD_VARIANTS: UnityBuildVariant[] = [
@@ -98,6 +98,7 @@ type UnityFlipbookCanvasProps = {
   onRequestNext: () => void;
   onRequestPrev: () => void;
   onFinalCloseComplete: () => void;
+  compact?: boolean;
 };
 
 function ensureLoaderScript(src: string): Promise<void> {
@@ -139,7 +140,8 @@ export function UnityFlipbookCanvas({
   triggerFinalClose,
   onRequestNext,
   onRequestPrev,
-  onFinalCloseComplete
+  onFinalCloseComplete,
+  compact = false
 }: UnityFlipbookCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const unityInstanceRef = useRef<UnityInstance | null>(null);
@@ -287,10 +289,10 @@ export function UnityFlipbookCanvas({
   };
 
   return (
-    <section className="card unity-stage-card">
+    <section className={`card unity-stage-card ${compact ? "is-compact" : ""}`}>
       <div className="unity-stage-toolbar">
         <div>
-          <p className="eyebrow">Unity Flipbook</p>
+          <p className="eyebrow">Pop-up 3D</p>
           <p className="muted">
             Halaman {currentIndex + 1}/{totalPages}
           </p>
@@ -319,7 +321,8 @@ export function UnityFlipbookCanvas({
       </div>
 
       <p className="muted">
-        Swipe di area buku untuk berpindah halaman. React tetap mengunci halaman berikutnya sampai aktivitas selesai.
+        Geser kiri/kanan di area 3D untuk berpindah halaman. React tetap mengunci halaman berikutnya sampai aktivitas
+        selesai.
       </p>
     </section>
   );

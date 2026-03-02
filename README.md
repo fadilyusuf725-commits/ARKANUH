@@ -17,10 +17,24 @@ Target utama: kualitas visual lebih baik di HP Android dengan performa stabil (3
    - Biodata
    - Hasil
 2. Pretest wajib selesai sebelum masuk flipbook.
-3. Flipbook 10 halaman di `/flipbook/:pageId` memakai Unity WebGL canvas.
+3. Flipbook 10 halaman di `/flipbook/:pageId` memakai gaya PPT story + panel pop-up 3D inline.
 4. Aktivitas halaman tetap di React (`InteractionCard`) sebagai pengunci lanjut.
 5. Halaman 10 menutup buku (final close), lalu lanjut ke posttest.
 6. Hasil akhir membandingkan skor pretest vs posttest.
+
+## Mode Flipbook Gaya PPT
+
+Refactor terbaru menambahkan:
+
+- tab halaman `Hal 1-10` untuk navigasi story.
+- frame cerita berlapis (layered illustration) mengikuti referensi `KISAH NABI NUH.pptx`.
+- panel pop-up 3D inline (Unity canvas rasio 16:10) di dalam halaman cerita.
+- narasi utama halaman dipisah dari panel interaksi agar nyaman dibaca siswa kelas 2 SD.
+
+Data layout halaman ada di:
+
+- `src/data/pptSlideAssets.ts`
+- `src/data/flipbookPages.ts`
 
 ## Struktur Unity WebGL
 
@@ -83,6 +97,31 @@ Output build:
 - `public/unity/Build/*`
 - `public/unity/TemplateData/*`
 - `public/unity/index.html`
+
+## Pipeline Aset PPT
+
+Ekstrak gambar dari PPT referensi:
+
+```bash
+npm run ppt:extract
+```
+
+Optimasi ke WebP untuk mobile:
+
+```bash
+npm run ppt:optimize
+```
+
+Jalankan keduanya sekaligus:
+
+```bash
+npm run ppt:prepare
+```
+
+Output:
+
+- raw: `public/assets/ppt-story/raw/*`
+- optimized: `public/assets/ppt-story/optimized/*`
 
 ## Voice Over Rekaman Pribadi
 
