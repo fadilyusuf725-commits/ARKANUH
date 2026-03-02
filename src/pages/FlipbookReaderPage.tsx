@@ -1,8 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { InteractionCard } from "../components/InteractionCard";
-import { PageTabRail } from "../components/PageTabRail";
-import { PptStoryFrame } from "../components/PptStoryFrame";
 import { ProgressTracker } from "../components/ProgressTracker";
 import { UnityFlipbookCanvas } from "../components/UnityFlipbookCanvas";
 import { VoiceNarration } from "../components/VoiceNarration";
@@ -39,33 +36,30 @@ export function FlipbookReaderPage() {
   }
 
   const firstIncompleteIndex = flipbookPages.findIndex((item) => !session.flipbook.completedPages.includes(item.id));
-  const maxReachableIndex = firstIncompleteIndex === -1 ? totalFlipbookPages - 1 : firstIncompleteIndex;
   const firstIncompleteId = firstIncompleteIndex >= 0 ? flipbookPages[firstIncompleteIndex].id : null;
 
   if (firstIncompleteId && Number(pageId) > Number(firstIncompleteId)) {
     return <Navigate to={`/flipbook/${firstIncompleteId}`} replace />;
   }
 
-  const interactionComplete = session.flipbook.completedPages.includes(page.id);
   const canGoPrev = currentIndex > 0;
-  const canGoNext = interactionComplete;
+  const canGoNext = true;
   const isLastPage = currentIndex === totalFlipbookPages - 1;
   const nextPage = currentIndex < totalFlipbookPages - 1 ? flipbookPages[currentIndex + 1] : undefined;
   const voiceAsset = getVoiceAssetByPageId(page.id);
   const nextVoiceAsset = nextPage ? getVoiceAssetByPageId(nextPage.id) : undefined;
 
+  useEffect(() => {
+    if (isLastPage) {
+      return;
+    }
+    markFlipbookPageCompleted(page.id, totalFlipbookPages);
+  }, [isLastPage, markFlipbookPageCompleted, page.id]);
+
   const goToIndex = (nextIndex: number) => {
     const targetPage = flipbookPages[nextIndex];
-    if (!targetPage || nextIndex > maxReachableIndex) {
+    if (!targetPage || nextIndex < 0 || nextIndex >= totalFlipbookPages) {
       return;
-    }
-
-    if (nextIndex > currentIndex && !canGoNext) {
-      return;
-    }
-
-    if (nextIndex > currentIndex && canGoNext) {
-      markFlipbookPageCompleted(page.id, totalFlipbookPages);
     }
 
     navigate(`/flipbook/${targetPage.id}`);
@@ -93,40 +87,26 @@ export function FlipbookReaderPage() {
     goToIndex(currentIndex + 1);
   };
 
-  const pageIds = useMemo(() => flipbookPages.map((item) => item.id), []);
-
   return (
     <main className="page-shell">
-      <section className="ppt-flipbook-shell">
-        <PageTabRail
-          pageIds={pageIds}
-          currentPageId={page.id}
-          maxReachableIndex={maxReachableIndex}
-          completedPages={session.flipbook.completedPages}
-          onSelect={(targetId) => {
-            const index = flipbookPages.findIndex((item) => item.id === targetId);
-            if (index >= 0) {
-              goToIndex(index);
-            }
-          }}
-        />
-
-        <div className="ppt-main-column">
-          <PptStoryFrame page={page} />
-
-          <UnityFlipbookCanvas
-            page={page}
-            currentIndex={currentIndex}
-            totalPages={totalFlipbookPages}
-            canAdvance={canGoNext}
-            triggerFinalClose={isFinalClosing}
-            onRequestNext={goNext}
-            onRequestPrev={goPrev}
-            onFinalCloseComplete={() => navigate("/posttest", { replace: true })}
-            compact
-          />
-        </div>
+      <section className="hero-card reader-focus-hero">
+        <p className="eyebrow">Buku Cerita 3D</p>
+        <h1>
+          Halaman {currentIndex + 1}: {page.title}
+        </h1>
+        <p className="subtitle">{page.narration}</p>
       </section>
+
+      <UnityFlipbookCanvas
+        page={page}
+        currentIndex={currentIndex}
+        totalPages={totalFlipbookPages}
+        canAdvance={canGoNext}
+        triggerFinalClose={isFinalClosing}
+        onRequestNext={goNext}
+        onRequestPrev={goPrev}
+        onFinalCloseComplete={() => navigate("/posttest", { replace: true })}
+      />
 
       <ProgressTracker
         completedPages={session.flipbook.completedPages}
@@ -139,12 +119,6 @@ export function FlipbookReaderPage() {
         title={page.title}
         audioSrc={voiceAsset?.src ?? page.voAudio}
         nextAudioSrc={nextVoiceAsset?.src ?? nextPage?.voAudio}
-      />
-
-      <InteractionCard
-        page={page}
-        isCompleted={interactionComplete}
-        onComplete={() => markFlipbookPageCompleted(page.id, totalFlipbookPages)}
       />
 
       <section className="card sticky-action">

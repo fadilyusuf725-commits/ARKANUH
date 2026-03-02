@@ -145,6 +145,9 @@ export function UnityFlipbookCanvas({
 }: UnityFlipbookCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const unityInstanceRef = useRef<UnityInstance | null>(null);
+  const onRequestNextRef = useRef(onRequestNext);
+  const onRequestPrevRef = useRef(onRequestPrev);
+  const onFinalCloseCompleteRef = useRef(onFinalCloseComplete);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [progress, setProgress] = useState(0);
   const [statusMessage, setStatusMessage] = useState("Memuat renderer Unity...");
@@ -161,6 +164,12 @@ export function UnityFlipbookCanvas({
     }),
     [page]
   );
+
+  useEffect(() => {
+    onRequestNextRef.current = onRequestNext;
+    onRequestPrevRef.current = onRequestPrev;
+    onFinalCloseCompleteRef.current = onFinalCloseComplete;
+  }, [onFinalCloseComplete, onRequestNext, onRequestPrev]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -215,15 +224,15 @@ export function UnityFlipbookCanvas({
 
           unsubscribe = subscribeUnityEvents((event) => {
             if (event.type === "REQUEST_NEXT_PAGE") {
-              onRequestNext();
+              onRequestNextRef.current();
               return;
             }
             if (event.type === "REQUEST_PREV_PAGE") {
-              onRequestPrev();
+              onRequestPrevRef.current();
               return;
             }
             if (event.type === "FINAL_CLOSE_DONE") {
-              onFinalCloseComplete();
+              onFinalCloseCompleteRef.current();
             }
           });
           return;
@@ -247,7 +256,7 @@ export function UnityFlipbookCanvas({
         currentInstance.Quit().catch(() => undefined);
       }
     };
-  }, [onFinalCloseComplete, onRequestNext, onRequestPrev]);
+  }, []);
 
   useEffect(() => {
     if (status !== "ready") {
@@ -321,8 +330,7 @@ export function UnityFlipbookCanvas({
       </div>
 
       <p className="muted">
-        Geser kiri/kanan di area 3D untuk berpindah halaman. React tetap mengunci halaman berikutnya sampai aktivitas
-        selesai.
+        Geser kiri atau kanan di area 3D untuk membalik halaman, atau gunakan tombol navigasi di bawah.
       </p>
     </section>
   );

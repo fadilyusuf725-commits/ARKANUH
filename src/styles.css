@@ -95,6 +95,20 @@ ol {
   background: #f6fbff;
 }
 
+.reader-focus-hero {
+  background: #f2faff;
+}
+
+.reader-focus-hero h1 {
+  font-size: clamp(1.35rem, 2.8vw, 1.9rem);
+  color: var(--blue-700);
+}
+
+.reader-focus-hero .subtitle {
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
 .eyebrow {
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -481,7 +495,7 @@ input[type="text"] {
 }
 
 .unity-stage-card {
-  background: #f2faff;
+  background: #eff9ff;
 }
 
 .unity-stage-card.is-compact {
@@ -498,7 +512,7 @@ input[type="text"] {
 
 .unity-canvas-wrap {
   width: 100%;
-  height: min(72dvh, 560px);
+  height: clamp(380px, 70dvh, 620px);
   min-height: 360px;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -771,5 +785,4 @@ input[type="text"] {
     min-width: 0;
     text-align: left;
   }
-
 }
