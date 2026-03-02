@@ -24,15 +24,18 @@ type UnityBuildVariant = {
   };
 };
 
+const UNITY_ASSET_VERSION = "20260302b";
+const withUnityAssetVersion = (path: string) => `${withBasePath(path)}?v=${UNITY_ASSET_VERSION}`;
+
 const UNITY_BUILD_VARIANTS: UnityBuildVariant[] = [
   {
     id: "ARKANUHBook",
-    loaderSrc: withBasePath("unity/Build/ARKANUHBook.loader.js"),
+    loaderSrc: withUnityAssetVersion("unity/Build/ARKANUHBook.loader.js"),
     config: {
-      dataUrl: withBasePath("unity/Build/ARKANUHBook.data.unityweb"),
-      frameworkUrl: withBasePath("unity/Build/ARKANUHBook.framework.js.unityweb"),
-      codeUrl: withBasePath("unity/Build/ARKANUHBook.wasm.unityweb"),
-      streamingAssetsUrl: withBasePath("unity/StreamingAssets"),
+      dataUrl: withUnityAssetVersion("unity/Build/ARKANUHBook.data.unityweb"),
+      frameworkUrl: withUnityAssetVersion("unity/Build/ARKANUHBook.framework.js.unityweb"),
+      codeUrl: withUnityAssetVersion("unity/Build/ARKANUHBook.wasm.unityweb"),
+      streamingAssetsUrl: withUnityAssetVersion("unity/StreamingAssets"),
       companyName: "ARKANUH",
       productName: "ARKANUHBook",
       productVersion: "4.0.0"
@@ -40,18 +43,51 @@ const UNITY_BUILD_VARIANTS: UnityBuildVariant[] = [
   },
   {
     id: "unity",
-    loaderSrc: withBasePath("unity/Build/unity.loader.js"),
+    loaderSrc: withUnityAssetVersion("unity/Build/unity.loader.js"),
     config: {
-      dataUrl: withBasePath("unity/Build/unity.data.unityweb"),
-      frameworkUrl: withBasePath("unity/Build/unity.framework.js.unityweb"),
-      codeUrl: withBasePath("unity/Build/unity.wasm.unityweb"),
-      streamingAssetsUrl: withBasePath("unity/StreamingAssets"),
+      dataUrl: withUnityAssetVersion("unity/Build/unity.data.unityweb"),
+      frameworkUrl: withUnityAssetVersion("unity/Build/unity.framework.js.unityweb"),
+      codeUrl: withUnityAssetVersion("unity/Build/unity.wasm.unityweb"),
+      streamingAssetsUrl: withUnityAssetVersion("unity/StreamingAssets"),
       companyName: "ARKANUH",
       productName: "ARKANUHBook",
       productVersion: "4.0.0"
     }
   }
 ];
+
+function formatUnityError(error: unknown): string {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  if (typeof error === "string" && error.trim().length > 0) {
+    return error;
+  }
+  if (typeof error === "object" && error !== null) {
+    try {
+      const asRecord = error as Record<string, unknown>;
+      if (typeof asRecord.message === "string" && asRecord.message.trim().length > 0) {
+        return asRecord.message;
+      }
+      return JSON.stringify(error);
+    } catch {
+      return "Gagal memuat Unity (error object tidak terbaca).";
+    }
+  }
+  return "Gagal memuat Unity.";
+}
+
+function detectWebGL2SupportIssue() {
+  if (typeof document === "undefined") {
+    return null;
+  }
+  const canvas = document.createElement("canvas");
+  const gl2 = canvas.getContext("webgl2");
+  if (!gl2) {
+    return "Perangkat/browser belum mendukung WebGL 2. Gunakan Chrome Android terbaru atau perangkat lain.";
+  }
+  return null;
+}
 
 type UnityFlipbookCanvasProps = {
   page: FlipbookPage;
@@ -136,6 +172,10 @@ export function UnityFlipbookCanvas({
       }
 
       const initErrors: string[] = [];
+      const webglIssue = detectWebGL2SupportIssue();
+      if (webglIssue) {
+        initErrors.push(`[webgl2] ${webglIssue}`);
+      }
 
       for (const variant of UNITY_BUILD_VARIANTS) {
         try {
@@ -186,7 +226,7 @@ export function UnityFlipbookCanvas({
           });
           return;
         } catch (error) {
-          initErrors.push(`[${variant.id}] ${error instanceof Error ? error.message : "Gagal memuat."}`);
+          initErrors.push(`[${variant.id}] ${formatUnityError(error)}`);
         }
       }
 
@@ -267,9 +307,12 @@ export function UnityFlipbookCanvas({
             <p>{statusMessage}</p>
             {status === "loading" && <p className="muted">Progress: {Math.round(progress * 100)}%</p>}
             {status === "error" && (
-              <p className="muted">
-                Build Unity WebGL belum terbaca atau cache lama masih dipakai. Coba refresh paksa / mode samaran.
-              </p>
+              <>
+                <p className="muted">
+                  Build Unity WebGL belum terbaca atau cache lama masih dipakai. Coba refresh paksa / mode samaran.
+                </p>
+                <p className="muted">Jika masih gagal, kirim teks error di atas persis apa adanya.</p>
+              </>
             )}
           </div>
         )}
