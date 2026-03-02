@@ -7,6 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
+    "ppt:extract": "powershell -ExecutionPolicy Bypass -File ./scripts/extract-ppt-assets.ps1",
+    "ppt:optimize": "node ./scripts/optimize-ppt-assets.mjs",
+    "ppt:prepare": "npm run ppt:extract && npm run ppt:optimize",
     "voice:edge": "powershell -ExecutionPolicy Bypass -File ./scripts/generate-voice-edge.ps1",
     "voice:process": "powershell -ExecutionPolicy Bypass -File ./scripts/process-voice.ps1",
     "unity:build:dev": "powershell -ExecutionPolicy Bypass -File ./scripts/unity-build.ps1 -Mode dev",
@@ -22,6 +25,7 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.1",
+    "sharp": "^0.33.5",
     "typescript": "^5.6.3",
     "vite": "^5.4.9"
   }

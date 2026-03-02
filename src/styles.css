@@ -346,17 +346,146 @@ input[type="text"] {
   color: var(--blue-700);
 }
 
-.flipbook-layout {
+.ppt-flipbook-shell {
+  display: grid;
+  gap: 10px;
+}
+
+.ppt-tab-rail {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 2px;
+}
+
+.ppt-tab {
+  border: 1px solid #b8dbf5;
+  border-radius: 999px;
+  background: #f2f9ff;
+  color: var(--ink-soft);
+  font-family: "Baloo 2", cursive;
+  font-weight: 700;
+  font-size: 0.9rem;
+  min-width: 74px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+
+.ppt-tab.is-current {
+  border-color: var(--blue-500);
+  background: rgba(47, 155, 255, 0.15);
+  color: var(--blue-700);
+}
+
+.ppt-tab.is-done {
+  background: rgba(47, 155, 255, 0.24);
+  color: var(--blue-700);
+}
+
+.ppt-main-column {
   display: grid;
   gap: 12px;
 }
 
-.flipbook-main {
+.ppt-story-frame {
+  background: #f8fdff;
   display: grid;
+  gap: 12px;
+}
+
+.ppt-story-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: flex-start;
+}
+
+.ppt-badge {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--blue-700);
+  background: rgba(47, 155, 255, 0.14);
+}
+
+.ppt-illustration {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #e8f6ff;
+  overflow: hidden;
+}
+
+.ppt-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: pptFadeIn 340ms ease both;
+}
+
+.ppt-layer.is-slide_up {
+  animation: pptSlideUpIn 340ms ease both;
+}
+
+.ppt-layer.is-none {
+  animation: none;
+}
+
+.ppt-story-body {
+  display: grid;
+  gap: 8px;
+  font-size: 1rem;
+  line-height: 1.58;
+  color: var(--ink);
+}
+
+.ppt-emphasize {
+  border-left: 4px solid var(--blue-300);
+  padding-left: 10px;
+  color: #24537f;
+  font-weight: 700;
+}
+
+.ppt-floating-note {
+  border: 1px solid #c4e2f8;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  background: #f4fbff;
+  display: grid;
+  gap: 4px;
+}
+
+@keyframes pptFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pptSlideUpIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .unity-stage-card {
   background: #f2faff;
+}
+
+.unity-stage-card.is-compact {
+  padding: 14px;
 }
 
 .unity-stage-toolbar {
@@ -376,6 +505,12 @@ input[type="text"] {
   border: 1px solid var(--line);
   background: var(--bg-plain);
   position: relative;
+}
+
+.unity-stage-card.is-compact .unity-canvas-wrap {
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 16 / 10;
 }
 
 .unity-canvas {
@@ -422,32 +557,6 @@ input[type="text"] {
   gap: 2px;
   color: var(--ink-soft);
   font-size: 0.9rem;
-}
-
-.floating-side-text {
-  --popup-accent: var(--blue-500);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 14px;
-  background: var(--white);
-  box-shadow: var(--shadow);
-  display: grid;
-  gap: 8px;
-  position: relative;
-}
-
-.floating-side-text::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 6px;
-  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
-  background: var(--popup-accent);
-}
-
-.floating-side-text h3,
-.floating-side-text p {
-  padding-left: 8px;
 }
 
 .floating-tag {
@@ -644,13 +753,23 @@ input[type="text"] {
     grid-template-columns: 1fr 1fr;
   }
 
-  .flipbook-layout {
-    grid-template-columns: minmax(0, 1fr) 300px;
+  .ppt-flipbook-shell {
+    grid-template-columns: 92px minmax(0, 1fr);
     align-items: start;
+    gap: 12px;
   }
 
-  .floating-side-text {
-    position: sticky;
-    top: 20px;
+  .ppt-tab-rail {
+    display: grid;
+    gap: 8px;
+    overflow: visible;
+    padding: 0;
   }
+
+  .ppt-tab {
+    border-radius: 14px;
+    min-width: 0;
+    text-align: left;
+  }
+
 }

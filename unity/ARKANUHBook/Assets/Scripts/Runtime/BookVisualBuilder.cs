@@ -4,10 +4,9 @@ namespace Arkanuh.UnityBridge
 {
     public class BookVisualBuilder : MonoBehaviour
     {
-        [SerializeField] private Transform bookRoot;
+        [SerializeField] private Transform stageRoot;
         [SerializeField] private Transform popupRoot;
-        [SerializeField] private Renderer coverRenderer;
-        [SerializeField] private Renderer pageRenderer;
+        [SerializeField] private Renderer backdropRenderer;
 
         private GameObject currentPopupObject;
         private TextMesh titleLabel;
@@ -15,39 +14,51 @@ namespace Arkanuh.UnityBridge
 
         public void InitializeVisualRig()
         {
-            if (bookRoot != null)
+            if (stageRoot != null)
             {
                 return;
             }
 
-            var root = new GameObject("BookRoot");
+            var root = new GameObject("PopupStageRoot");
             root.transform.SetParent(transform, false);
-            root.transform.localPosition = new Vector3(0f, -0.2f, 0f);
-            bookRoot = root.transform;
+            root.transform.localPosition = new Vector3(0f, -0.15f, 0f);
+            stageRoot = root.transform;
 
-            var cover = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cover.name = "FrontCover";
-            cover.transform.SetParent(bookRoot, false);
-            cover.transform.localScale = new Vector3(5.1f, 0.2f, 3.6f);
-            cover.transform.localPosition = new Vector3(0f, 0.1f, 0f);
-            coverRenderer = cover.GetComponent<Renderer>();
+            var backdrop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            backdrop.name = "Backdrop";
+            backdrop.transform.SetParent(stageRoot, false);
+            backdrop.transform.localPosition = new Vector3(0f, 0.85f, 1.8f);
+            backdrop.transform.localScale = new Vector3(5.2f, 2.8f, 0.08f);
+            backdropRenderer = backdrop.GetComponent<Renderer>();
 
-            var page = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            page.name = "PageSurface";
-            page.transform.SetParent(bookRoot, false);
-            page.transform.localScale = new Vector3(4.7f, 0.08f, 3.2f);
-            page.transform.localPosition = new Vector3(0f, 0.24f, 0f);
-            pageRenderer = page.GetComponent<Renderer>();
+            var platform = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            platform.name = "Platform";
+            platform.transform.SetParent(stageRoot, false);
+            platform.transform.localPosition = new Vector3(0f, 0.05f, 0f);
+            platform.transform.localScale = new Vector3(4.9f, 0.16f, 3.1f);
+            var platformRenderer = platform.GetComponent<Renderer>();
+            if (platformRenderer != null)
+            {
+                var platformMaterial = new Material(Shader.Find("Standard"));
+                platformMaterial.color = ParseHex("#f5fbff");
+                platformRenderer.material = platformMaterial;
+            }
 
             var popup = new GameObject("PopupRoot");
-            popup.transform.SetParent(bookRoot, false);
-            popup.transform.localPosition = new Vector3(0f, 0.55f, 0f);
+            popup.transform.SetParent(stageRoot, false);
+            popup.transform.localPosition = new Vector3(0f, 0.55f, -0.2f);
             popupRoot = popup.transform;
 
-            titleLabel = CreateLabel("TitleLabel", new Vector3(0f, 0.55f, -2.1f), 0.36f, TextAnchor.MiddleCenter);
-            floatingLabel = CreateLabel("FloatingLabel", new Vector3(0f, -1.5f, -2.1f), 0.18f, TextAnchor.MiddleCenter);
+            titleLabel = CreateLabel("TitleLabel", new Vector3(0f, 1.95f, 0.4f), 0.36f, TextAnchor.MiddleCenter, "#0f2f4d");
+            floatingLabel = CreateLabel(
+                "FloatingLabel",
+                new Vector3(0f, -0.85f, -1.3f),
+                0.17f,
+                TextAnchor.MiddleCenter,
+                "#24537f"
+            );
 
-            ApplyCoverColor(ParseHex("#2f9bff"));
+            ApplyBackdropColor(ParseHex("#cfeeff"));
         }
 
         public void ApplyPageVisual(UnityPagePayloadData payload)
@@ -58,9 +69,9 @@ namespace Arkanuh.UnityBridge
             }
 
             InitializeVisualRig();
-
             var accentColor = ParseHex(payload.popupAccent);
-            ApplyCoverColor(accentColor);
+
+            ApplyBackdropColor(Color.Lerp(ParseHex("#dff4ff"), accentColor, 0.35f));
 
             if (titleLabel != null)
             {
@@ -77,13 +88,13 @@ namespace Arkanuh.UnityBridge
 
         public void ApplyBookTransform(float lift, float tilt)
         {
-            if (bookRoot == null)
+            if (stageRoot == null)
             {
                 return;
             }
 
-            bookRoot.localPosition = new Vector3(0f, -0.2f + lift, 0f);
-            bookRoot.localRotation = Quaternion.Euler(-4f + tilt, 0f, 0f);
+            stageRoot.localPosition = new Vector3(0f, -0.15f + lift, 0f);
+            stageRoot.localRotation = Quaternion.Euler(tilt, 0f, 0f);
         }
 
         public void SetFlipProgress(float progress)
@@ -94,7 +105,8 @@ namespace Arkanuh.UnityBridge
             }
 
             var clamped = Mathf.Clamp01(progress);
-            popupRoot.localRotation = Quaternion.Euler(0f, Mathf.Lerp(0f, 170f, clamped), 0f);
+            popupRoot.localRotation = Quaternion.Euler(0f, Mathf.Lerp(-8f, 8f, clamped), 0f);
+            popupRoot.localScale = Vector3.one * Mathf.Lerp(0.92f, 1.02f, Mathf.Sin(clamped * Mathf.PI));
         }
 
         public void SetPopupSpin(float yaw)
@@ -139,11 +151,29 @@ namespace Arkanuh.UnityBridge
 
         private void BuildArkPopup(Transform root, Color accent)
         {
-            var hull = CreatePrimitive(PrimitiveType.Cube, root, new Vector3(0f, 0.05f, 0f), new Vector3(1.8f, 0.35f, 0.9f), accent);
+            var hull = CreatePrimitive(
+                PrimitiveType.Cube,
+                root,
+                new Vector3(0f, 0.06f, 0f),
+                new Vector3(1.85f, 0.36f, 0.88f),
+                accent
+            );
             hull.name = "Hull";
-            var mast = CreatePrimitive(PrimitiveType.Cylinder, root, new Vector3(0f, 0.65f, 0f), new Vector3(0.08f, 0.55f, 0.08f), ParseHex("#6a4a2b"));
+            var mast = CreatePrimitive(
+                PrimitiveType.Cylinder,
+                root,
+                new Vector3(0f, 0.68f, 0f),
+                new Vector3(0.08f, 0.55f, 0.08f),
+                ParseHex("#6a4a2b")
+            );
             mast.name = "Mast";
-            var sail = CreatePrimitive(PrimitiveType.Cube, root, new Vector3(0.34f, 0.65f, 0f), new Vector3(0.58f, 0.42f, 0.04f), ParseHex("#d8efff"));
+            var sail = CreatePrimitive(
+                PrimitiveType.Cube,
+                root,
+                new Vector3(0.34f, 0.68f, 0f),
+                new Vector3(0.58f, 0.42f, 0.04f),
+                ParseHex("#d8efff")
+            );
             sail.name = "Sail";
         }
 
@@ -153,7 +183,13 @@ namespace Arkanuh.UnityBridge
             cloud.name = "Cloud";
             for (var i = -2; i <= 2; i++)
             {
-                var drop = CreatePrimitive(PrimitiveType.Cylinder, root, new Vector3(i * 0.2f, 0.08f, 0f), new Vector3(0.05f, 0.17f, 0.05f), ParseHex("#7fd0ff"));
+                var drop = CreatePrimitive(
+                    PrimitiveType.Cylinder,
+                    root,
+                    new Vector3(i * 0.2f, 0.08f, 0f),
+                    new Vector3(0.05f, 0.17f, 0.05f),
+                    ParseHex("#7fd0ff")
+                );
                 drop.name = $"Drop_{i}";
             }
         }
@@ -170,7 +206,13 @@ namespace Arkanuh.UnityBridge
         {
             var wave1 = CreatePrimitive(PrimitiveType.Cylinder, root, new Vector3(-0.25f, 0.2f, 0f), new Vector3(0.3f, 0.2f, 1.0f), accent);
             wave1.transform.localRotation = Quaternion.Euler(0f, 0f, 24f);
-            var wave2 = CreatePrimitive(PrimitiveType.Cylinder, root, new Vector3(0.45f, 0.32f, 0f), new Vector3(0.27f, 0.18f, 1.1f), ParseHex("#78ccff"));
+            var wave2 = CreatePrimitive(
+                PrimitiveType.Cylinder,
+                root,
+                new Vector3(0.45f, 0.32f, 0f),
+                new Vector3(0.27f, 0.18f, 1.1f),
+                ParseHex("#78ccff")
+            );
             wave2.transform.localRotation = Quaternion.Euler(0f, 0f, -22f);
         }
 
@@ -182,11 +224,11 @@ namespace Arkanuh.UnityBridge
             var glow = orb.AddComponent<Light>();
             glow.type = LightType.Point;
             glow.range = 5f;
-            glow.intensity = 2f;
+            glow.intensity = 1.9f;
             glow.color = accent;
         }
 
-        private static TextMesh CreateLabel(string name, Vector3 localPosition, float size, TextAnchor anchor)
+        private static TextMesh CreateLabel(string name, Vector3 localPosition, float size, TextAnchor anchor, string colorHex)
         {
             var go = new GameObject(name);
             var text = go.AddComponent<TextMesh>();
@@ -194,7 +236,7 @@ namespace Arkanuh.UnityBridge
             text.alignment = TextAlignment.Center;
             text.fontSize = 72;
             text.characterSize = size * 0.08f;
-            text.color = ParseHex("#103a62");
+            text.color = ParseHex(colorHex);
             go.transform.localPosition = localPosition;
             return text;
         }
@@ -217,16 +259,11 @@ namespace Arkanuh.UnityBridge
             return primitive;
         }
 
-        private void ApplyCoverColor(Color accent)
+        private void ApplyBackdropColor(Color color)
         {
-            if (coverRenderer != null && coverRenderer.material != null)
+            if (backdropRenderer != null && backdropRenderer.material != null)
             {
-                coverRenderer.material.color = accent;
-            }
-
-            if (pageRenderer != null && pageRenderer.material != null)
-            {
-                pageRenderer.material.color = Color.white;
+                backdropRenderer.material.color = color;
             }
         }
 
