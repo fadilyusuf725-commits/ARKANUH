@@ -30,6 +30,10 @@ namespace Arkanuh.UnityBridge
             backdrop.transform.localPosition = new Vector3(0f, 0.85f, 1.8f);
             backdrop.transform.localScale = new Vector3(5.2f, 2.8f, 0.08f);
             backdropRenderer = backdrop.GetComponent<Renderer>();
+            if (backdropRenderer != null)
+            {
+                backdropRenderer.material = CreateColorMaterial(backdropRenderer, ParseHex("#cfeeff"));
+            }
 
             var platform = GameObject.CreatePrimitive(PrimitiveType.Cube);
             platform.name = "Platform";
@@ -39,9 +43,7 @@ namespace Arkanuh.UnityBridge
             var platformRenderer = platform.GetComponent<Renderer>();
             if (platformRenderer != null)
             {
-                var platformMaterial = new Material(Shader.Find("Standard"));
-                platformMaterial.color = ParseHex("#f5fbff");
-                platformRenderer.material = platformMaterial;
+                platformRenderer.material = CreateColorMaterial(platformRenderer, ParseHex("#f5fbff"));
             }
 
             var popup = new GameObject("PopupRoot");
@@ -251,9 +253,7 @@ namespace Arkanuh.UnityBridge
             var renderer = primitive.GetComponent<Renderer>();
             if (renderer != null)
             {
-                var material = new Material(Shader.Find("Standard"));
-                material.color = color;
-                renderer.material = material;
+                renderer.material = CreateColorMaterial(renderer, color);
             }
 
             return primitive;
@@ -263,7 +263,60 @@ namespace Arkanuh.UnityBridge
         {
             if (backdropRenderer != null && backdropRenderer.material != null)
             {
-                backdropRenderer.material.color = color;
+                SetMaterialColor(backdropRenderer.material, color);
+            }
+        }
+
+        private static Material CreateColorMaterial(Renderer renderer, Color color)
+        {
+            var baseMaterial = renderer != null ? renderer.sharedMaterial : null;
+            Material material;
+            if (baseMaterial != null)
+            {
+                material = new Material(baseMaterial);
+            }
+            else
+            {
+                var fallbackShader = ResolveFallbackShader();
+                if (fallbackShader == null)
+                {
+                    Debug.LogWarning("Fallback shader tidak ditemukan. Material default dipakai.");
+                    material = new Material(Shader.Find("Standard"));
+                }
+                else
+                {
+                    material = new Material(fallbackShader);
+                }
+            }
+
+            SetMaterialColor(material, color);
+            return material;
+        }
+
+        private static Shader ResolveFallbackShader()
+        {
+            return Shader.Find("Universal Render Pipeline/Lit")
+                ?? Shader.Find("Universal Render Pipeline/Simple Lit")
+                ?? Shader.Find("Standard")
+                ?? Shader.Find("Legacy Shaders/Diffuse")
+                ?? Shader.Find("Unlit/Color")
+                ?? Shader.Find("Sprites/Default");
+        }
+
+        private static void SetMaterialColor(Material material, Color color)
+        {
+            if (material == null)
+            {
+                return;
+            }
+
+            if (material.HasProperty("_BaseColor"))
+            {
+                material.SetColor("_BaseColor", color);
+            }
+            else if (material.HasProperty("_Color"))
+            {
+                material.SetColor("_Color", color);
             }
         }
 
