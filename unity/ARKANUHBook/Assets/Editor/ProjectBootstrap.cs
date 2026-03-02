@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 namespace Arkanuh.UnityBridgeEditor
@@ -13,13 +12,11 @@ namespace Arkanuh.UnityBridgeEditor
     {
         public const string SceneFolder = "Assets/Scenes";
         public const string ScenePath = "Assets/Scenes/FlipbookMain.unity";
-        public const string SettingsFolder = "Assets/Settings";
-        public const string UrpAssetPath = "Assets/Settings/ARKANUH-URP.asset";
 
         public static void EnsureProjectSetup()
         {
             EnsureFolders();
-            EnsureUniversalRenderPipeline();
+            EnsureBuiltInRenderPipeline();
             EnsureScene();
             EnsureBuildSettings();
             EnsurePlayerSettings();
@@ -31,25 +28,12 @@ namespace Arkanuh.UnityBridgeEditor
             {
                 AssetDatabase.CreateFolder("Assets", "Scenes");
             }
-
-            if (!AssetDatabase.IsValidFolder(SettingsFolder))
-            {
-                AssetDatabase.CreateFolder("Assets", "Settings");
-            }
         }
 
-        private static void EnsureUniversalRenderPipeline()
+        private static void EnsureBuiltInRenderPipeline()
         {
-            var urpAsset = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(UrpAssetPath);
-            if (urpAsset == null)
-            {
-                urpAsset = UniversalRenderPipelineAsset.Create();
-                AssetDatabase.CreateAsset(urpAsset, UrpAssetPath);
-                AssetDatabase.SaveAssets();
-            }
-
-            GraphicsSettings.defaultRenderPipeline = urpAsset;
-            QualitySettings.renderPipeline = urpAsset;
+            GraphicsSettings.defaultRenderPipeline = null;
+            QualitySettings.renderPipeline = null;
         }
 
         private static void EnsureScene()
