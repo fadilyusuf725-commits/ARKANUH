@@ -10,16 +10,48 @@ import {
   UnityInstance
 } from "../lib/unityBridge";
 
-const UNITY_LOADER_SRC = withBasePath("unity/Build/ARKANUHBook.loader.js");
-const UNITY_CONFIG = {
-  dataUrl: withBasePath("unity/Build/ARKANUHBook.data.unityweb"),
-  frameworkUrl: withBasePath("unity/Build/ARKANUHBook.framework.js.unityweb"),
-  codeUrl: withBasePath("unity/Build/ARKANUHBook.wasm.unityweb"),
-  streamingAssetsUrl: withBasePath("unity/StreamingAssets"),
-  companyName: "ARKANUH",
-  productName: "ARKANUHBook",
-  productVersion: "4.0.0"
+type UnityBuildVariant = {
+  id: string;
+  loaderSrc: string;
+  config: {
+    dataUrl: string;
+    frameworkUrl: string;
+    codeUrl: string;
+    streamingAssetsUrl: string;
+    companyName: string;
+    productName: string;
+    productVersion: string;
+  };
 };
+
+const UNITY_BUILD_VARIANTS: UnityBuildVariant[] = [
+  {
+    id: "ARKANUHBook",
+    loaderSrc: withBasePath("unity/Build/ARKANUHBook.loader.js"),
+    config: {
+      dataUrl: withBasePath("unity/Build/ARKANUHBook.data.unityweb"),
+      frameworkUrl: withBasePath("unity/Build/ARKANUHBook.framework.js.unityweb"),
+      codeUrl: withBasePath("unity/Build/ARKANUHBook.wasm.unityweb"),
+      streamingAssetsUrl: withBasePath("unity/StreamingAssets"),
+      companyName: "ARKANUH",
+      productName: "ARKANUHBook",
+      productVersion: "4.0.0"
+    }
+  },
+  {
+    id: "unity",
+    loaderSrc: withBasePath("unity/Build/unity.loader.js"),
+    config: {
+      dataUrl: withBasePath("unity/Build/unity.data.unityweb"),
+      frameworkUrl: withBasePath("unity/Build/unity.framework.js.unityweb"),
+      codeUrl: withBasePath("unity/Build/unity.wasm.unityweb"),
+      streamingAssetsUrl: withBasePath("unity/StreamingAssets"),
+      companyName: "ARKANUH",
+      productName: "ARKANUHBook",
+      productVersion: "4.0.0"
+    }
+  }
+];
 
 type UnityFlipbookCanvasProps = {
   page: FlipbookPage;
@@ -103,56 +135,63 @@ export function UnityFlipbookCanvas({
         return;
       }
 
-      try {
-        await ensureLoaderScript(UNITY_LOADER_SRC);
-        if (isCancelled) {
-          return;
-        }
+      const initErrors: string[] = [];
 
-        const loader = getUnityLoader();
-        if (!loader) {
-          setStatus("error");
-          setStatusMessage("Unity loader belum siap. Cek file WebGL Build.");
-          return;
-        }
-
-        const unityInstance = await loader(canvasRef.current, UNITY_CONFIG, (nextProgress) => {
+      for (const variant of UNITY_BUILD_VARIANTS) {
+        try {
+          setStatusMessage(`Memuat renderer Unity (${variant.id})...`);
+          await ensureLoaderScript(variant.loaderSrc);
           if (isCancelled) {
             return;
           }
-          setProgress(nextProgress);
-          setStatusMessage(`Memuat renderer Unity... ${Math.round(nextProgress * 100)}%`);
-        });
 
-        if (isCancelled) {
-          if (unityInstance?.Quit) {
-            await unityInstance.Quit().catch(() => undefined);
+          const loader = getUnityLoader();
+          if (!loader) {
+            initErrors.push(`[${variant.id}] createUnityInstance tidak ditemukan.`);
+            continue;
           }
+
+          const unityInstance = await loader(canvasRef.current, variant.config, (nextProgress) => {
+            if (isCancelled) {
+              return;
+            }
+            setProgress(nextProgress);
+            setStatusMessage(`Memuat renderer Unity (${variant.id})... ${Math.round(nextProgress * 100)}%`);
+          });
+
+          if (isCancelled) {
+            if (unityInstance?.Quit) {
+              await unityInstance.Quit().catch(() => undefined);
+            }
+            return;
+          }
+
+          unityInstanceRef.current = unityInstance;
+          setStatus("ready");
+          setStatusMessage(`Unity siap (${variant.id}).`);
+          emitUnityEvent({ type: "UNITY_READY" });
+
+          unsubscribe = subscribeUnityEvents((event) => {
+            if (event.type === "REQUEST_NEXT_PAGE") {
+              onRequestNext();
+              return;
+            }
+            if (event.type === "REQUEST_PREV_PAGE") {
+              onRequestPrev();
+              return;
+            }
+            if (event.type === "FINAL_CLOSE_DONE") {
+              onFinalCloseComplete();
+            }
+          });
           return;
+        } catch (error) {
+          initErrors.push(`[${variant.id}] ${error instanceof Error ? error.message : "Gagal memuat."}`);
         }
-
-        unityInstanceRef.current = unityInstance;
-        setStatus("ready");
-        setStatusMessage("Unity siap.");
-        emitUnityEvent({ type: "UNITY_READY" });
-
-        unsubscribe = subscribeUnityEvents((event) => {
-          if (event.type === "REQUEST_NEXT_PAGE") {
-            onRequestNext();
-            return;
-          }
-          if (event.type === "REQUEST_PREV_PAGE") {
-            onRequestPrev();
-            return;
-          }
-          if (event.type === "FINAL_CLOSE_DONE") {
-            onFinalCloseComplete();
-          }
-        });
-      } catch (error) {
-        setStatus("error");
-        setStatusMessage(error instanceof Error ? error.message : "Gagal memuat Unity.");
       }
+
+      setStatus("error");
+      setStatusMessage(initErrors.length > 0 ? initErrors[initErrors.length - 1] : "Gagal memuat Unity.");
     };
 
     init();
@@ -229,7 +268,7 @@ export function UnityFlipbookCanvas({
             {status === "loading" && <p className="muted">Progress: {Math.round(progress * 100)}%</p>}
             {status === "error" && (
               <p className="muted">
-                Build Unity WebGL belum terbaca. Jalankan <code>npm run unity:build:release</code> lalu refresh halaman.
+                Build Unity WebGL belum terbaca atau cache lama masih dipakai. Coba refresh paksa / mode samaran.
               </p>
             )}
           </div>
