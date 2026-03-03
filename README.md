@@ -1,9 +1,9 @@
-# ARKANUH v4 - Unity WebGL Hybrid + React Learning Flow
+# ARKANUH v4 - Unity WebGL Hybrid + Single-Canvas Flipbook
 
 ARKANUH v4 memakai arsitektur **hybrid**:
 
 - React tetap memegang alur pembelajaran (menu, pretest, posttest, hasil, guard, storage).
-- Unity WebGL menjadi renderer utama untuk flipbook 3D.
+- Unity WebGL menjadi renderer utama untuk flipbook 3D dalam satu kanvas.
 
 Target utama: kualitas visual lebih baik di HP Android dengan performa stabil (30-45 FPS).
 
@@ -17,24 +17,18 @@ Target utama: kualitas visual lebih baik di HP Android dengan performa stabil (3
    - Biodata
    - Hasil
 2. Pretest wajib selesai sebelum masuk flipbook.
-3. Flipbook 10 halaman di `/flipbook/:pageId` memakai gaya PPT story + panel pop-up 3D inline.
-4. Aktivitas halaman tetap di React (`InteractionCard`) sebagai pengunci lanjut.
+3. Flipbook 10 halaman di `/flipbook/:pageId` ditampilkan sebagai satu panggung 3D (buku + pop-up).
+4. Navigasi halaman lewat swipe di canvas Unity atau tombol `Sebelumnya/Berikutnya`.
 5. Halaman 10 menutup buku (final close), lalu lanjut ke posttest.
 6. Hasil akhir membandingkan skor pretest vs posttest.
 
-## Mode Flipbook Gaya PPT
+## Mode Flipbook Aktif
 
-Refactor terbaru menambahkan:
+Refactor terbaru memakai mode fokus:
 
-- tab halaman `Hal 1-10` untuk navigasi story.
-- frame cerita berlapis (layered illustration) mengikuti referensi `KISAH NABI NUH.pptx`.
-- panel pop-up 3D inline (Unity canvas rasio 16:10) di dalam halaman cerita.
-- narasi utama halaman dipisah dari panel interaksi agar nyaman dibaca siswa kelas 2 SD.
-
-Data layout halaman ada di:
-
-- `src/data/pptSlideAssets.ts`
-- `src/data/flipbookPages.ts`
+- satu kanvas Unity untuk visual buku dan pop-up 3D.
+- narasi halaman dari data `src/data/flipbookPages.ts`.
+- progress, voice narration, dan navigasi tetap dikendalikan React.
 
 ## Struktur Unity WebGL
 
@@ -76,6 +70,29 @@ Source Unity ada di:
 - `unity/ARKANUHBook/Assets/*`
 - `unity/ARKANUHBook/Packages/*`
 - `unity/ARKANUHBook/ProjectSettings/*`
+
+## Integrasi Model dari Meshy (Prefab)
+
+`BookVisualBuilder` mendukung model prefab per template. Jika prefab diisi, Unity akan memakai prefab; jika kosong, otomatis fallback ke geometri procedural.
+
+Field prefab di Inspector `ReactBridge > BookVisualBuilder`:
+
+- `arkPrefab`
+- `rainPrefab`
+- `mountainPrefab`
+- `wavePrefab`
+- `lightPrefab`
+
+Pengaturan tambahan:
+
+- `useTemplatePrefabs`: aktif/nonaktif pakai prefab.
+- `tintTemplatePrefabs`: beri warna aksen dari payload halaman.
+- `templatePrefabOffset`: posisi lokal prefab.
+- `templatePrefabScale`: skala lokal prefab.
+
+Prompt siap pakai untuk Meshy ada di:
+
+- `docs/MESHY_PROMPTS_ARKANUH.md`
 
 ## Build Unity WebGL
 
@@ -181,3 +198,7 @@ Deploy GitHub Pages tetap menggunakan `base: /ARKANUH/`.
 3. Jika audio VO terlalu kecil/berisik:
    - simpan raw audio di `voice-raw/`
    - jalankan `npm run voice:process`
+4. Jika objek menjadi warna pink/magenta:
+   - rebuild dengan `npm run unity:build:release`
+   - pastikan shader/material prefab kompatibel WebGL
+   - uji mode samaran untuk menghindari cache build lama

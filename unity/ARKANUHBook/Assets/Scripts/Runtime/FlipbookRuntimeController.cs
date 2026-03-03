@@ -25,6 +25,9 @@ namespace Arkanuh.UnityBridge
 
         private void Awake()
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            WebGLInput.captureAllKeyboardInput = false;
+#endif
             EnsureSceneSetup();
         }
 
@@ -241,7 +244,7 @@ namespace Arkanuh.UnityBridge
 
             ResetView();
 
-            if (FindObjectOfType<Light>() == null)
+            if (FindFirstObjectByType<Light>() == null)
             {
                 var lightGo = new GameObject("Directional Light");
                 var light = lightGo.AddComponent<Light>();

@@ -7,6 +7,17 @@ namespace Arkanuh.UnityBridge
         [SerializeField] private Transform stageRoot;
         [SerializeField] private Transform popupRoot;
         [SerializeField] private Renderer backdropRenderer;
+        [SerializeField] private Renderer platformRenderer;
+        [Header("Template Prefab (Opsional dari Meshy)")]
+        [SerializeField] private bool useTemplatePrefabs = true;
+        [SerializeField] private bool tintTemplatePrefabs = false;
+        [SerializeField] private Vector3 templatePrefabOffset = Vector3.zero;
+        [SerializeField] private Vector3 templatePrefabScale = Vector3.one;
+        [SerializeField] private GameObject arkPrefab;
+        [SerializeField] private GameObject rainPrefab;
+        [SerializeField] private GameObject mountainPrefab;
+        [SerializeField] private GameObject wavePrefab;
+        [SerializeField] private GameObject lightPrefab;
 
         private GameObject currentPopupObject;
         private TextMesh titleLabel;
@@ -55,7 +66,7 @@ namespace Arkanuh.UnityBridge
             platform.transform.SetParent(stageRoot, false);
             platform.transform.localPosition = new Vector3(0f, 0.05f, 0f);
             platform.transform.localScale = new Vector3(4.9f, 0.16f, 3.1f);
-            var platformRenderer = platform.GetComponent<Renderer>();
+            platformRenderer = platform.GetComponent<Renderer>();
             if (platformRenderer != null)
             {
                 platformRenderer.material = CreateColorMaterial(platformRenderer, creamWhite);
@@ -184,7 +195,10 @@ namespace Arkanuh.UnityBridge
 
         private void ApplyPlatformColor(Color color)
         {
-            // Update warna platform jika diperlukan
+            if (platformRenderer != null && platformRenderer.material != null)
+            {
+                SetMaterialColor(platformRenderer.material, color);
+            }
         }
 
         public void ApplyBookTransform(float lift, float tilt)
@@ -230,6 +244,11 @@ namespace Arkanuh.UnityBridge
             currentPopupObject.transform.SetParent(popupRoot, false);
             currentPopupObject.transform.localPosition = Vector3.zero;
 
+            if (TrySpawnTemplatePrefab(template, accent))
+            {
+                return;
+            }
+
             switch (template)
             {
                 case "rain":
@@ -247,6 +266,81 @@ namespace Arkanuh.UnityBridge
                 default:
                     BuildArkScene(currentPopupObject.transform, accent);
                     break;
+            }
+        }
+
+        private bool TrySpawnTemplatePrefab(string template, Color accent)
+        {
+            if (!useTemplatePrefabs)
+            {
+                return false;
+            }
+
+            var prefab = GetTemplatePrefab(template);
+            if (prefab == null)
+            {
+                return false;
+            }
+
+            var instance = Instantiate(prefab, currentPopupObject.transform, false);
+            instance.name = $"Template_{template}";
+            instance.transform.localPosition = templatePrefabOffset;
+            instance.transform.localRotation = Quaternion.identity;
+            instance.transform.localScale = templatePrefabScale;
+
+            if (tintTemplatePrefabs)
+            {
+                ApplyTintToHierarchy(instance.transform, accent);
+            }
+
+            return true;
+        }
+
+        private GameObject GetTemplatePrefab(string template)
+        {
+            switch (template)
+            {
+                case "rain":
+                    return rainPrefab;
+                case "mountain":
+                    return mountainPrefab;
+                case "wave":
+                    return wavePrefab;
+                case "light":
+                    return lightPrefab;
+                default:
+                    return arkPrefab;
+            }
+        }
+
+        private static void ApplyTintToHierarchy(Transform root, Color tintColor)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            var propertyBlock = new MaterialPropertyBlock();
+            var renderers = root.GetComponentsInChildren<Renderer>(true);
+            foreach (var renderer in renderers)
+            {
+                if (renderer == null || renderer.sharedMaterial == null)
+                {
+                    continue;
+                }
+
+                if (renderer.sharedMaterial.HasProperty("_BaseColor"))
+                {
+                    propertyBlock.SetColor("_BaseColor", tintColor);
+                    renderer.SetPropertyBlock(propertyBlock);
+                    continue;
+                }
+
+                if (renderer.sharedMaterial.HasProperty("_Color"))
+                {
+                    propertyBlock.SetColor("_Color", tintColor);
+                    renderer.SetPropertyBlock(propertyBlock);
+                }
             }
         }
 

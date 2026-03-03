@@ -24,7 +24,7 @@ type UnityBuildVariant = {
   };
 };
 
-const UNITY_ASSET_VERSION = "20260302e";
+const UNITY_ASSET_VERSION = "20260303a";
 const withUnityAssetVersion = (path: string) => `${withBasePath(path)}?v=${UNITY_ASSET_VERSION}`;
 
 const UNITY_BUILD_VARIANTS: UnityBuildVariant[] = [
