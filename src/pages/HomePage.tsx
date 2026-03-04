@@ -7,12 +7,13 @@ type MenuIconCardProps = {
   icon: string;
   label: string;
   to?: string;
+  href?: string;
   locked?: boolean;
   lockText?: string;
 };
 
-function MenuIconCard({ icon, label, to, locked, lockText }: MenuIconCardProps) {
-  if (!to || locked) {
+function MenuIconCard({ icon, label, to, href, locked, lockText }: MenuIconCardProps) {
+  if (locked) {
     return (
       <button type="button" className="icon-menu-card is-locked" disabled aria-label={`${label} terkunci`}>
         <span className="icon-emoji" aria-hidden="true">
@@ -24,13 +25,42 @@ function MenuIconCard({ icon, label, to, locked, lockText }: MenuIconCardProps) 
     );
   }
 
+  if (href) {
+    return (
+      <a
+        href={href}
+        className="icon-menu-card"
+        aria-label={`Buka menu ${label}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className="icon-emoji" aria-hidden="true">
+          {icon}
+        </span>
+        <span className="icon-label">{label}</span>
+      </a>
+    );
+  }
+
+  if (to) {
+    return (
+      <Link to={to} className="icon-menu-card" aria-label={`Buka menu ${label}`}>
+        <span className="icon-emoji" aria-hidden="true">
+          {icon}
+        </span>
+        <span className="icon-label">{label}</span>
+      </Link>
+    );
+  }
+
   return (
-    <Link to={to} className="icon-menu-card" aria-label={`Buka menu ${label}`}>
+    <button type="button" className="icon-menu-card is-locked" disabled aria-label={`${label} tidak tersedia`}>
       <span className="icon-emoji" aria-hidden="true">
         {icon}
       </span>
       <span className="icon-label">{label}</span>
-    </Link>
+      <span className="icon-lock-text">Belum tersedia</span>
+    </button>
   );
 }
 
@@ -63,11 +93,6 @@ export function HomePage() {
         lockText: "Pretest dulu"
       },
       {
-        icon: "✍️",
-        label: "Biodata",
-        to: "/biodata-penulis"
-      },
-      {
         icon: "🧠",
         label: "Pretest",
         to: "/pretest"
@@ -80,9 +105,19 @@ export function HomePage() {
         lockText: "Selesaikan buku"
       },
       {
+        icon: "🎮",
+        label: "Mini Game",
+        href: "https://quiz.zep.us/id/play/EgQEOp"
+      },
+      {
         icon: "📚",
         label: "CP TP ATP",
         to: "/cp-tp-atp"
+      },
+      {
+        icon: "✍️",
+        label: "Biodata",
+        to: "/biodata-penulis"
       },
       {
         icon: "🏆",
@@ -131,6 +166,7 @@ export function HomePage() {
             icon={menu.icon}
             label={menu.label}
             to={menu.to}
+            href={menu.href}
             locked={menu.locked}
             lockText={menu.lockText}
           />

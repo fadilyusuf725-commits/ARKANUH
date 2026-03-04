@@ -5,80 +5,90 @@ export const posttestQuestions: AssessmentQuestion[] = [
     id: "post-1",
     phase: "posttest",
     competencyTag: "iman",
-    question: "Mengapa Nabi Nuh tetap berdakwah walau ditolak?",
-    options: ["Karena taat kepada Allah", "Karena ingin dipuji", "Karena marah kepada kaumnya"],
-    correctIndex: 0
+    question: "Nabi yang diutus untuk mengingatkan kaum penyembah berhala adalah...",
+    options: ["Nabi Ibrahim", "Nabi Nuh", "Nabi Musa", "Nabi Isa"],
+    correctIndex: 1
   },
   {
     id: "post-2",
     phase: "posttest",
-    competencyTag: "akhlak",
-    question: "Saat teman memberi nasihat baik, sikap paling tepat adalah...",
-    options: ["Mendengar dan menghargai", "Menertawakan teman", "Pergi meninggalkan teman"],
+    competencyTag: "sabar",
+    question: "Masa dakwah Nabi Nuh kepada kaumnya berlangsung selama...",
+    options: ["950 tahun", "100 tahun", "500 tahun", "50 tahun"],
     correctIndex: 0
   },
   {
     id: "post-3",
     phase: "posttest",
-    competencyTag: "sabar",
-    question: "Pelajaran utama dari keteguhan Nabi Nuh adalah...",
-    options: ["Sabar dalam kebaikan", "Cepat putus asa", "Balas mengejek orang lain"],
-    correctIndex: 0
+    competencyTag: "taat",
+    question: "Perintah Allah yang dijalankan Nabi Nuh adalah membangun...",
+    options: ["Istana yang megah", "Kapal besar", "Patung yang indah", "Gunung yang tinggi"],
+    correctIndex: 1
   },
   {
     id: "post-4",
     phase: "posttest",
-    competencyTag: "taat",
-    question: "Apa bukti Nabi Nuh taat kepada Allah?",
-    options: ["Membuat bahtera sesuai perintah", "Menunda perintah sangat lama", "Tidak mengerjakan apa pun"],
-    correctIndex: 0
+    competencyTag: "iman",
+    question: "Banjir besar terjadi karena kaum Nabi Nuh...",
+    options: ["Rajin beribadah", "Mengingkari perintah Allah", "Suka membuat kapal", "Menyayangi hewan"],
+    correctIndex: 1
   },
   {
     id: "post-5",
     phase: "posttest",
-    competencyTag: "taat",
-    question: "Persiapan bahtera mengajarkan kita untuk...",
-    options: ["Tekun dan tertib", "Asal-asalan", "Mengabaikan tugas"],
-    correctIndex: 0
+    competencyTag: "iman",
+    question: "Ketika banjir besar datang, yang diselamatkan Allah adalah...",
+    options: [
+      "Semua manusia",
+      "Nabi Nuh dan orang yang beriman",
+      "Hanya orang-orang kafir",
+      "Hanya hewan-hewan"
+    ],
+    correctIndex: 1
   },
   {
     id: "post-6",
     phase: "posttest",
-    competencyTag: "iman",
-    question: "Ketika banjir besar terjadi, siapa yang mendapat keselamatan?",
-    options: ["Yang beriman dan taat", "Yang suka mengejek", "Tidak ada yang selamat"],
-    correctIndex: 0
+    competencyTag: "akhlak",
+    question: "Sikap kaum kafir saat melihat Nabi Nuh membuat kapal yaitu...",
+    options: ["Membantu dengan gembira", "Mengejek dan menertawakan", "Memuji dan memberi hadiah", "Diam saja tidak peduli"],
+    correctIndex: 1
   },
   {
     id: "post-7",
     phase: "posttest",
-    competencyTag: "taat",
-    question: "Hewan dibawa ke bahtera secara berpasangan agar...",
-    options: ["Sesuai petunjuk Allah", "Lebih lucu dilihat", "Cepat selesai tanpa aturan"],
-    correctIndex: 0
+    competencyTag: "iman",
+    question: "Anak Nabi Nuh yang tetap kafir akhirnya...",
+    options: ["Naik kapal dan selamat", "Selamat di atas gunung", "Tenggelam bersama orang kafir", "Menjadi nabi setelah ayahnya"],
+    correctIndex: 2
   },
   {
     id: "post-8",
     phase: "posttest",
-    competencyTag: "akhlak",
-    question: "Sikap teladan yang perlu ditiru dari kisah Nabi Nuh adalah...",
-    options: ["Jujur, sabar, dan taat", "Bohong dan sombong", "Marah tanpa alasan"],
-    correctIndex: 0
+    competencyTag: "iman",
+    question: "Sesudah banjir mereda, Nabi Nuh dan pengikutnya memilih untuk...",
+    options: ["Membuat patung lagi", "Bersyukur kepada Allah", "Kembali menyembah berhala", "Membangun istana di gunung"],
+    correctIndex: 1
   },
   {
     id: "post-9",
     phase: "posttest",
-    competencyTag: "iman",
-    question: "Surutnya banjir menunjukkan bahwa...",
-    options: ["Allah memberi pertolongan tepat waktu", "Tidak ada hikmah dari peristiwa", "Bahtera tidak penting"],
+    competencyTag: "sabar",
+    question: "Hikmah utama dari kisah Nabi Nuh untuk kita adalah...",
+    options: [
+      "Meneladani kesabaran Nabi Nuh",
+      "Harus punya kapal besar",
+      "Boleh menyembah patung",
+      "Boleh mengejek nabi"
+    ],
     correctIndex: 0
   },
   {
     id: "post-10",
     phase: "posttest",
     competencyTag: "iman",
-    question: "Setelah belajar kisah Nabi Nuh, tindakan terbaik adalah...",
-    options: ["Berusaha taat dalam kehidupan sehari-hari", "Mengabaikan nasihat baik", "Mengejek teman yang berbuat baik"],
-    correctIndex: 0
+    question: "Yang mengajak manusia membuat patung sebagai kenangan adalah...",
+    options: ["Malaikat", "Setan", "Nabi", "Teman"],
+    correctIndex: 1
   }
 ];

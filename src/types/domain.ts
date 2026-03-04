@@ -4,25 +4,9 @@ export type AssessmentPhase = "pretest" | "posttest";
 export type PopupTemplate = "ark" | "rain" | "mountain" | "wave" | "light";
 export type BookAnimState = "cover_intro" | "drop_in" | "idle" | "flipping" | "final_close";
 export type FlipbookRenderer = "unity_webgl";
-export type StoryLayoutStyle = "ppt_story";
 
 export type StudentProfile = {
   nickname: string;
-};
-
-export type SlideLayerAsset = {
-  src: string;
-  alt: string;
-  zIndex: number;
-  effect?: "fade" | "slide_up" | "none";
-};
-
-export type SlideLayout = {
-  style: StoryLayoutStyle;
-  pageBadgeLabel: string;
-  layers: SlideLayerAsset[];
-  bodyText: string;
-  emphasizeText?: string;
 };
 
 export type FlipbookPage = {
@@ -43,7 +27,6 @@ export type FlipbookPage = {
   popupAccent: string;
   coverTitle?: string;
   backCoverSummary?: string[];
-  slideLayout: SlideLayout;
 };
 
 export type PopupViewState = {

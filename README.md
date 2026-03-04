@@ -1,102 +1,50 @@
-# ARKANUH v4 - Unity WebGL Hybrid + Single-Canvas Flipbook
+# ARKANUH v4
 
-ARKANUH v4 memakai arsitektur **hybrid**:
+ARKANUH adalah web pembelajaran kisah Nabi Nuh untuk kelas 2 SD dengan arsitektur hybrid:
 
-- React tetap memegang alur pembelajaran (menu, pretest, posttest, hasil, guard, storage).
-- Unity WebGL menjadi renderer utama untuk flipbook 3D dalam satu kanvas.
+- React untuk alur belajar (menu, pretest, posttest, hasil, penyimpanan lokal)
+- Unity WebGL untuk visual buku 3D dalam satu kanvas
 
-Target utama: kualitas visual lebih baik di HP Android dengan performa stabil (30-45 FPS).
-
-## Alur Utama
+## Alur Belajar
 
 1. Beranda (`/`) menampilkan menu ikon:
    - Mulai
    - Pretest
-   - Posttest (locked)
+   - Posttest (locked sebelum flipbook selesai)
+   - Mini Game (link eksternal ZEP)
    - CP TP ATP
    - Biodata
    - Hasil
 2. Pretest wajib selesai sebelum masuk flipbook.
-3. Flipbook 10 halaman di `/flipbook/:pageId` ditampilkan sebagai satu panggung 3D (buku + pop-up).
-4. Navigasi halaman lewat swipe di canvas Unity atau tombol `Sebelumnya/Berikutnya`.
-5. Halaman 10 menutup buku (final close), lalu lanjut ke posttest.
-6. Hasil akhir membandingkan skor pretest vs posttest.
+3. Flipbook 10 halaman berjalan di `/flipbook/:pageId`.
+4. Setelah halaman 10 selesai, lanjut ke posttest.
+5. Hasil akhir menampilkan perbandingan skor pretest dan posttest.
 
-## Mode Flipbook Aktif
+## Mini Game
 
-Refactor terbaru memakai mode fokus:
+Menu Mini Game membuka:
 
-- satu kanvas Unity untuk visual buku dan pop-up 3D.
-- narasi halaman dari data `src/data/flipbookPages.ts`.
-- progress, voice narration, dan navigasi tetap dikendalikan React.
+- `https://quiz.zep.us/id/play/EgQEOp`
 
-## Struktur Unity WebGL
+Mode mini game saat ini bersifat mandiri (tidak sinkron nilai ke session ARKANUH).
 
-Build Unity diletakkan di:
+## Routing GitHub Pages
+
+Project memakai:
+
+- `base: /ARKANUH/` di Vite
+- `BrowserRouter basename={import.meta.env.BASE_URL}`
+- fallback SPA `dist/404.html` otomatis dibuat saat build (`postbuild`)
+
+Tujuan: URL langsung/reload seperti `/ARKANUH/pretest` atau `/ARKANUH/flipbook/1` tetap dapat dibuka.
+
+## Unity WebGL
+
+Build Unity berada di:
 
 - `public/unity/Build/*`
-- `public/unity/StreamingAssets/*` (opsional)
 
-File default yang dipakai loader:
-
-- `ARKANUHBook.loader.js`
-- `ARKANUHBook.data.unityweb`
-- `ARKANUHBook.framework.js.unityweb`
-- `ARKANUHBook.wasm.unityweb`
-
-## Bridge React-Unity
-
-Kontrak command (React -> Unity):
-
-- `LOAD_PAGE`
-- `SET_CAN_ADVANCE`
-- `RESET_VIEW`
-- `PLAY_FINAL_CLOSE`
-
-Kontrak event (Unity -> React):
-
-- `UNITY_READY`
-- `REQUEST_NEXT_PAGE`
-- `REQUEST_PREV_PAGE`
-- `FINAL_CLOSE_DONE`
-
-Implementasi bridge ada di:
-
-- `src/lib/unityBridge.ts`
-- `src/components/UnityFlipbookCanvas.tsx`
-
-Source Unity ada di:
-
-- `unity/ARKANUHBook/Assets/*`
-- `unity/ARKANUHBook/Packages/*`
-- `unity/ARKANUHBook/ProjectSettings/*`
-
-## Integrasi Model dari Meshy (Prefab)
-
-`BookVisualBuilder` mendukung model prefab per template. Jika prefab diisi, Unity akan memakai prefab; jika kosong, otomatis fallback ke geometri procedural.
-
-Field prefab di Inspector `ReactBridge > BookVisualBuilder`:
-
-- `arkPrefab`
-- `rainPrefab`
-- `mountainPrefab`
-- `wavePrefab`
-- `lightPrefab`
-
-Pengaturan tambahan:
-
-- `useTemplatePrefabs`: aktif/nonaktif pakai prefab.
-- `tintTemplatePrefabs`: beri warna aksen dari payload halaman.
-- `templatePrefabOffset`: posisi lokal prefab.
-- `templatePrefabScale`: skala lokal prefab.
-
-Prompt siap pakai untuk Meshy ada di:
-
-- `docs/MESHY_PROMPTS_ARKANUH.md`
-
-## Build Unity WebGL
-
-Build dari command line:
+Script build:
 
 ```bash
 npm run unity:build:dev
@@ -104,75 +52,38 @@ npm run unity:build:release
 npm run unity:build:all
 ```
 
-Script build:
+## Integrasi Model Meshy
 
-- `scripts/unity-build.ps1`
-- `unity/ARKANUHBook/Assets/Editor/BuildWebGL.cs`
+`BookVisualBuilder` mendukung prefab template:
 
-Output build:
+- `arkPrefab`
+- `rainPrefab`
+- `mountainPrefab`
+- `wavePrefab`
+- `lightPrefab`
 
-- `public/unity/Build/*`
-- `public/unity/TemplateData/*`
-- `public/unity/index.html`
+Jika prefab diisi, Unity memakai prefab. Jika kosong, Unity fallback ke geometri procedural.
 
-## Pipeline Aset PPT
+Prompt Meshy tersedia di:
 
-Ekstrak gambar dari PPT referensi:
+- `docs/MESHY_PROMPTS_ARKANUH.md`
 
-```bash
-npm run ppt:extract
-```
+## Voice Over
 
-Optimasi ke WebP untuk mobile:
+Audio halaman:
 
-```bash
-npm run ppt:optimize
-```
+- `public/assets/voice/page-01.mp3` s.d `page-10.mp3`
 
-Jalankan keduanya sekaligus:
+Player memprioritaskan MP3, lalu fallback ke browser TTS jika audio tidak tersedia.
 
-```bash
-npm run ppt:prepare
-```
-
-Output:
-
-- raw: `public/assets/ppt-story/raw/*`
-- optimized: `public/assets/ppt-story/optimized/*`
-
-## Voice Over Rekaman Pribadi
-
-Format target:
-
-- `public/assets/voice/page-01.mp3` sampai `page-10.mp3`
-
-Player:
-
-- Prioritas audio file MP3
-- Fallback ke browser TTS jika file tidak ada/rusak
-
-### Proses Audio Rekaman (Normalisasi + Noise Reduction Ringan)
-
-Siapkan rekaman mentah di folder `voice-raw` lalu jalankan:
-
-```bash
-npm run voice:process
-```
-
-Script:
-
-- `scripts/process-voice.ps1`
-
-Butuh `ffmpeg` terpasang.
-
-## Kontrak Penyimpanan Lokal
+## Penyimpanan Lokal
 
 - `localStorage["arkanuh_v2_session_current"]`
 - `localStorage["arkanuh_v2_session_history"]`
 
-Riwayat maksimal 25 sesi terbaru.
+Riwayat disimpan maksimal 25 sesi terbaru.
 
-## Jalankan Proyek
+## Menjalankan Proyek
 
 ```bash
 npm install
@@ -185,20 +96,8 @@ Build produksi:
 npm run build
 ```
 
-Deploy GitHub Pages tetap menggunakan `base: /ARKANUH/`.
+## Troubleshooting
 
-## Troubleshooting Unity
-
-1. Jika batch build gagal:
-   - pastikan Unity Editor path benar: `C:\Program Files\Unity\Hub\Editor\6000.3.7f1\Editor\Unity.exe`
-   - cek log di `unity/Logs/unity-build-*.log`
-2. Jika loader React gagal:
-   - pastikan file `ARKANUHBook.*` ada di `public/unity/Build/`
-   - jalankan ulang `npm run unity:build:release`
-3. Jika audio VO terlalu kecil/berisik:
-   - simpan raw audio di `voice-raw/`
-   - jalankan `npm run voice:process`
-4. Jika objek menjadi warna pink/magenta:
-   - rebuild dengan `npm run unity:build:release`
-   - pastikan shader/material prefab kompatibel WebGL
-   - uji mode samaran untuk menghindari cache build lama
+1. Jika halaman live tidak update, lakukan hard refresh atau mode samaran.
+2. Jika Unity gagal memuat, pastikan file `public/unity/Build/*` tersedia dan jalankan `npm run unity:build:release`.
+3. Jika route tertentu menjadi 404, pastikan output build memiliki `dist/404.html`.

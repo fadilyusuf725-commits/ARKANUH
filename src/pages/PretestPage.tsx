@@ -79,9 +79,9 @@ export function PretestPage() {
     <main className="page-shell">
       <section className="hero-card">
         <p className="eyebrow">Pretest</p>
-        <h1>Pretest 10 Soal</h1>
+        <h1>Pretest Cerita Nabi Nuh</h1>
         <p className="subtitle">
-          Soal {currentIndex + 1}/{PRETEST_TOTAL} | Terjawab {answeredCount}/{PRETEST_TOTAL}
+          Soal {currentIndex + 1}/{PRETEST_TOTAL} • Jawab {answeredCount}/{PRETEST_TOTAL}
         </p>
       </section>
 
@@ -122,7 +122,7 @@ export function PretestPage() {
           </button>
         </div>
         <button type="button" className="btn btn-primary btn-full" onClick={onSubmit} disabled={!allAnswered}>
-          Kirim Pretest
+          Selesai Pretest
         </button>
       </section>
     </main>

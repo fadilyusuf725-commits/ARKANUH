@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { BiodataPage } from "./pages/BiodataPage";
 import { CurriculumPage } from "./pages/CurriculumPage";
 import { FinalResultPage } from "./pages/FinalResultPage";
@@ -22,7 +22,7 @@ export default function App() {
         <Route path="/posttest" element={<PosttestPage />} />
         <Route path="/hasil-akhir" element={<FinalResultPage />} />
         <Route path="/404" element={<NotFoundPage />} />
-        <Route path="*" element={<Navigate to="/404" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
   );

@@ -71,9 +71,9 @@ export function PosttestPage() {
     <main className="page-shell">
       <section className="hero-card">
         <p className="eyebrow">Posttest</p>
-        <h1>Posttest 10 Soal</h1>
+        <h1>Posttest Cerita Nabi Nuh</h1>
         <p className="subtitle">
-          Soal {currentIndex + 1}/{POSTTEST_TOTAL} | Terjawab {answeredCount}/{POSTTEST_TOTAL}
+          Soal {currentIndex + 1}/{POSTTEST_TOTAL} • Jawab {answeredCount}/{POSTTEST_TOTAL}
         </p>
       </section>
 
@@ -114,7 +114,7 @@ export function PosttestPage() {
           </button>
         </div>
         <button type="button" className="btn btn-primary btn-full" onClick={onSubmit} disabled={!allAnswered}>
-          Kirim Posttest
+          Selesai Posttest
         </button>
       </section>
     </main>
