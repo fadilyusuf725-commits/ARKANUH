@@ -3,15 +3,28 @@ import { flipbookPages } from "../data/flipbookPages";
 import { withBasePath } from "../lib/assetPaths";
 import "../styles/flipbook.css";
 
-// Lazy load page-flip library
+// Lazy load page-flip library with multiple fallbacks
 let PageFlip: any = null;
 
 const loadPageFlip = async () => {
   if (!PageFlip) {
     try {
-      PageFlip = (await import("page-flip")).default;
+      // Try different import patterns
+      const module = await import("page-flip");
+      PageFlip = module.default || module.PageFlip || module;
+      
+      // If module itself is a function/class, use it directly
+      if (typeof PageFlip !== 'function') {
+        throw new Error("Invalid PageFlip export structure");
+      }
     } catch (error) {
-      console.error("Failed to load page-flip:", error);
+      console.error("Failed to load page-flip with dynamic import:", error);
+      // As last resort, try to access from window if loaded via script
+      if (typeof (window as any).PageFlip !== 'undefined') {
+        PageFlip = (window as any).PageFlip;
+      } else {
+        throw error;
+      }
     }
   }
   return PageFlip;
@@ -43,7 +56,12 @@ export function FlipbookReader({
         // Load the library
         const PF = await loadPageFlip();
         if (!PF) {
-          throw new Error("Failed to load PageFlip library");
+          throw new Error("Failed to load PageFlip library - module is null");
+        }
+
+        if (typeof PF !== 'function') {
+          console.error("PageFlip is not a constructor. Type:", typeof PF, "Value:", PF);
+          throw new Error(`Invalid PageFlip class: expected function, got ${typeof PF}`);
         }
 
         // Create canvas element for page-flip
@@ -53,29 +71,36 @@ export function FlipbookReader({
         canvas.style.height = "100%";
         containerRef.current?.appendChild(canvas);
 
-        // Initialize page-flip
-        const flipBook = new PF(canvas, {
-          width: 500,
-          height: 650,
-          size: "fixed",
-          minWidth: 300,
-          maxWidth: 900,
-          minHeight: 390,
-          maxHeight: 1350,
-          showCover: true,
-          autoSize: true,
-          maxShadowOpacity: 0.5,
-          useMouseEvents: true,
-          disableFlip: false,
-          clickEventForward: true,
-          usePortrait: true,
-          startZIndex: 0,
-          drawShadow: true,
-          flips: (flipbookPages.length + 1) * 2,
-          duration: 800,
-          mobileScrollSupport: true,
-        });
+        // Initialize page-flip with try-catch
+        let flipBook: any;
+        try {
+          flipBook = new PF(canvas, {
+            width: 500,
+            height: 650,
+            size: "fixed",
+            minWidth: 300,
+            maxWidth: 900,
+            minHeight: 390,
+            maxHeight: 1350,
+            showCover: true,
+            autoSize: true,
+            maxShadowOpacity: 0.5,
+            useMouseEvents: true,
+            disableFlip: false,
+            clickEventForward: true,
+            usePortrait: true,
+            startZIndex: 0,
+            drawShadow: true,
+            flips: (flipbookPages.length + 1) * 2,
+            duration: 800,
+            mobileScrollSupport: true,
+          });
+        } catch (err) {
+          console.error("Failed to instantiate PageFlip:", err);
+          throw new Error(`PageFlip instantiation failed: ${err instanceof Error ? err.message : String(err)}`);
+        }
 
+        // Store reference
         flipBookRef.current = flipBook;
 
         let pageIndex = 0;

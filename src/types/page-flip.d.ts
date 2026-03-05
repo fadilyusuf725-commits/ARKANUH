@@ -41,4 +41,5 @@ declare module "page-flip" {
   }
 
   export default PageFlip;
+  export const PageFlip: any;
 }
