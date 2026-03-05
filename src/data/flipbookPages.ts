@@ -5,82 +5,132 @@ export const flipbookPages: FlipbookPage[] = [
   {
     id: "1",
     title: "Nabi Nuh dan Kaumnya",
-    objective: "Mengenal Nabi Nuh dan memahami bahwa kaumnya menyembah patung, bukan Allah.",
-    narration:
-      "Pada zaman dahulu, hiduplah Nabi Nuh yang saleh dan baik hati. Nabi Nuh tinggal di tengah kaum yang sudah lupa kepada Allah. Mereka justru menyembah patung-patung bernama Wadd, Suwa', Yaghuts, Ya'uq, dan Nasr. Nabi Nuh sedih melihat kaumnya tersesat, lalu beliau mulai mengajak mereka kembali menyembah Allah.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-01.webp")
+    objective: "Mengenal Nabi Nuh dan melihat kesalahan kaum yang menyembah patung.",
+    narration: `Pada zaman dahulu, hiduplah seorang nabi yang bernama Nuh. Beliau tinggal di negeri Babilonia. Nabi Nuh adalah hamba Allah yang saleh dan baik hati.
+
+Kaum Nabi Nuh tidak menyembah Allah. Mereka menyembah patung-patung. Patung itu diberi nama Wadd, Suwa', Yaghuts, Ya'uq, dan Nasr. Mereka lupa kepada Allah yang menciptakan mereka.
+
+Nabi Nuh sedih melihat kaumnya yang sesat. Beliau ingin mengajak mereka kembali menyembah Allah. Dengan sabar, Nabi Nuh mulai berdakwah kepada kaumnya.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-01.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/ac1160db-5473-4df9-9d05-98bce22955e3?invite_code=LKAST7"
   },
   {
     id: "2",
-    title: "Dakwah yang Panjang",
-    objective: "Memahami bahwa Nabi Nuh berdakwah sangat lama dengan sabar.",
-    narration:
-      "Setiap hari Nabi Nuh mengingatkan kaumnya dengan lembut. Beliau berkata bahwa hanya Allah yang pantas disembah. Namun kaumnya menolak dan menganggap Nabi Nuh hanyalah manusia biasa. Mereka tidak mau mendengar nasihat itu. Walaupun begitu, Nabi Nuh tetap sabar berdakwah selama 950 tahun tanpa menyerah.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-02.webp")
+    title: "Dakwah Nabi Nuh",
+    objective: "Memahami bahwa Nabi Nuh berdakwah setiap hari dengan sabar.",
+    narration: `Nabi Nuh berdakwah setiap hari. Beliau berkata, "Wahai kaumku, sembahlah Allah. Tidak ada Tuhan selain Dia. Aku takut kalian akan mendapat azab jika tidak taat."
+
+Kaum Nabi Nuh menolak ajakan beliau. Mereka berkata, "Wahai Nuh, kamu hanya manusia biasa seperti kami. Kami tidak percaya kepadamu!"
+
+Mereka menertawakan Nabi Nuh. Namun Nabi Nuh tidak marah. Beliau tetap sabar mengajak mereka beriman.
+
+Nabi Nuh berdakwah selama 950 tahun lamanya. Wah, lama sekali, ya!`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-02.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/13a00c36-367b-4371-8740-b1d8bc5390b2?invite_code=LKAST7"
   },
   {
     id: "3",
-    title: "Orang Beriman yang Setia",
-    objective: "Mengetahui bahwa hanya sedikit orang rendah hati yang mau beriman.",
-    narration:
-      "Kaum Nabi Nuh semakin sombong dan berani menantang azab Allah. Mereka juga merendahkan pengikut Nabi Nuh yang sederhana dan tidak kaya. Hanya sedikit orang yang mau beriman, tetapi mereka setia dan rendah hati. Nabi Nuh tetap membimbing mereka dengan kasih sayang serta rasa syukur kepada Allah.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-03.webp")
+    title: "Kaum yang Sombong",
+    objective: "Mengenali kesombongan kaum Nabi Nuh saat menolak kebenaran.",
+    narration: `Kaum Nabi Nuh semakin sombong. Mereka berkata, "Wahai Nuh, jika kamu benar, datangkanlah azab yang kamu ancamkan itu!"
+
+Mereka tidak percaya bahwa Nabi Nuh utusan Allah. Mereka menganggap pengikut Nabi Nuh hanyalah orang-orang miskin dan hina.
+
+Para pemuka kaum berkata, "Kami tidak akan beriman seperti orang-orang hina itu." Mereka tetap menyembah patung dan menolak kebenaran.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-03.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/72294589-9b8c-4554-9bf7-c6ea880c9360?invite_code=QCYWGH"
   },
   {
     id: "4",
-    title: "Perintah Membuat Kapal",
-    objective: "Memahami bahwa Nabi Nuh taat saat Allah memerintahkan membuat kapal besar.",
-    narration:
-      "Setelah kaumnya terus menolak kebenaran, Nabi Nuh berdoa kepada Allah. Lalu Allah memerintahkan beliau membuat kapal yang sangat besar. Perintah itu terasa aneh karena tempat Nabi Nuh jauh dari laut. Namun Nabi Nuh tidak ragu. Beliau segera mengumpulkan kayu dan mulai membangun kapal sesuai perintah Allah.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-04.webp")
+    title: "Pengikut Nabi Nuh",
+    objective: "Mengetahui bahwa pengikut Nabi Nuh adalah orang-orang yang rendah hati dan setia.",
+    narration: `Hanya sedikit orang yang mau beriman kepada Nabi Nuh. Mereka adalah orang-orang yang rendah hati dan tidak sombong.
+
+Mereka percaya bahwa Nabi Nuh adalah utusan Allah. Mereka rajin beribadah dan mengikuti ajaran Nabi Nuh.
+
+Nabi Nuh sangat bersyukur memiliki pengikut yang setia. Beliau membimbing mereka dengan sabar dan penuh kasih sayang.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-04.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/716b3922-1112-4456-941d-dad7f25b495e?invite_code=QCYWGH"
   },
   {
     id: "5",
-    title: "Ejekan Saat Membangun Kapal",
-    objective: "Belajar bahwa Nabi Nuh tetap tenang walau diejek.",
-    narration:
-      "Nabi Nuh dan para pengikutnya bekerja keras membangun kapal besar. Orang-orang kafir datang lalu menertawakan mereka. Mereka berkata, 'Mengapa membuat kapal di tempat kering?' Nabi Nuh tidak marah. Beliau tetap tenang dan berkata bahwa kelak mereka akan tahu siapa yang benar. Kapal pun selesai dibangun dengan penuh kesabaran.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-05.webp")
+    title: "Perintah Membuat Kapal",
+    objective: "Memahami bahwa Nabi Nuh segera taat saat Allah memerintahkan membuat kapal besar.",
+    narration: `Nabi Nuh berdoa kepada Allah, "Ya Tuhanku, jangan biarkan seorang pun dari orang kafir tinggal di bumi."
+
+Allah mengabulkan doa Nabi Nuh. Allah memerintahkan Nabi Nuh membuat kapal yang besar.
+
+Padahal, tempat tinggal Nabi Nuh jauh dari laut. Di sekitarnya hanya ada daratan kering dan pasir.
+
+Nabi Nuh segera melaksanakan perintah Allah. Beliau mulai mengumpulkan kayu yang kuat.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-05.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/081f023b-8053-4c46-b240-db0462e4d637?invite_code=QCYWGH"
   },
   {
     id: "6",
-    title: "Datangnya Banjir Besar",
-    objective: "Mengenal tanda azab Allah berupa air yang memancar dan hujan lebat.",
-    narration:
-      "Tanda azab Allah akhirnya datang. Air memancar deras dari bumi, lalu hujan turun sangat lebat dari langit. Nabi Nuh segera memerintahkan orang-orang beriman untuk naik ke kapal. Hewan-hewan juga dibawa berpasangan. Semua dilakukan dengan cepat karena air semakin tinggi dan banjir besar mulai melanda.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-06.webp")
+    title: "Kapal Selesai Dibangun",
+    objective: "Belajar bahwa Nabi Nuh tetap tenang walau diejek saat membangun kapal.",
+    narration: `Nabi Nuh dan pengikutnya membuat kapal besar. Mereka bekerja keras setiap hari.
+
+Kaum kafir melihat mereka membuat kapal. Mereka tertawa dan mengejek, "Hai Nuh! Mengapa membuat kapal di padang pasir? Mau berlayar di atas pasir?"
+
+Nabi Nuh menjawab dengan tenang, "Kalian boleh mengejek sekarang. Kelak kalian akan tahu siapa yang benar."
+
+Beliau terus bekerja tanpa marah. Kapal besar itu akhirnya selesai dibuat.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-06.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/228e64d9-651b-453d-b626-4e3864e069b1?invite_code=QCYWGH"
   },
   {
     id: "7",
-    title: "Kan'an Menolak Naik",
-    objective: "Memahami bahwa anak Nabi Nuh pun ada yang menolak kebenaran.",
-    narration:
-      "Nabi Nuh memanggil putranya, Kan'an, agar segera naik ke kapal. Dengan sedih beliau berkata bahwa banjir akan menenggelamkan bumi. Tetapi Kan'an menolak. Ia merasa gunung tinggi akan menyelamatkannya. Nabi Nuh kembali mengingatkan bahwa tidak ada yang bisa selamat tanpa pertolongan Allah. Namun Kan'an tetap keras hati.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-07.webp")
+    title: "Tanda Datangnya Banjir",
+    objective: "Mengenal tanda azab Allah ketika banjir besar mulai datang.",
+    narration: `Tiba-tiba datang tanda azab dari Allah. Dari dalam tanah, dari tempat pembakaran roti, memancar air dengan deras.
+
+Langit menjadi gelap. Hujan lebat turun belum pernah terjadi sebelumnya. Air mulai naik ke mana-mana.
+
+Nabi Nuh segera memerintahkan pengikutnya naik ke kapal. Beliau juga membawa hewan-hewan, sepasang jantan dan betina.
+
+Beliau memanggil keluarganya untuk naik. Istrinya naik, tetapi istri yang lain tidak mau beriman.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-07.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/2bd377ae-fbd0-4ca4-9006-ece3d2ec772c?invite_code=LKAST7"
   },
   {
     id: "8",
-    title: "Orang Kafir Tenggelam",
-    objective: "Mengetahui bahwa orang yang menolak Allah akhirnya terkena azab.",
-    narration:
-      "Air semakin tinggi hingga menenggelamkan daratan dan gunung-gunung. Orang-orang kafir berlari mencari tempat aman, tetapi tidak ada yang dapat menyelamatkan mereka. Kan'an pun tenggelam bersama kaum yang ingkar. Sementara itu, kapal Nabi Nuh terapung dengan selamat. Nabi Nuh dan orang-orang beriman terus berdoa kepada Allah di dalam kapal.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-08.webp")
+    title: "Kan'an Menolak Naik",
+    objective: "Memahami bahwa Kan'an menolak ajakan Nabi Nuh untuk naik ke kapal.",
+    narration: `Nabi Nuh memanggil putranya yang bernama Kan'an. "Wahai anakku, naiklah ke kapal! Sebentar lagi bumi akan tenggelam."
+
+Kan'an menolak. Ia berkata sombong, "Aku tidak perlu kapal, Ayah! Aku akan pergi ke gunung yang tinggi. Gunung itu akan melindungiku."
+
+Nabi Nuh berkata lagi, "Tidak ada yang bisa melindungi dari azab Allah, Nak. Naiklah!"
+
+Kan'an tetap menolak. Ia berlari menuju gunung. Nabi Nuh sedih sekali melihat anaknya durhaka.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-08.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/6f41fe0b-7cce-40d8-8b72-93d4b01264e0?invite_code=31OFKB"
   },
   {
     id: "9",
-    title: "Air Surut dan Selamat",
-    objective: "Memahami bahwa Allah menyelamatkan orang beriman dan menghentikan banjir.",
-    narration:
-      "Atas perintah Allah, hujan berhenti dan air mulai surut. Kapal Nabi Nuh akhirnya berlabuh di Gunung Judi. Nabi Nuh dan para pengikutnya turun dengan hati penuh syukur. Mereka selamat karena beriman dan taat kepada Allah. Kisah ini menunjukkan bahwa Allah menjaga orang yang percaya kepada-Nya.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-09.webp")
+    title: "Orang Kafir Tenggelam",
+    objective: "Mengetahui bahwa orang-orang kafir tenggelam, sedangkan Nabi Nuh dan pengikutnya selamat.",
+    narration: `Air semakin naik. Semua daratan mulai tenggelam. Orang-orang kafir berlarian ke gunung, tapi air terus naik.
+
+Gunung-gunung tinggi pun tenggelam. Kan'an ikut tenggelam bersama orang-orang kafir. Betapa sedih hati Nabi Nuh.
+
+Kapal Nabi Nuh terapung dengan selamat. Di dalam kapal, Nabi Nuh dan pengikutnya berdoa kepada Allah.
+
+Allah berfirman, "Hai bumi, telanlah airmu! Hai langit, berhentilah hujan!" Air pun surut.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-09.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/941a73af-5d63-4312-b1cb-23994ba41cc6?invite_code=LKAST7"
   },
   {
     id: "10",
-    title: "Hikmah Kisah Nabi Nuh",
-    objective: "Meneladani sifat taat, sabar, jujur, dan rendah hati dari kisah Nabi Nuh.",
-    narration:
-      "Dari kisah Nabi Nuh, kita belajar untuk selalu taat kepada Allah, sabar saat menghadapi kesulitan, dan tidak sombong. Nabi Nuh tetap berdakwah walau sering ditolak. Orang-orang beriman selamat karena percaya kepada Allah. Karena itu, kita juga harus memilih jalan yang benar, jujur, dan patuh kepada ajaran Allah setiap hari.",
-    pageTexture: withBasePath("assets/flipbook/pages/page-10.webp")
+    title: "Kapal Berlabuh",
+    objective: "Memahami bahwa kapal Nabi Nuh berlabuh dan orang beriman bersyukur kepada Allah.",
+    narration: `Kapal Nabi Nuh berlabuh di atas sebuah gunung. Gunung itu bernama Gunung Judi.
+
+Nabi Nuh dan semua pengikutnya turun dari kapal. Mereka bersyukur kepada Allah. Hanya orang beriman yang selamat. Orang kafir yang sombong telah binasa.`,
+    pageTexture: withBasePath("assets/flipbook/pages/page-10.webp"),
+    asset3dUrl: "https://studio.tripo3d.ai/3d-model/b5d24a9f-55a9-4931-b774-fead65d02b10?invite_code=LKAST7"
   }
 ];
 

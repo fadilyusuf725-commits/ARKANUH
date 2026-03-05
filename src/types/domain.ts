@@ -11,6 +11,7 @@ export type FlipbookPage = {
   objective: string;
   narration: string;
   pageTexture?: string;
+  asset3dUrl?: string;
 };
 
 export type VoiceAssetManifest = {

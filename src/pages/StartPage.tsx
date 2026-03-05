@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
+import { InlineModelViewer } from "../components/InlineModelViewer";
 import { ProgressTracker } from "../components/ProgressTracker";
 import { VoiceNarration } from "../components/VoiceNarration";
 import {
@@ -148,6 +149,13 @@ export function StartPage() {
           ))}
         </div>
       </section>
+
+      <InlineModelViewer
+        title={activePage.title}
+        modelSrc={activePage.id ? `${import.meta.env.BASE_URL}assets/models/page-${activePage.id.padStart(2, "0")}.glb` : undefined}
+        posterSrc={activePage.pageTexture}
+        assetPageUrl={activePage.asset3dUrl}
+      />
 
       <VoiceNarration
         title={activePage.title}
