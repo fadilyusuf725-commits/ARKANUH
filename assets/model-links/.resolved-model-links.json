@@ -1,77 +1,107 @@
 {
-  "generatedAt": "2026-03-05T00:00:00.000Z",
+  "generatedAt": "2026-03-05T12:00:00.000Z",
+  "source": "Tripo3D Direct Links (DOCX)",
+  "description": "High-quality realistic 3D models (10 pages)",
   "items": [
     {
       "pageId": "1",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "b5d24a9f-55a9-4931-b774-fead65d02b10",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-01.glb",
       "fileName": "page-01.glb",
-      "bytes": 9535584
+      "inviteCode": "LKAST7",
+      "quality": "high"
     },
     {
       "pageId": "2",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "ac1160db-5473-4df9-9d05-98bce22955e3",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-02.glb",
       "fileName": "page-02.glb",
-      "bytes": 8606092
+      "inviteCode": "LKAST7",
+      "quality": "high"
     },
     {
       "pageId": "3",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "13a00c36-367b-4371-8740-b1d8bc5390b2",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-03.glb",
       "fileName": "page-03.glb",
-      "bytes": 9092108
+      "inviteCode": "LKAST7",
+      "quality": "high"
     },
     {
       "pageId": "4",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "72294589-9b8c-4554-9bf7-c6ea880c9360",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-04.glb",
       "fileName": "page-04.glb",
-      "bytes": 9107408
+      "inviteCode": "QCYWGH",
+      "quality": "high"
     },
     {
       "pageId": "5",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "716b3922-1112-4456-941d-dad7f25b495e",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-05.glb",
       "fileName": "page-05.glb",
-      "bytes": 9900368
+      "inviteCode": "QCYWGH",
+      "quality": "high"
     },
     {
       "pageId": "6",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "081f023b-8053-4c46-b240-db0462e4d637",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-06.glb",
       "fileName": "page-06.glb",
-      "bytes": 8546888
+      "inviteCode": "QCYWGH",
+      "quality": "high"
     },
     {
       "pageId": "7",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "228e64d9-651b-453d-b626-4e3864e069b1",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-07.glb",
       "fileName": "page-07.glb",
-      "bytes": 7284000
+      "inviteCode": "QCYWGH",
+      "quality": "high"
     },
     {
       "pageId": "8",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "2bd377ae-fbd0-4ca4-9006-ece3d2ec772c",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-08.glb",
       "fileName": "page-08.glb",
-      "bytes": 9625480
+      "inviteCode": "LKAST7",
+      "quality": "high"
     },
     {
       "pageId": "9",
-      "sourceType": "direct_file",
-      "status": "local",
+      "modelId": "6f41fe0b-7cce-40d8-8b72-93d4b01264e0",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
       "resolvedUrl": "/assets/models/page-09.glb",
       "fileName": "page-09.glb",
-      "bytes": 9180504
+      "inviteCode": "31OFKB",
+      "quality": "high"
+    },
+    {
+      "pageId": "10",
+      "modelId": "941a73af-5d63-4312-b1cb-23994ba41cc6",
+      "sourceType": "tripo3d_direct",
+      "status": "ready",
+      "resolvedUrl": "/assets/models/page-10.glb",
+      "fileName": "page-10.glb",
+      "inviteCode": "LKAST7",
+      "quality": "high"
     }
   ]
 }

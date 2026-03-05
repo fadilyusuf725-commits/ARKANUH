@@ -138,6 +138,21 @@ export const flipbookPages: FlipbookPage[] = [
     popupTemplate: "light",
     floatingText: "Keselamatan",
     popupAccent: "#FFD700",
+  },
+  {
+    id: "10",
+    title: "Pesan Penting dari Kisah Nabi Nuh",
+    objective: "Memahami pelajaran penting tentang taat kepada Allah dan kesabaran dalam berdakwah",
+    narration: "Dari kisah Nabi Nuh, kita belajar banyak hal penting:\n\nPertama, kita harus selalu taat kepada Allah. Nabi Nuh taat meskipun dipersulit oleh kaumnya selama 950 tahun.\n\nKedua, kesabaran adalah kunci. Nabi Nuh tidak pernah marah atau putus asa meski ditolak terus-menerus.\n\nKetiga, kerendahan hati adalah harta yang berharga. Hanya orang-orang yang rendah hati yang percaya kepada Nabi Nuh.\n\nKeempat, azab Allah pasti datang bagi orang-orang yang sombong dan menolak kebenaran. Tetapi Allah juga menyelamatkan orang-orang yang beriman.\n\nAyo, kita mulai dari sekarang untuk selalu taat kepada Allah, sabar dalam menghadapi cobaan, dan rendah hati kepada sesama.",
+    arAsset: "nuh_legacy",
+    voAudio: withBasePath("assets/voice/page-10.wav"),
+    interactionType: "choice",
+    interactionPrompt: "Apa pelajaran paling penting dari kisah Nabi Nuh untuk kamu?",
+    completionRule: "choice_selection",
+    interactionChoices: ["Ketaatan kepada Allah", "Kesabaran dalam menghadapi cobaan", "Kerendahan hati"],
+    popupTemplate: "light",
+    floatingText: "Pelajaran Penting",
+    popupAccent: "#20B2AA",
   }
 ];
 
