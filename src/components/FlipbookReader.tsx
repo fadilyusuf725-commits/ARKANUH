@@ -11,8 +11,26 @@ const loadPageFlip = async () => {
   
   try {
     const mod = await import("page-flip");
-    // page-flip exports as a named export with UMD pattern
-    PageFlip = mod.PageFlip || mod.default || mod;
+    console.log("page-flip module loaded:", mod);
+    console.log("mod.PageFlip:", mod.PageFlip);
+    console.log("mod.default:", mod.default);
+    console.log("typeof mod.PageFlip:", typeof mod.PageFlip);
+    console.log("typeof mod.default:", typeof mod.default);
+    
+    // Try different export patterns
+    if (mod.PageFlip && typeof mod.PageFlip === "function") {
+      PageFlip = mod.PageFlip;
+    } else if (mod.default && typeof mod.default === "function") {
+      PageFlip = mod.default;
+    } else if (typeof mod === "function") {
+      PageFlip = mod;
+    } else {
+      // Last resort: check for __esModule pattern
+      PageFlip = mod.default || Object.values(mod).find(v => typeof v === "function") || mod;
+    }
+    
+    console.log("Selected PageFlip:", PageFlip);
+    console.log("PageFlip is function:", typeof PageFlip === "function");
     return PageFlip;
   } catch (e) {
     console.error("Failed to load page-flip:", e);
