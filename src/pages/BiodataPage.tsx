@@ -32,7 +32,7 @@ export function BiodataPage() {
         <div className="biodata-team-grid">
           <div className="biodata-team-member team-card-with-photo">
             <div className="team-photo">
-              <img src="/ARKANUH/assets/team-photos/fadhilah.jpg" alt="Mochamad Fadhilah Yusup Fauzan" />
+              <img src="/ARKANUH/assets/team-photos/fadhillah.jpg" alt="Mochamad Fadhilah Yusup Fauzan" />
             </div>
             <h3>Mochamad Fadhilah Yusup Fauzan</h3>
             <ul className="biodata-details">
