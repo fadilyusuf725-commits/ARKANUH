@@ -757,3 +757,20 @@ input[type="text"] {
   }
 
 }
+
+/* ===========================
+   FLIPBOOK READER PAGE LAYOUT
+   =========================== */
+
+main.page-shell {
+  max-width: 100%;
+  width: 100%;
+  gap: 0;
+  margin-bottom: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
