@@ -281,7 +281,23 @@ export function ThreeFlipbookCanvas({
         (error: any) => {
           if (isMounted) {
             console.error(`Failed to load model from ${modelUrl}:`, error);
-            setStatusMessage(`Gagal memuat model (${error.message || "Unknown error"}). Periksa console untuk detail.`);
+            setStatusMessage(`Gagal memuat model. Menampilkan placeholder...`);
+            
+            // Create a fallback placeholder model (a cube)
+            if (modelGroupRef.current) {
+              const placeholderGeometry = new THREE.BoxGeometry(1, 1.5, 0.8);
+              const placeholderMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8896b8,
+                roughness: 0.7,
+                metalness: 0.2
+              });
+              const placeholderMesh = new THREE.Mesh(placeholderGeometry, placeholderMaterial);
+              placeholderMesh.castShadow = true;
+              placeholderMesh.receiveShadow = true;
+              modelGroupRef.current.add(placeholderMesh);
+              
+              setStatusMessage(`Model tidak tersedia. Menampilkan placeholder. Error: ${error.message || "Unknown"}`);
+            }
           }
         }
       );
