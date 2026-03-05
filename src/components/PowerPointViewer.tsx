@@ -134,6 +134,99 @@ export function PowerPointViewer({ fileUrl, initialSlide = 0, onSlideChange }: P
     }
   };
 
+  // Extract shapes and content from PPTX slide XML
+  const parseSlideShapes = (xml: string): Array<{
+    type: string;
+    fill?: string;
+    text?: string;
+    x?: number;
+    y?: number;
+    w?: number;
+    h?: number;
+    fontSize?: number;
+    bold?: boolean;
+  }> => {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xml, "text/xml");
+      const shapes: Array<any> = [];
+
+      // Parse slide background fill
+      const bgFill = doc.querySelector("p|bg p|bgPr");
+      if (bgFill) {
+        const solidFill = bgFill.querySelector("a|solidFill");
+        if (solidFill) {
+          const srgbClr = solidFill.querySelector("a|srgbClr");
+          if (srgbClr) {
+            shapes.push({
+              type: "background",
+              fill: "#" + srgbClr.getAttribute("val"),
+            });
+          }
+        }
+      }
+
+      // Parse shapes and text boxes
+      const shapeElements = doc.querySelectorAll("p|sp");
+      shapeElements.forEach((shape) => {
+        const shapeObj: any = { type: "shape" };
+
+        // Get fill color
+        const propGroup = shape.querySelector("p|spPr");
+        if (propGroup) {
+          const solidFill = propGroup.querySelector("a|solidFill");
+          if (solidFill) {
+            const srgbClr = solidFill.querySelector("a|srgbClr");
+            if (srgbClr) {
+              shapeObj.fill = "#" + srgbClr.getAttribute("val");
+            }
+          }
+
+          // Get position and size
+          const xfrm = propGroup.querySelector("a|xfrm");
+          if (xfrm) {
+            const off = xfrm.querySelector("a|off");
+            const ext = xfrm.querySelector("a|ext");
+            if (off && ext) {
+              shapeObj.x = parseInt(off.getAttribute("x") || "0") / 914400; // EMU to pixels
+              shapeObj.y = parseInt(off.getAttribute("y") || "0") / 914400;
+              shapeObj.w = parseInt(ext.getAttribute("cx") || "0") / 914400;
+              shapeObj.h = parseInt(ext.getAttribute("cy") || "0") / 914400;
+            }
+          }
+        }
+
+        // Get text content
+        const textElements = shape.querySelectorAll("a|t");
+        if (textElements.length > 0) {
+          const texts: string[] = [];
+          textElements.forEach((t) => {
+            if (t.textContent) texts.push(t.textContent);
+          });
+          shapeObj.text = texts.join(" ");
+
+          // Get font size
+          const rPr = shape.querySelector("a|rPr");
+          if (rPr) {
+            const sz = rPr.getAttribute("sz");
+            if (sz) {
+              shapeObj.fontSize = parseInt(sz) / 100; // Convert to pixels
+            }
+            shapeObj.bold = rPr.getAttribute("b") === "1";
+          }
+        }
+
+        if (shapeObj.text || shapeObj.fill) {
+          shapes.push(shapeObj);
+        }
+      });
+
+      return shapes;
+    } catch {
+      return [];
+    }
+  };
+
   // Render slide to canvas
   useEffect(() => {
     if (!canvasRef.current || slides.length === 0 || !slides[currentSlide]) return;
@@ -156,50 +249,81 @@ export function PowerPointViewer({ fileUrl, initialSlide = 0, onSlideChange }: P
 
         ctx.scale(scaleFactor, scaleFactor);
 
-        // Fill background with gradient
-        const gradient = ctx.createLinearGradient(0, 0, slideWidth, slideHeight);
-        gradient.addColorStop(0, "#f8f9fa");
-        gradient.addColorStop(1, "#e9ecef");
-        ctx.fillStyle = gradient;
+        // Parse slide shapes from PPTX XML
+        const slide = slides[currentSlide];
+        const shapes = parseSlideShapes(slide.rawXML);
+
+        // Default background
+        let bgColor = "#f8f9fa";
+
+        // Render background first
+        const bgShape = shapes.find((s) => s.type === "background");
+        if (bgShape?.fill) {
+          bgColor = bgShape.fill;
+        }
+
+        ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, slideWidth, slideHeight);
 
-        // Render slide content
-        const slide = slides[currentSlide];
+        // Render shapes
+        shapes.forEach((shape) => {
+          if (shape.type === "background") return;
 
-        // Title
-        ctx.font = "bold 48px Arial";
-        ctx.fillStyle = "#2c3e50";
-        ctx.textAlign = "center";
-        ctx.fillText(slide.title, slideWidth / 2, 100);
+          // Draw shape background
+          if (shape.fill && shape.x !== undefined && shape.y !== undefined && shape.w && shape.h) {
+            ctx.fillStyle = shape.fill;
+            ctx.globalAlpha = 0.9;
+            ctx.fillRect(shape.x, shape.y, shape.w, shape.h);
+            ctx.globalAlpha = 1.0;
 
-        // Content
-        ctx.font = "18px Arial";
-        ctx.fillStyle = "#34495e";
-        ctx.textAlign = "left";
-        const lines = slide.content.substring(0, 500).split(" ");
-        let line = "";
-        let y = 200;
+            // Draw border
+            ctx.strokeStyle = "rgba(0,0,0,0.2)";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(shape.x, shape.y, shape.w, shape.h);
+          }
 
-        lines.forEach((word) => {
-          const testLine = line + word + " ";
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > slideWidth - 100) {
-            ctx.fillText(line, 50, y);
-            line = word + " ";
-            y += 30;
-          } else {
-            line = testLine;
+          // Draw text
+          if (shape.text) {
+            const fontSize = Math.max(12, Math.min(24, shape.fontSize || 18));
+            ctx.font = `${shape.bold ? "bold " : ""}${fontSize}px Arial`;
+            ctx.fillStyle = "#333";
+            ctx.textAlign = "left";
+
+            const x = (shape.x || slideWidth / 2) + 10;
+            const y = (shape.y || slideHeight / 2) + fontSize;
+
+            // Word wrap
+            const maxWidth = (shape.w || slideWidth - 100) - 20;
+            const words = shape.text.split(" ");
+            let line = "";
+            let lineY = y;
+
+            words.forEach((word) => {
+              const testLine = line + (line ? " " : "") + word;
+              const metrics = ctx.measureText(testLine);
+
+              if (metrics.width > maxWidth && line) {
+                ctx.fillText(line, x, lineY);
+                line = word;
+                lineY += fontSize + 5;
+              } else {
+                line = testLine;
+              }
+            });
+
+            if (line) {
+              ctx.fillText(line, x, lineY);
+            }
           }
         });
-        if (line) ctx.fillText(line, 50, y);
 
         // Slide number
         ctx.font = "14px Arial";
-        ctx.fillStyle = "#7f8c8d";
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
         ctx.textAlign = "right";
-        ctx.fillText(`${currentSlide + 1} / ${slides.length}`, slideWidth - 20, slideHeight - 20);
+        ctx.fillText(`${currentSlide + 1} / ${slides.length}`, slideWidth - 20, slideHeight - 15);
 
-        console.log("✓ Rendered slide", currentSlide + 1);
+        console.log("✓ Rendered slide", currentSlide + 1, "with", shapes.length, "shapes");
       } catch (err) {
         console.error("Error rendering slide:", err);
       }
