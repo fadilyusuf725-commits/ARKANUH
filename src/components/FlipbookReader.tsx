@@ -3,31 +3,21 @@ import { flipbookPages } from "../data/flipbookPages";
 import { withBasePath } from "../lib/assetPaths";
 import "../styles/flipbook.css";
 
-// Lazy load page-flip library with multiple fallbacks
+// Import page-flip library
 let PageFlip: any = null;
 
 const loadPageFlip = async () => {
-  if (!PageFlip) {
-    try {
-      // Try different import patterns
-      const module = await import("page-flip");
-      PageFlip = module.default || module.PageFlip || module;
-      
-      // If module itself is a function/class, use it directly
-      if (typeof PageFlip !== 'function') {
-        throw new Error("Invalid PageFlip export structure");
-      }
-    } catch (error) {
-      console.error("Failed to load page-flip with dynamic import:", error);
-      // As last resort, try to access from window if loaded via script
-      if (typeof (window as any).PageFlip !== 'undefined') {
-        PageFlip = (window as any).PageFlip;
-      } else {
-        throw error;
-      }
-    }
+  if (PageFlip) return PageFlip;
+  
+  try {
+    const mod = await import("page-flip");
+    // page-flip exports as a named export with UMD pattern
+    PageFlip = mod.PageFlip || mod.default || mod;
+    return PageFlip;
+  } catch (e) {
+    console.error("Failed to load page-flip:", e);
+    return null;
   }
-  return PageFlip;
 };
 
 type FlipbookReaderProps = {
@@ -51,59 +41,43 @@ export function FlipbookReader({
   useEffect(() => {
     if (!containerRef.current || isInitialized) return;
 
-    const initializeFlipbook = async () => {
+    (async () => {
       try {
-        // Load the library
-        const PF = await loadPageFlip();
-        if (!PF) {
-          throw new Error("Failed to load PageFlip library - module is null");
+        const PF = PageFlip || (await loadPageFlip());
+
+        if (!PF || typeof PF !== "function") {
+          throw new Error(`PageFlip invalid: ${typeof PF}`);
         }
 
-        if (typeof PF !== 'function') {
-          console.error("PageFlip is not a constructor. Type:", typeof PF, "Value:", PF);
-          throw new Error(`Invalid PageFlip class: expected function, got ${typeof PF}`);
-        }
-
-        // Create canvas element for page-flip
         const canvas = document.createElement("div");
         canvas.id = "flipbook";
         canvas.style.width = "100%";
         canvas.style.height = "100%";
         containerRef.current?.appendChild(canvas);
 
-        // Initialize page-flip with try-catch
-        let flipBook: any;
-        try {
-          flipBook = new PF(canvas, {
-            width: 500,
-            height: 650,
-            size: "fixed",
-            minWidth: 300,
-            maxWidth: 900,
-            minHeight: 390,
-            maxHeight: 1350,
-            showCover: true,
-            autoSize: true,
-            maxShadowOpacity: 0.5,
-            useMouseEvents: true,
-            disableFlip: false,
-            clickEventForward: true,
-            usePortrait: true,
-            startZIndex: 0,
-            drawShadow: true,
-            flips: (flipbookPages.length + 1) * 2,
-            duration: 800,
-            mobileScrollSupport: true,
-          });
-        } catch (err) {
-          console.error("Failed to instantiate PageFlip:", err);
-          throw new Error(`PageFlip instantiation failed: ${err instanceof Error ? err.message : String(err)}`);
-        }
+        const flipBook = new PF(canvas, {
+        width: 500,
+        height: 650,
+        size: "fixed",
+        minWidth: 300,
+        maxWidth: 900,
+        minHeight: 390,
+        maxHeight: 1350,
+        showCover: true,
+        autoSize: true,
+        maxShadowOpacity: 0.5,
+        useMouseEvents: true,
+        disableFlip: false,
+        clickEventForward: true,
+        usePortrait: true,
+        startZIndex: 0,
+        drawShadow: true,
+        flips: (flipbookPages.length + 1) * 2,
+        duration: 800,
+        mobileScrollSupport: true,
+      });
 
-        // Store reference
-        flipBookRef.current = flipBook;
-
-        let pageIndex = 0;
+      flipBookRef.current = flipBook;
 
         // Create and add cover page
         const coverDiv = document.createElement("div");
@@ -117,7 +91,9 @@ export function FlipbookReader({
             </div>
           </div>
         `;
-        flipBook.addPage(coverDiv, pageIndex++);
+        flipBook.addPage(coverDiv, 0);
+
+        let pageIndex = 1;
 
         // Add all story pages
         flipbookPages.forEach((page) => {
@@ -201,14 +177,12 @@ export function FlipbookReader({
 
         setIsInitialized(true);
         setError(null);
-      } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : "Unknown error";
-        console.error("Failed to initialize flipbook:", err);
-        setError(`Flipbook error: ${errorMsg}`);
-      }
-    };
-
-    initializeFlipbook();
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Unknown error";
+      console.error("Failed to initialize flipbook:", err);
+      setError(`Flipbook error: ${errorMsg}`);
+    }
+    })();
 
     return () => {
       try {
