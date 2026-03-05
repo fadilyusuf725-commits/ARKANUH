@@ -168,10 +168,30 @@ export function FlipbookReader({
 
         flipBookRef.current = flipBook;
         console.log("PageFlip instance created:", flipBook);
-        console.log("Calling loadFromHTML with", pages.length, "pages");
+        console.log("Available methods:", Object.getOwnPropertyNames(Object.getPrototypeOf(flipBook)));
         
-        // Load pages using loadFromHTML API
-        flipBook.loadFromHTML(pages);
+        // Try to load pages using loadFromHTML
+        try {
+          if (typeof flipBook.loadFromHTML === "function") {
+            console.log("Calling loadFromHTML with", pages.length, "pages");
+            flipBook.loadFromHTML(pages);
+          } else {
+            console.warn("loadFromHTML not available, trying alternative methods");
+            // Fallback: add pages individually
+            if (typeof flipBook.addPage === "function") {
+              console.log("Using addPage() method as fallback");
+              pages.forEach((pageEl, idx) => {
+                flipBook.addPage(pageEl, idx);
+              });
+            } else {
+              throw new Error("Neither loadFromHTML nor addPage is available");
+            }
+          }
+          console.log("Pages loaded successfully");
+        } catch (err) {
+          console.error("Error loading pages:", err);
+          throw err;
+        }
 
         // Event listeners
         flipBook.on("change", (object: any) => {
