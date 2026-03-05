@@ -9,6 +9,7 @@ import { PosttestPage } from "./pages/PosttestPage";
 import { PretestPage } from "./pages/PretestPage";
 import { StartPage } from "./pages/StartPage";
 import { UserGuidePage } from "./pages/UserGuidePage";
+import { PowerPointPage } from "./pages/PowerPointPage";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/panduan-penggunaan" element={<UserGuidePage />} />
         <Route path="/cp-tp-atp" element={<CurriculumPage />} />
         <Route path="/flipbook/:pageId" element={<FlipbookReaderPage />} />
+        <Route path="/powerpoint" element={<PowerPointPage />} />
         <Route path="/posttest" element={<PosttestPage />} />
         <Route path="/hasil-akhir" element={<FinalResultPage />} />
         <Route path="/404" element={<NotFoundPage />} />
