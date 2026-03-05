@@ -2,46 +2,34 @@ import { useEffect, useRef, useState } from "react";
 import { flipbookPages } from "../data/flipbookPages";
 import "../styles/flipbook.css";
 
-// Page-flip library loaded from npm
+// Extend window for CDN page-flip
+declare global {
+  interface Window {
+    St: {
+      PageFlip: any;
+    };
+  }
+}
+
+// Page-flip library loaded from CDN in index.html as window.St.PageFlip
 let PageFlip: any = null;
 
 const loadPageFlip = async () => {
   if (PageFlip) return PageFlip;
   
-  try {
-    const mod = await import("page-flip");
-    console.log("page-flip module loaded:", mod);
-    console.log("module keys:", Object.keys(mod));
-    console.log("mod.PageFlip:", mod.PageFlip);
-    console.log("mod.default:", mod.default);
-    
-    // Try different export patterns that page-flip v2.0.7 might use
-    if (mod.PageFlip && typeof mod.PageFlip === "function") {
-      PageFlip = mod.PageFlip;
-      console.log("✓ Using mod.PageFlip");
-    } else if (mod.default && typeof mod.default === "function") {
-      PageFlip = mod.default;
-      console.log("✓ Using mod.default");
-    } else if (typeof mod === "function") {
-      PageFlip = mod;
-      console.log("✓ Using mod directly as function");
-    } else {
-      // If module exports an object with PageFlip inside
-      const exportObj = mod as any;
-      if (exportObj.PageFlip && typeof exportObj.PageFlip === "function") {
-        PageFlip = exportObj.PageFlip;
-        console.log("✓ Using exportObj.PageFlip");
-      } else {
-        throw new Error(`PageFlip not found. Module exports: ${JSON.stringify(Object.keys(exportObj))}`);
-      }
+  // Wait for CDN to load
+  let attempts = 0;
+  while (!window.St || !window.St.PageFlip) {
+    if (attempts > 50) {
+      throw new Error("PageFlip CDN failed to load (timeout)");
     }
-    
-    console.log("PageFlip loaded successfully:", PageFlip.name || "anonymous");
-    return PageFlip;
-  } catch (e) {
-    console.error("Failed to load page-flip from npm:", e);
-    return null;
+    await new Promise((r) => setTimeout(r, 100));
+    attempts++;
   }
+  
+  PageFlip = window.St.PageFlip;
+  console.log("✓ PageFlip loaded from CDN (window.St.PageFlip)");
+  return PageFlip;
 };
 
 type FlipbookReaderProps = {
