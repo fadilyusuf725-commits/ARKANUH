@@ -3,34 +3,35 @@ import { flipbookPages } from "../data/flipbookPages";
 import { withBasePath } from "../lib/assetPaths";
 import "../styles/flipbook.css";
 
-// Import page-flip library
+// Page-flip library is loaded via CDN in index.html as window.St.PageFlip
 let PageFlip: any = null;
 
 const loadPageFlip = async () => {
   if (PageFlip) return PageFlip;
   
+  // Page-flip from CDN is already loaded as window.St.PageFlip
+  if ((window as any).St && (window as any).St.PageFlip) {
+    PageFlip = (window as any).St.PageFlip;
+    console.log("PageFlip loaded from window.St.PageFlip (CDN)", PageFlip);
+    return PageFlip;
+  }
+  
+  // Fallback: try to load from npm if CDN fails
   try {
     const mod = await import("page-flip");
-    console.log("page-flip module loaded:", mod);
+    console.log("page-flip module fallback loaded:", mod);
     console.log("mod.PageFlip:", mod.PageFlip);
     console.log("mod.default:", mod.default);
-    console.log("typeof mod.PageFlip:", typeof mod.PageFlip);
-    console.log("typeof mod.default:", typeof mod.default);
     
-    // Try different export patterns
     if (mod.PageFlip && typeof mod.PageFlip === "function") {
       PageFlip = mod.PageFlip;
     } else if (mod.default && typeof mod.default === "function") {
       PageFlip = mod.default;
-    } else if (typeof mod === "function") {
-      PageFlip = mod;
     } else {
-      // Last resort: check for __esModule pattern
-      PageFlip = mod.default || Object.values(mod).find(v => typeof v === "function") || mod;
+      PageFlip = mod;
     }
     
-    console.log("Selected PageFlip:", PageFlip);
-    console.log("PageFlip is function:", typeof PageFlip === "function");
+    console.log("Selected PageFlip (fallback):", PageFlip);
     return PageFlip;
   } catch (e) {
     console.error("Failed to load page-flip:", e);
