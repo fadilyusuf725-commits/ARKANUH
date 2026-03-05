@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { ProgressTracker } from "../components/ProgressTracker";
-import { UnityFlipbookCanvas } from "../components/UnityFlipbookCanvas";
+import { ThreeFlipbookCanvas } from "../components/ThreeFlipbookCanvas";
 import { VoiceNarration } from "../components/VoiceNarration";
 import { flipbookPageMap, flipbookPages, totalFlipbookPages } from "../data/flipbookPages";
 import { getVoiceAssetByPageId } from "../data/voiceManifest";
@@ -97,7 +97,7 @@ export function FlipbookReaderPage() {
         <p className="subtitle">{page.narration}</p>
       </section>
 
-      <UnityFlipbookCanvas
+      <ThreeFlipbookCanvas
         page={page}
         currentIndex={currentIndex}
         totalPages={totalFlipbookPages}
@@ -117,8 +117,8 @@ export function FlipbookReaderPage() {
       <VoiceNarration
         text={page.narration}
         title={page.title}
-        audioSrc={voiceAsset?.src ?? page.voAudio}
-        nextAudioSrc={nextVoiceAsset?.src ?? nextPage?.voAudio}
+        audioSrc={voiceAsset?.src}
+        nextAudioSrc={nextVoiceAsset?.src}
       />
 
       <section className="card sticky-action">

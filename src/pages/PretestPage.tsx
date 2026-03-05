@@ -81,7 +81,7 @@ export function PretestPage() {
         <p className="eyebrow">Pretest</p>
         <h1>Pretest Cerita Nabi Nuh</h1>
         <p className="subtitle">
-          Soal {currentIndex + 1}/{PRETEST_TOTAL} • Jawab {answeredCount}/{PRETEST_TOTAL}
+          Soal {currentIndex + 1}/{PRETEST_TOTAL} - Jawab {answeredCount}/{PRETEST_TOTAL}
         </p>
       </section>
 

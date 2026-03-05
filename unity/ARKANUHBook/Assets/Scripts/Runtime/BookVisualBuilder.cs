@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Networking;
 
 namespace Arkanuh.UnityBridge
 {
@@ -8,6 +10,11 @@ namespace Arkanuh.UnityBridge
         [SerializeField] private Transform popupRoot;
         [SerializeField] private Renderer backdropRenderer;
         [SerializeField] private Renderer platformRenderer;
+        [SerializeField] private Renderer pageTextureRenderer;
+        [Header("Registry Model Per Halaman")]
+        [SerializeField] private bool preferRegistryModels = true;
+        [SerializeField] private bool forceMaterialFallbackOnImportedModels = true;
+        [SerializeField] private PageModelRegistry pageModelRegistry;
         [Header("Template Prefab (Opsional dari Meshy)")]
         [SerializeField] private bool useTemplatePrefabs = true;
         [SerializeField] private bool tintTemplatePrefabs = false;
@@ -41,6 +48,11 @@ namespace Arkanuh.UnityBridge
             if (stageRoot != null)
             {
                 return;
+            }
+
+            if (pageModelRegistry == null)
+            {
+                pageModelRegistry = Resources.Load<PageModelRegistry>("PageModelRegistry");
             }
 
             var root = new GameObject("PopupStageRoot");
@@ -95,11 +107,31 @@ namespace Arkanuh.UnityBridge
                 rightRenderer.material = CreateColorMaterial(rightRenderer, woodBrown);
             }
 
-            // Popup root untuk elemen 3D cerita
+            // Popup root untuk elemen 3D cerita - positioned di depan halaman
             var popup = new GameObject("PopupRoot");
             popup.transform.SetParent(stageRoot, false);
-            popup.transform.localPosition = new Vector3(0f, 0.55f, -0.2f);
+            popup.transform.localPosition = new Vector3(0f, 0.55f, -0.35f);
+            popup.transform.localScale = new Vector3(1.35f, 1.35f, 1.35f);
             popupRoot = popup.transform;
+
+            // Flipbook/PageTexture plane - render halaman buku di belakang
+            var pagePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            pagePlane.name = "PageTexturePlane";
+            pagePlane.transform.SetParent(stageRoot, false);
+            pagePlane.transform.localPosition = new Vector3(0f, 0.55f, 0.05f);
+            pagePlane.transform.localScale = new Vector3(2.4f, 1.6f, 1f);
+            pagePlane.transform.localRotation = Quaternion.identity;
+            pageTextureRenderer = pagePlane.GetComponent<Renderer>();
+            if (pageTextureRenderer != null)
+            {
+                pageTextureRenderer.material = CreateColorMaterial(pageTextureRenderer, creamWhite);
+            }
+            // Remove collider dari quad
+            var pageCollider = pagePlane.GetComponent<Collider>();
+            if (pageCollider != null)
+            {
+                Destroy(pageCollider);
+            }
 
             // Label dengan styling yang lebih baik
             titleLabel = CreateLabel("TitleLabel", new Vector3(0f, 1.95f, 0.4f), 0.38f, TextAnchor.MiddleCenter, "#1a365d");
@@ -149,6 +181,12 @@ namespace Arkanuh.UnityBridge
             InitializeVisualRig();
             var accentColor = ParseHex(payload.popupAccent);
 
+            // Load dan tampilkan page texture (halaman buku)
+            if (!string.IsNullOrWhiteSpace(payload.pageTexture) && pageTextureRenderer != null)
+            {
+                LoadPageTexture(payload.pageTexture);
+            }
+
             // Gradasi backdrop berdasarkan tema cerita
             Color backdropColor;
             Color platformColor;
@@ -190,7 +228,7 @@ namespace Arkanuh.UnityBridge
                 floatingLabel.text = payload.floatingText;
             }
 
-            RebuildPopup(payload.popupTemplate, accentColor);
+            RebuildPopup(payload, accentColor);
         }
 
         private void ApplyPlatformColor(Color color)
@@ -233,7 +271,38 @@ namespace Arkanuh.UnityBridge
             currentPopupObject.transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
         }
 
-        private void RebuildPopup(string template, Color accent)
+        private void LoadPageTexture(string textureUrl)
+        {
+            if (pageTextureRenderer == null || pageTextureRenderer.material == null)
+            {
+                return;
+            }
+
+            StartCoroutine(LoadTextureAsync(textureUrl, pageTextureRenderer.material));
+        }
+
+        private System.Collections.IEnumerator LoadTextureAsync(string textureUrl, Material targetMaterial)
+        {
+            using (var request = UnityEngine.Networking.UnityWebRequestTexture.GetTexture(textureUrl))
+            {
+                yield return request.SendWebRequest();
+
+                if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
+                {
+                    Debug.LogWarning($"[BookVisualBuilder] Failed to load texture: {textureUrl}");
+                    yield break;
+                }
+
+                var texture = UnityEngine.Networking.DownloadHandlerTexture.GetContent(request);
+                if (texture != null)
+                {
+                    targetMaterial.SetTexture("_MainTex", texture);
+                    targetMaterial.SetTexture("_BaseMap", texture);
+                }
+            }
+        }
+
+        private void RebuildPopup(UnityPagePayloadData payload, Color accent)
         {
             if (currentPopupObject != null)
             {
@@ -244,12 +313,23 @@ namespace Arkanuh.UnityBridge
             currentPopupObject.transform.SetParent(popupRoot, false);
             currentPopupObject.transform.localPosition = Vector3.zero;
 
-            if (TrySpawnTemplatePrefab(template, accent))
+            if (string.Equals(payload.id, "10"))
+            {
+                BuildBackCoverScene(currentPopupObject.transform, payload, accent);
+                return;
+            }
+
+            if (TrySpawnPageModel(payload))
             {
                 return;
             }
 
-            switch (template)
+            if (TrySpawnTemplatePrefab(payload.popupTemplate, accent))
+            {
+                return;
+            }
+
+            switch (payload.popupTemplate)
             {
                 case "rain":
                     BuildRainScene(currentPopupObject.transform, accent);
@@ -266,6 +346,141 @@ namespace Arkanuh.UnityBridge
                 default:
                     BuildArkScene(currentPopupObject.transform, accent);
                     break;
+            }
+        }
+
+        private void BuildBackCoverScene(Transform root, UnityPagePayloadData payload, Color accent)
+        {
+            var coverBody = CreatePrimitive(
+                PrimitiveType.Cube,
+                root,
+                new Vector3(0f, 0.15f, 0f),
+                new Vector3(2.2f, 1.4f, 0.15f),
+                accent
+            );
+            coverBody.name = "BackCoverBody";
+
+            var coverInner = CreatePrimitive(
+                PrimitiveType.Cube,
+                root,
+                new Vector3(0f, 0.15f, -0.05f),
+                new Vector3(1.95f, 1.15f, 0.06f),
+                new Color(0.97f, 0.98f, 1f)
+            );
+            coverInner.name = "BackCoverInner";
+
+            var spine = CreatePrimitive(
+                PrimitiveType.Cube,
+                root,
+                new Vector3(-1.12f, 0.15f, 0f),
+                new Vector3(0.18f, 1.4f, 0.22f),
+                new Color(0.08f, 0.26f, 0.45f)
+            );
+            spine.name = "BackCoverSpine";
+
+            var summaryItems = payload.backCoverSummary;
+            if (summaryItems == null || summaryItems.Length == 0)
+            {
+                return;
+            }
+
+            var maxItems = Mathf.Min(summaryItems.Length, 4);
+            for (var index = 0; index < maxItems; index += 1)
+            {
+                var itemText = CreateLabel(
+                    $"BackCoverSummary{index + 1}",
+                    new Vector3(0f, 0f, 0f),
+                    0.15f,
+                    TextAnchor.MiddleLeft,
+                    "#0f2f4d"
+                );
+                itemText.transform.SetParent(root, false);
+                itemText.transform.localPosition = new Vector3(-0.78f, 0.45f - (index * 0.26f), -0.11f);
+                itemText.text = $"- {summaryItems[index]}";
+            }
+        }
+
+        private bool TrySpawnPageModel(UnityPagePayloadData payload)
+        {
+            if (!preferRegistryModels || payload == null || currentPopupObject == null)
+            {
+                return false;
+            }
+
+            if (pageModelRegistry == null)
+            {
+                pageModelRegistry = Resources.Load<PageModelRegistry>("PageModelRegistry");
+                if (pageModelRegistry == null)
+                {
+                    return false;
+                }
+            }
+
+            if (!pageModelRegistry.TryGet(payload.id, payload.modelKey, out var entry) || entry == null || entry.prefab == null)
+            {
+                return false;
+            }
+
+            var instance = Instantiate(entry.prefab, currentPopupObject.transform, false);
+            instance.name = string.IsNullOrWhiteSpace(entry.modelKey) ? $"PageModel_{entry.pageId}" : entry.modelKey;
+            instance.transform.localPosition = new Vector3(0f, entry.yOffset, 0f);
+            instance.transform.localRotation = Quaternion.Euler(0f, entry.yaw, 0f);
+            instance.transform.localScale = Vector3.one * (entry.scale <= 0f ? 1f : entry.scale);
+
+            OptimizeImportedModel(instance);
+            return true;
+        }
+
+        private void OptimizeImportedModel(GameObject rootObject)
+        {
+            if (rootObject == null)
+            {
+                return;
+            }
+
+            var renderers = rootObject.GetComponentsInChildren<Renderer>(true);
+            foreach (var renderer in renderers)
+            {
+                if (renderer == null)
+                {
+                    continue;
+                }
+
+                renderer.shadowCastingMode = ShadowCastingMode.Off;
+                renderer.receiveShadows = false;
+
+                if (!forceMaterialFallbackOnImportedModels)
+                {
+                    continue;
+                }
+
+                var materials = renderer.materials;
+                for (var index = 0; index < materials.Length; index += 1)
+                {
+                    var material = materials[index];
+                    if (material == null)
+                    {
+                        continue;
+                    }
+
+                    if (material.shader == null || !material.shader.isSupported)
+                    {
+                        var fallback = ResolveFallbackShader();
+                        if (fallback != null)
+                        {
+                            material.shader = fallback;
+                        }
+                    }
+                }
+            }
+
+            var colliders = rootObject.GetComponentsInChildren<Collider>(true);
+            foreach (var collider in colliders)
+            {
+                if (collider != null)
+                {
+                    Destroy(collider);
+                }
             }
         }
 

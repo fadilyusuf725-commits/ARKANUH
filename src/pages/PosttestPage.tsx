@@ -73,7 +73,7 @@ export function PosttestPage() {
         <p className="eyebrow">Posttest</p>
         <h1>Posttest Cerita Nabi Nuh</h1>
         <p className="subtitle">
-          Soal {currentIndex + 1}/{POSTTEST_TOTAL} • Jawab {answeredCount}/{POSTTEST_TOTAL}
+          Soal {currentIndex + 1}/{POSTTEST_TOTAL} - Jawab {answeredCount}/{POSTTEST_TOTAL}
         </p>
       </section>
 

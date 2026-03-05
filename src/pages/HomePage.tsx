@@ -86,41 +86,41 @@ export function HomePage() {
   const menuCards = useMemo(
     () => [
       {
-        icon: "📘",
+        icon: "\u{1F4D8}",
         label: "Mulai",
         to: pretestDone ? "/mulai" : undefined,
         locked: !pretestDone,
         lockText: "Pretest dulu"
       },
       {
-        icon: "🧠",
+        icon: "\u{1F9E0}",
         label: "Pretest",
         to: "/pretest"
       },
       {
-        icon: "🏁",
+        icon: "\u{1F3C1}",
         label: "Posttest",
         to: flipbookDone ? "/posttest" : undefined,
         locked: !flipbookDone,
         lockText: "Selesaikan buku"
       },
       {
-        icon: "🎮",
+        icon: "\u{1F3AE}",
         label: "Mini Game",
         href: "https://quiz.zep.us/id/play/EgQEOp"
       },
       {
-        icon: "📚",
+        icon: "\u{1F4DA}",
         label: "CP TP ATP",
         to: "/cp-tp-atp"
       },
       {
-        icon: "✍️",
+        icon: "\u{270D}\u{FE0F}",
         label: "Biodata",
         to: "/biodata-penulis"
       },
       {
-        icon: "🏆",
+        icon: "\u{1F3C6}",
         label: "Hasil",
         to: posttestDone ? "/hasil-akhir" : undefined,
         locked: !posttestDone,

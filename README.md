@@ -1,103 +1,128 @@
-# ARKANUH v4
+# ARKANUH v4 (React + Unity WebGL Hybrid)
 
-ARKANUH adalah web pembelajaran kisah Nabi Nuh untuk kelas 2 SD dengan arsitektur hybrid:
+ARKANUH adalah web pembelajaran kisah Nabi Nuh untuk kelas 2 SD.
 
-- React untuk alur belajar (menu, pretest, posttest, hasil, penyimpanan lokal)
-- Unity WebGL untuk visual buku 3D dalam satu kanvas
+- React mengelola alur belajar (`pretest -> flipbook -> posttest -> hasil`) dan session lokal.
+- Unity WebGL merender pop-up book 3D di modul flipbook.
 
-## Alur Belajar
+## Alur Pembelajaran
 
-1. Beranda (`/`) menampilkan menu ikon:
-   - Mulai
-   - Pretest
-   - Posttest (locked sebelum flipbook selesai)
-   - Mini Game (link eksternal ZEP)
-   - CP TP ATP
-   - Biodata
-   - Hasil
-2. Pretest wajib selesai sebelum masuk flipbook.
-3. Flipbook 10 halaman berjalan di `/flipbook/:pageId`.
-4. Setelah halaman 10 selesai, lanjut ke posttest.
-5. Hasil akhir menampilkan perbandingan skor pretest dan posttest.
-
-## Mini Game
-
-Menu Mini Game membuka:
-
-- `https://quiz.zep.us/id/play/EgQEOp`
-
-Mode mini game saat ini bersifat mandiri (tidak sinkron nilai ke session ARKANUH).
+1. Beranda (`/`) berisi menu ikon: Mulai, Pretest, Posttest, Mini Game, CP TP ATP, Biodata, Hasil.
+2. Pretest wajib selesai sebelum masuk `/mulai` dan `/flipbook/:pageId`.
+3. Flipbook berjalan 10 halaman (`/flipbook/1` s.d `/flipbook/10`).
+4. Halaman terakhir memicu final close lalu lanjut `/posttest`.
+5. Hasil akhir tampil di `/hasil-akhir`.
 
 ## Routing GitHub Pages
 
-Project memakai:
+Konfigurasi agar aman saat reload/deep-link:
 
-- `base: /ARKANUH/` di Vite
+- Vite `base: /ARKANUH/`
 - `BrowserRouter basename={import.meta.env.BASE_URL}`
-- fallback SPA `dist/404.html` otomatis dibuat saat build (`postbuild`)
+- `postbuild` otomatis membuat `dist/404.html` sebagai fallback SPA
 
-Tujuan: URL langsung/reload seperti `/ARKANUH/pretest` atau `/ARKANUH/flipbook/1` tetap dapat dibuka.
+## Pipeline Flipbook dari PPTX
 
-## Unity WebGL
+1. Simpan file sumber di folder:
+   - `assets/flipbook/source/`
+   - default yang dipakai saat ini: `KISAH NABI NUH (1).pptx`
+2. Jalankan:
+   - `npm run flipbook:prepare`
+3. Output:
+   - gambar: `public/assets/flipbook/pages/page-01.webp` s.d `page-10.webp`
+   - voice: `public/assets/voice/page-01.wav` s.d `page-09.wav`
 
-Build Unity berada di:
+Catatan:
 
-- `public/unity/Build/*`
+- Script menggunakan PowerPoint COM untuk export slide.
+- Mapping slide dikunci: `slide 3..12` -> `page 01..10`.
+- Halaman 10 tidak punya file voice dari PPT sehingga akan otomatis fallback ke TTS browser.
+- Optimasi gambar menggunakan `sharp` (resize longest side 1600 px, WebP quality default 80).
 
-Script build:
+## Pipeline Model 3D dari Link Publik
 
-```bash
-npm run unity:build:dev
-npm run unity:build:release
-npm run unity:build:all
-```
+1. Isi mapping URL model:
+   - `assets/model-links/page-model-links.json`
+   - format: 10 entri, `pageId` 1-10, `sourceType` (`tripo_page` / `direct_file` / `none`)
+2. Unduh model ke folder Unity Incoming:
+   - `npm run models:fetch`
+3. Hasil resolve URL disimpan ke:
+   - `assets/model-links/.resolved-model-links.json`
+4. Di Unity, jalankan menu:
+   - `ARKANUH > Models > Rebuild Page Model Registry`
 
-## Integrasi Model Meshy
+Output Unity pipeline:
 
-`BookVisualBuilder` mendukung prefab template:
+- model mentah: `unity/ARKANUHBook/Assets/Models/Incoming/page-XX.glb|fbx`
+- prefab final: `unity/ARKANUHBook/Assets/Prefabs/PageModels/page-01..page-09.prefab`
+- registry: `unity/ARKANUHBook/Assets/Resources/PageModelRegistry.asset`
+- halaman 10 (`sourceType: none`) sengaja tidak punya model dan dirender sebagai back-cover scene.
 
-- `arkPrefab`
-- `rainPrefab`
-- `mountainPrefab`
-- `wavePrefab`
-- `lightPrefab`
+Catatan penting:
 
-Jika prefab diisi, Unity memakai prefab. Jika kosong, Unity fallback ke geometri procedural.
+- Package Unity `com.unity.meshopt.decompress@0.1.0-preview.7` wajib terpasang agar GLB Tripo (meshopt) bisa diimport.
+- URL Tripo bertipe signed URL dan bisa kedaluwarsa, jadi jalankan ulang `npm run models:fetch` saat model gagal dibaca.
 
-Prompt Meshy tersedia di:
+## Integrasi React -> Unity Payload
 
-- `docs/MESHY_PROMPTS_ARKANUH.md`
+Setiap halaman mengirim payload:
 
-## Voice Over
+- `id`
+- `title`
+- `popupTemplate`
+- `popupAccent`
+- `floatingText`
+- `modelKey` (contoh `page-01`)
+- `pageTexture` (contoh `/assets/flipbook/pages/page-01.webp`)
 
-Audio halaman:
+Jika prefab model tidak ditemukan di registry, Unity fallback ke template procedural.
 
-- `public/assets/voice/page-01.mp3` s.d `page-10.mp3`
+## Build dan Deploy
 
-Player memprioritaskan MP3, lalu fallback ke browser TTS jika audio tidak tersedia.
-
-## Penyimpanan Lokal
-
-- `localStorage["arkanuh_v2_session_current"]`
-- `localStorage["arkanuh_v2_session_history"]`
-
-Riwayat disimpan maksimal 25 sesi terbaru.
-
-## Menjalankan Proyek
+Jalankan lokal:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Build produksi:
+Build web:
 
 ```bash
 npm run build
 ```
 
-## Troubleshooting
+Build Unity release:
 
-1. Jika halaman live tidak update, lakukan hard refresh atau mode samaran.
-2. Jika Unity gagal memuat, pastikan file `public/unity/Build/*` tersedia dan jalankan `npm run unity:build:release`.
-3. Jika route tertentu menjadi 404, pastikan output build memiliki `dist/404.html`.
+```bash
+npm run unity:build:release
+```
+
+Siapkan semua aset sekali jalan:
+
+```bash
+npm run assets:prepare
+```
+
+## Voice Over
+
+- Prioritas audio file: `public/assets/voice/page-01.wav` s.d `page-09.wav`
+- Jika audio tidak tersedia, player fallback ke browser TTS
+
+## Session Storage
+
+- `localStorage["arkanuh_v2_session_current"]`
+- `localStorage["arkanuh_v2_session_history"]`
+
+Riwayat disimpan maksimum 25 sesi.
+
+## QA Checklist Sebelum Deploy
+
+1. `npm run flipbook:prepare` menghasilkan 10 halaman WebP + 9 file WAV.
+2. `npm run models:fetch` berhasil unduh model halaman 1-9 dan skip halaman 10.
+3. `assets/model-links/.resolved-model-links.json` terisi hasil resolve terbaru.
+4. Unity menu `Rebuild Page Model Registry` sukses tanpa error.
+4. `npm run unity:build:release` selesai dan file `public/unity/Build/*` ada.
+5. `npm run build` sukses.
+6. Deep-link `/ARKANUH/pretest` dan `/ARKANUH/flipbook/1` aman saat refresh.
+7. Flipbook halaman 1-9 menampilkan model sesuai page dan halaman 10 tampil sebagai back-cover tanpa error.

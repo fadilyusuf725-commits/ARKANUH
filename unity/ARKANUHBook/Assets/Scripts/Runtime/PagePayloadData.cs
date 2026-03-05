@@ -10,6 +10,8 @@ namespace Arkanuh.UnityBridge
         public string popupTemplate = "ark";
         public string popupAccent = "#2f9bff";
         public string floatingText = string.Empty;
+        public string modelKey = string.Empty;
+        public string pageTexture = string.Empty;
         public string coverTitle = "ARKANUH";
         public string[] backCoverSummary;
     }

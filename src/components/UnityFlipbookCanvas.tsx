@@ -24,23 +24,10 @@ type UnityBuildVariant = {
   };
 };
 
-const UNITY_ASSET_VERSION = "20260303a";
+const UNITY_ASSET_VERSION = "20260305b";
 const withUnityAssetVersion = (path: string) => `${withBasePath(path)}?v=${UNITY_ASSET_VERSION}`;
 
 const UNITY_BUILD_VARIANTS: UnityBuildVariant[] = [
-  {
-    id: "ARKANUHBook",
-    loaderSrc: withUnityAssetVersion("unity/Build/ARKANUHBook.loader.js"),
-    config: {
-      dataUrl: withUnityAssetVersion("unity/Build/ARKANUHBook.data.unityweb"),
-      frameworkUrl: withUnityAssetVersion("unity/Build/ARKANUHBook.framework.js.unityweb"),
-      codeUrl: withUnityAssetVersion("unity/Build/ARKANUHBook.wasm.unityweb"),
-      streamingAssetsUrl: withUnityAssetVersion("unity/StreamingAssets"),
-      companyName: "ARKANUH",
-      productName: "ARKANUHBook",
-      productVersion: "4.0.0"
-    }
-  },
   {
     id: "unity",
     loaderSrc: withUnityAssetVersion("unity/Build/unity.loader.js"),
@@ -106,30 +93,67 @@ function ensureLoaderScript(src: string): Promise<void> {
     return Promise.reject(new Error("Window tidak tersedia."));
   }
 
+  // Check if script is already loaded and ready
   const existing = document.querySelector<HTMLScriptElement>(`script[data-unity-loader='${src}']`);
-  if (existing?.dataset.loaded === "true") {
-    return Promise.resolve();
+  if (existing) {
+    if (existing.dataset.loaded === "true") {
+      // Already loaded successfully
+      return Promise.resolve();
+    }
+    if (existing.dataset.loaded === "loading") {
+      // Currently loading - wait for it
+      return new Promise((resolve, reject) => {
+        const checkInterval = setInterval(() => {
+          if (existing.dataset.loaded === "true") {
+            clearInterval(checkInterval);
+            resolve();
+          } else if (existing.dataset.loaded === "error") {
+            clearInterval(checkInterval);
+            reject(new Error("Unity loader gagal dimuat."));
+          }
+        }, 50);
+        // Timeout after 30 seconds
+        setTimeout(() => {
+          clearInterval(checkInterval);
+          reject(new Error("Unity loader timeout."));
+        }, 30000);
+      });
+    }
   }
 
-  if (existing && existing.dataset.loaded !== "true") {
-    return new Promise((resolve, reject) => {
-      existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error("Loader Unity gagal dimuat.")), { once: true });
-    });
-  }
-
+  // Create new script
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = src;
     script.async = true;
     script.dataset.unityLoader = src;
+    script.dataset.loaded = "loading";
+
+    const timeoutId = setTimeout(() => {
+      script.dataset.loaded = "error";
+      reject(new Error("Unity loader timeout."));
+    }, 30000);
+
     script.onload = () => {
+      clearTimeout(timeoutId);
       script.dataset.loaded = "true";
       resolve();
     };
-    script.onerror = () => reject(new Error("Loader Unity gagal dimuat."));
+
+    script.onerror = () => {
+      clearTimeout(timeoutId);
+      script.dataset.loaded = "error";
+      reject(new Error("Unity loader gagal dimuat."));
+    };
+
     document.body.appendChild(script);
   });
+}
+
+// Unity loader sometimes tries to query with empty/invalid selectors
+// This is handled gracefully by browsers, no need for custom patching
+function installUnitySelectorGuard() {
+  // No longer needed - browsers handle invalid selectors correctly
 }
 
 export function UnityFlipbookCanvas({
@@ -159,6 +183,8 @@ export function UnityFlipbookCanvas({
       popupTemplate: page.popupTemplate,
       popupAccent: page.popupAccent,
       floatingText: page.floatingText,
+      modelKey: page.modelKey,
+      pageTexture: page.pageTexture,
       coverTitle: page.coverTitle,
       backCoverSummary: page.backCoverSummary
     }),
@@ -188,10 +214,19 @@ export function UnityFlipbookCanvas({
         initErrors.push(`[webgl2] ${webglIssue}`);
       }
 
+      installUnitySelectorGuard();
+
       for (const variant of UNITY_BUILD_VARIANTS) {
         try {
           setStatusMessage(`Memuat renderer Unity (${variant.id})...`);
-          await ensureLoaderScript(variant.loaderSrc);
+          
+          try {
+            await ensureLoaderScript(variant.loaderSrc);
+          } catch (scriptError) {
+            initErrors.push(`[${variant.id}] ${formatUnityError(scriptError)}`);
+            continue;
+          }
+
           if (isCancelled) {
             return;
           }
@@ -202,19 +237,41 @@ export function UnityFlipbookCanvas({
             continue;
           }
 
-          const unityInstance = await loader(canvasRef.current, variant.config, (nextProgress) => {
-            if (isCancelled) {
-              return;
-            }
-            setProgress(nextProgress);
-            setStatusMessage(`Memuat renderer Unity (${variant.id})... ${Math.round(nextProgress * 100)}%`);
-          });
+          let unityInstance: UnityInstance | null = null;
+          try {
+            unityInstance = await loader(
+              canvasRef.current,
+              {
+                ...variant.config,
+                keyboardListeningElement: canvasRef.current
+              },
+              (nextProgress) => {
+                if (isCancelled) {
+                  return;
+                }
+                setProgress(nextProgress);
+                setStatusMessage(`Memuat renderer Unity (${variant.id})... ${Math.round(nextProgress * 100)}%`);
+              }
+            );
+          } catch (loaderError) {
+            initErrors.push(`[${variant.id}] ${formatUnityError(loaderError)}`);
+            continue;
+          }
 
           if (isCancelled) {
             if (unityInstance?.Quit) {
-              await unityInstance.Quit().catch(() => undefined);
+              try {
+                await unityInstance.Quit();
+              } catch {
+                // Cleanup error, ignore
+              }
             }
             return;
+          }
+
+          if (!unityInstance) {
+            initErrors.push(`[${variant.id}] Unity instance tidak valid.`);
+            continue;
           }
 
           unityInstanceRef.current = unityInstance;
@@ -241,6 +298,7 @@ export function UnityFlipbookCanvas({
         }
       }
 
+      // All variants failed
       setStatus("error");
       setStatusMessage(initErrors.length > 0 ? initErrors[initErrors.length - 1] : "Gagal memuat Unity.");
     };
@@ -253,7 +311,9 @@ export function UnityFlipbookCanvas({
       const currentInstance = unityInstanceRef.current;
       unityInstanceRef.current = null;
       if (currentInstance?.Quit) {
-        currentInstance.Quit().catch(() => undefined);
+        currentInstance.Quit().catch(() => {
+          // Cleanup error, ignore silently
+        });
       }
     };
   }, []);

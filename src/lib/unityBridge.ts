@@ -11,6 +11,8 @@ export type UnityLoaderConfig = {
   companyName?: string;
   productName?: string;
   productVersion?: string;
+  keyboardListeningElement?: HTMLElement | Document | string;
+  [key: string]: unknown;
 };
 
 export type UnityInstance = {

@@ -42,6 +42,7 @@ namespace Arkanuh.UnityBridgeEditor
         private static void BuildInternal(bool development)
         {
             ProjectBootstrap.EnsureProjectSetup();
+            ModelImportPipeline.RebuildPageModelRegistry();
 
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.WebGL)
             {
@@ -74,8 +75,6 @@ namespace Arkanuh.UnityBridgeEditor
                 throw new Exception($"Build WebGL gagal ({report.summary.result}).");
             }
 
-            SyncNamedBundles(outputPath);
-
             Debug.Log($"Build WebGL {(development ? "Development" : "Release")} selesai: {outputPath}");
         }
 
@@ -98,35 +97,5 @@ namespace Arkanuh.UnityBridgeEditor
             return fallback;
         }
 
-        private static void SyncNamedBundles(string outputPath)
-        {
-            var buildDir = Path.Combine(outputPath, "Build");
-            if (!Directory.Exists(buildDir))
-            {
-                return;
-            }
-
-            CopyIfExists(
-                Path.Combine(buildDir, "unity.loader.js"),
-                Path.Combine(buildDir, "ARKANUHBook.loader.js"));
-            CopyIfExists(
-                Path.Combine(buildDir, "unity.data.unityweb"),
-                Path.Combine(buildDir, "ARKANUHBook.data.unityweb"));
-            CopyIfExists(
-                Path.Combine(buildDir, "unity.framework.js.unityweb"),
-                Path.Combine(buildDir, "ARKANUHBook.framework.js.unityweb"));
-            CopyIfExists(
-                Path.Combine(buildDir, "unity.wasm.unityweb"),
-                Path.Combine(buildDir, "ARKANUHBook.wasm.unityweb"));
-        }
-
-        private static void CopyIfExists(string sourcePath, string targetPath)
-        {
-            if (!File.Exists(sourcePath))
-            {
-                return;
-            }
-            File.Copy(sourcePath, targetPath, true);
-        }
     }
 }

@@ -4,6 +4,8 @@ export type AssessmentPhase = "pretest" | "posttest";
 export type PopupTemplate = "ark" | "rain" | "mountain" | "wave" | "light";
 export type BookAnimState = "cover_intro" | "drop_in" | "idle" | "flipping" | "final_close";
 export type FlipbookRenderer = "unity_webgl";
+export type ModelFormat = "fbx" | "glb";
+export type ModelSourceType = "tripo_page" | "direct_file" | "none";
 
 export type StudentProfile = {
   nickname: string;
@@ -25,8 +27,20 @@ export type FlipbookPage = {
   popupTemplate: PopupTemplate;
   floatingText: string;
   popupAccent: string;
+  modelKey?: string;
+  pageTexture?: string;
   coverTitle?: string;
   backCoverSummary?: string[];
+};
+
+export type PageModelLink = {
+  pageId: string;
+  sourceType: ModelSourceType;
+  url?: string;
+  format?: ModelFormat;
+  scale?: number;
+  yaw?: number;
+  yOffset?: number;
 };
 
 export type PopupViewState = {
@@ -53,6 +67,8 @@ export type UnityPagePayload = {
   popupTemplate: PopupTemplate;
   popupAccent: string;
   floatingText: string;
+  modelKey?: string;
+  pageTexture?: string;
   coverTitle?: string;
   backCoverSummary?: string[];
 };
