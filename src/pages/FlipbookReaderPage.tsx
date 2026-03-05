@@ -38,7 +38,7 @@ export function FlipbookReaderPage() {
   const firstIncompleteIndex = flipbookPages.findIndex((item) => !session.flipbook.completedPages.includes(item.id));
   const firstIncompleteId = firstIncompleteIndex >= 0 ? flipbookPages[firstIncompleteIndex].id : null;
 
-  if (firstIncompleteId && Number(pageId) > Number(firstIncompleteId)) {
+  if (firstIncompleteId && parseInt(pageId, 10) > parseInt(firstIncompleteId, 10)) {
     return <Navigate to={`/flipbook/${firstIncompleteId}`} replace />;
   }
 

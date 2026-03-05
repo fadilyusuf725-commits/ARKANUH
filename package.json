@@ -13,6 +13,7 @@
     "flipbook:prepare": "powershell -ExecutionPolicy Bypass -File ./scripts/extract-flipbook-pptx.ps1 && powershell -ExecutionPolicy Bypass -File ./scripts/extract-ppt-voice.ps1",
     "models:fetch": "node ./scripts/fetch-model-links.mjs",
     "assets:prepare": "npm run flipbook:prepare && npm run models:fetch",
+    "models:download": "node ./scripts/download-models.mjs",
     "voice:edge": "powershell -ExecutionPolicy Bypass -File ./scripts/generate-voice-edge.ps1",
     "voice:process": "powershell -ExecutionPolicy Bypass -File ./scripts/process-voice.ps1",
     "unity:build:dev": "powershell -ExecutionPolicy Bypass -File ./scripts/unity-build.ps1 -Mode dev",

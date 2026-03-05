@@ -210,6 +210,28 @@ export function ThreeFlipbookCanvas({
     if (status !== "ready") return;
 
     let isMounted = true;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    const createFallbackModel = (reason: string = "Model unavailable") => {
+      if (!modelGroupRef.current) return;
+
+      // Create a sphere with page-themed color
+      const fallbackGeometry = new THREE.IcosahedronGeometry(1.2, 4);
+      const fallbackMaterial = new THREE.MeshStandardMaterial({
+        color: 0x8896b8,
+        roughness: 0.6,
+        metalness: 0.3,
+        wireframe: false
+      });
+      const fallbackMesh = new THREE.Mesh(fallbackGeometry, fallbackMaterial);
+      fallbackMesh.castShadow = true;
+      fallbackMesh.receiveShadow = true;
+      fallbackMesh.position.y = 0.8;
+      modelGroupRef.current.add(fallbackMesh);
+      
+      setStatusMessage(`Fallback mode: ${reason}`);
+      console.warn(`[ThreeFlipbookCanvas] Showing fallback for page ${page.id}: ${reason}`);
+    };
 
     const loadModel = async () => {
       if (!modelGroupRef.current) return;
@@ -233,17 +255,30 @@ export function ThreeFlipbookCanvas({
       const modelUrl = modelLink ? getModelUrl(modelLink) : null;
 
       if (!modelUrl) {
-        console.warn(`No model URL for page ${page.id}`);
+        if (isMounted) {
+          console.warn(`[ThreeFlipbookCanvas] No model URL for page ${page.id}`);
+          createFallbackModel("No URL found");
+        }
         return;
       }
 
+      console.log(`[ThreeFlipbookCanvas] Loading model from: ${modelUrl}`);
       setStatusMessage(`Memuat model 3D... (${page.id})`);
 
       const loader = new GLTFLoader();
+      
+      // Set timeout for model loading (3 seconds)
+      timeoutId = setTimeout(() => {
+        if (isMounted) {
+          console.warn(`[ThreeFlipbookCanvas] Model load timeout for page ${page.id}`);
+          createFallbackModel("Load timeout (>3s)");
+        }
+      }, 3000);
 
       loader.load(
         modelUrl,
         (gltf: any) => {
+          if (timeoutId) clearTimeout(timeoutId);
           if (!isMounted || !modelGroupRef.current) return;
 
           const model = gltf.scene;
@@ -271,6 +306,7 @@ export function ThreeFlipbookCanvas({
 
           modelGroupRef.current?.add(model);
           setStatusMessage("Model siap.");
+          console.log(`[ThreeFlipbookCanvas] Successfully loaded model for page ${page.id}`);
         },
         (progress: any) => {
           if (isMounted) {
@@ -279,25 +315,10 @@ export function ThreeFlipbookCanvas({
           }
         },
         (error: any) => {
+          if (timeoutId) clearTimeout(timeoutId);
           if (isMounted) {
-            console.error(`Failed to load model from ${modelUrl}:`, error);
-            setStatusMessage(`Gagal memuat model. Menampilkan placeholder...`);
-            
-            // Create a fallback placeholder model (a cube)
-            if (modelGroupRef.current) {
-              const placeholderGeometry = new THREE.BoxGeometry(1, 1.5, 0.8);
-              const placeholderMaterial = new THREE.MeshStandardMaterial({
-                color: 0x8896b8,
-                roughness: 0.7,
-                metalness: 0.2
-              });
-              const placeholderMesh = new THREE.Mesh(placeholderGeometry, placeholderMaterial);
-              placeholderMesh.castShadow = true;
-              placeholderMesh.receiveShadow = true;
-              modelGroupRef.current.add(placeholderMesh);
-              
-              setStatusMessage(`Model tidak tersedia. Menampilkan placeholder. Error: ${error.message || "Unknown"}`);
-            }
+            console.error(`[ThreeFlipbookCanvas] Failed to load model from ${modelUrl}:`, error);
+            createFallbackModel(`Load failed: ${error.message || "Network error"}`);
           }
         }
       );
@@ -307,6 +328,7 @@ export function ThreeFlipbookCanvas({
 
     return () => {
       isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, [page.id, status]);
 
