@@ -11,21 +11,29 @@ export function BiodataPage() {
 
       <section className="card">
         <h2>👨‍🏫 Pembimbing</h2>
-        <div className="biodata-team-member">
-          <h3>Dr. Ani Nur Aeni, M.Pd.</h3>
-          <ul className="biodata-details">
-            <li><strong>NIP:</strong> 197608222005022002</li>
-            <li><strong>Email:</strong> <a href="mailto:aninuraeni@upi.edu">aninuraeni@upi.edu</a></li>
-            <li><strong>Peran:</strong> Pembimbing / Dosen Pendidik</li>
-            <li><strong>Institusi:</strong> Universitas Pendidikan Indonesia (UPI)</li>
-          </ul>
+        <div className="biodata-team-member team-with-photo">
+          <div className="team-photo">
+            <img src="/ARKANUH/assets/team-photos/ani-nur-aeni.jpg" alt="Dr. Ani Nur Aeni, M.Pd." />
+          </div>
+          <div className="team-info">
+            <h3>Dr. Ani Nur Aeni, M.Pd.</h3>
+            <ul className="biodata-details">
+              <li><strong>NIP:</strong> 197608222005022002</li>
+              <li><strong>Email:</strong> <a href="mailto:aninuraeni@upi.edu">aninuraeni@upi.edu</a></li>
+              <li><strong>Peran:</strong> Pembimbing / Dosen Pendidik</li>
+              <li><strong>Institusi:</strong> Universitas Pendidikan Indonesia (UPI)</li>
+            </ul>
+          </div>
         </div>
       </section>
 
       <section className="card">
         <h2>👩‍💻 Tim Pengembang</h2>
         <div className="biodata-team-grid">
-          <div className="biodata-team-member">
+          <div className="biodata-team-member team-card-with-photo">
+            <div className="team-photo">
+              <img src="/ARKANUH/assets/team-photos/fadhilah.jpg" alt="Mochamad Fadhilah Yusup Fauzan" />
+            </div>
             <h3>Mochamad Fadhilah Yusup Fauzan</h3>
             <ul className="biodata-details">
               <li><strong>NIM:</strong> 2403827</li>
@@ -35,7 +43,10 @@ export function BiodataPage() {
             </ul>
           </div>
 
-          <div className="biodata-team-member">
+          <div className="biodata-team-member team-card-with-photo">
+            <div className="team-photo">
+              <img src="/ARKANUH/assets/team-photos/pratiwi.jpg" alt="Pratiwi Tarida" />
+            </div>
             <h3>Pratiwi Tarida</h3>
             <ul className="biodata-details">
               <li><strong>NIM:</strong> 2403348</li>
@@ -45,7 +56,10 @@ export function BiodataPage() {
             </ul>
           </div>
 
-          <div className="biodata-team-member">
+          <div className="biodata-team-member team-card-with-photo">
+            <div className="team-photo">
+              <img src="/ARKANUH/assets/team-photos/dina.jpg" alt="Dina Marlina Sudrajat" />
+            </div>
             <h3>Dina Marlina Sudrajat</h3>
             <ul className="biodata-details">
               <li><strong>NIM:</strong> 2407769</li>
@@ -55,7 +69,10 @@ export function BiodataPage() {
             </ul>
           </div>
 
-          <div className="biodata-team-member">
+          <div className="biodata-team-member team-card-with-photo">
+            <div className="team-photo">
+              <img src="/ARKANUH/assets/team-photos/rezki.jpg" alt="Rezki Cladesvina Adhi Putri" />
+            </div>
             <h3>Rezki Cladesvina Adhi Putri</h3>
             <ul className="biodata-details">
               <li><strong>NIM:</strong> 2400282</li>
