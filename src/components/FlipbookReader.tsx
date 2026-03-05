@@ -259,9 +259,18 @@ export function FlipbookReader({
 
     return () => {
       try {
-        if (flipBookRef.current && typeof flipBookRef.current.destroy === "function") {
+        if (flipBookRef.current) {
           console.log("Destroying flipbook instance");
-          flipBookRef.current.destroy();
+          try {
+            if (typeof flipBookRef.current.destroy === "function") {
+              flipBookRef.current.destroy();
+            }
+          } catch (destroyErr) {
+            // Destroy may fail internally - this is non-critical
+            console.debug("Destroy method internal error (non-critical):", destroyErr);
+          }
+          // Clear reference regardless of destroy success
+          flipBookRef.current = null;
         }
         if (containerRef.current) {
           containerRef.current.innerHTML = "";

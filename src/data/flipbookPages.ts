@@ -54,7 +54,7 @@ export const flipbookPages: FlipbookPage[] = [
     objective: "Memahami bahwa Nabi Nuh menerima perintah Allah untuk membuat kapal meskipun jauh dari laut",
     narration: "Nabi Nuh berdoa kepada Allah, 'Ya Tuhanku, jangan biarkan seorang pun dari orang kafir tinggal di bumi.'\n\nAllah mengabulkan doa Nabi Nuh. Allah memerintahkan Nabi Nuh membuat kapal yang besar.\n\nPadahal, tempat tinggal Nabi Nuh jauh dari laut. Di sekitarnya hanya ada daratan kering dan pasir.\n\nNabi Nuh segera melaksanakan perintah Allah. Beliau mulai mengumpulkan kayu yang kuat.",
     arAsset: "ark_construction",
-    voAudio: withBasePath("assets/voice/Cap 4.wav"),
+    voAudio: withBasePath("assets/voice/cap 4.wav"),
     interactionType: "tap",
     interactionPrompt: "Tampilkan bagaimana Nabi Nuh membuat kapal",
     completionRule: "tap_to_reveal",
