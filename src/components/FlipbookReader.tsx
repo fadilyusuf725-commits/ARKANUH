@@ -17,18 +17,23 @@ let PageFlip: any = null;
 const loadPageFlip = async () => {
   if (PageFlip) return PageFlip;
   
-  // Wait for CDN to load
-  let attempts = 0;
+  // CDN script should already be loaded before React initialization
+  // But add safety check with timeout
+  const startTime = Date.now();
+  const timeoutMs = 3000; // 3 second timeout
+  
   while (!window.St || !window.St.PageFlip) {
-    if (attempts > 50) {
-      throw new Error("PageFlip CDN failed to load (timeout)");
+    if (Date.now() - startTime > timeoutMs) {
+      console.error("✗ PageFlip CDN timeout after 3s. window.St:", window.St);
+      throw new Error(`PageFlip CDN failed to load within ${timeoutMs}ms`);
     }
     await new Promise((r) => setTimeout(r, 100));
-    attempts++;
   }
   
   PageFlip = window.St.PageFlip;
   console.log("✓ PageFlip loaded from CDN (window.St.PageFlip)");
+  console.log("  PageFlip type:", typeof PageFlip);
+  console.log("  PageFlip constructor:", PageFlip.name || "anonymous");
   return PageFlip;
 };
 
