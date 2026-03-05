@@ -12,15 +12,16 @@ type Slide = {
 
 type Props = {
   fileUrl: string;
+  initialSlide?: number;
   onSlideChange?: (slideIndex: number) => void;
 };
 
-export function PowerPointViewer({ fileUrl, onSlideChange }: Props) {
+export function PowerPointViewer({ fileUrl, initialSlide = 0, onSlideChange }: Props) {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [slides, setSlides] = useState<Slide[]>([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(initialSlide);
   const [totalSlides, setTotalSlides] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,9 +100,10 @@ export function PowerPointViewer({ fileUrl, onSlideChange }: Props) {
 
         setSlides(parsedSlides);
         setTotalSlides(parsedSlides.length);
-        setCurrentSlide(0);
+        const validInitialSlide = Math.min(Math.max(0, initialSlide), parsedSlides.length - 1);
+        setCurrentSlide(validInitialSlide);
         setError(null);
-        console.log("✓ Presentation loaded with", parsedSlides.length, "slides");
+        console.log("✓ Presentation loaded with", parsedSlides.length, "slides, starting at slide", validInitialSlide + 1);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         console.error("✗ Error loading PPTX:", msg);

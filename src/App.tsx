@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { BiodataPage } from "./pages/BiodataPage";
 import { CurriculumPage } from "./pages/CurriculumPage";
 import { FinalResultPage } from "./pages/FinalResultPage";
-import { FlipbookReaderPage } from "./pages/FlipbookReaderPage";
+import { FlipbookPage } from "./pages/FlipbookPage";
 import { HomePage } from "./pages/HomePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { PosttestPage } from "./pages/PosttestPage";
@@ -21,7 +21,7 @@ export default function App() {
         <Route path="/biodata-penulis" element={<BiodataPage />} />
         <Route path="/panduan-penggunaan" element={<UserGuidePage />} />
         <Route path="/cp-tp-atp" element={<CurriculumPage />} />
-        <Route path="/flipbook/:pageId" element={<FlipbookReaderPage />} />
+        <Route path="/flipbook/:pageId" element={<FlipbookPage />} />
         <Route path="/powerpoint" element={<PowerPointPage />} />
         <Route path="/posttest" element={<PosttestPage />} />
         <Route path="/hasil-akhir" element={<FinalResultPage />} />
