@@ -7,7 +7,6 @@ import { HomePage } from "./pages/HomePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { PosttestPage } from "./pages/PosttestPage";
 import { PretestPage } from "./pages/PretestPage";
-import { StartPage } from "./pages/StartPage";
 import { UserGuidePage } from "./pages/UserGuidePage";
 
 export default function App() {
@@ -19,7 +18,6 @@ export default function App() {
         <Route path="/biodata-penulis" element={<BiodataPage />} />
         <Route path="/panduan-penggunaan" element={<UserGuidePage />} />
         <Route path="/cp-tp-atp" element={<CurriculumPage />} />
-        <Route path="/menu-cerita" element={<StartPage />} />
         <Route path="/flipbook/:pageId" element={<FlipbookReaderPage />} />
         <Route path="/posttest" element={<PosttestPage />} />
         <Route path="/hasil-akhir" element={<FinalResultPage />} />

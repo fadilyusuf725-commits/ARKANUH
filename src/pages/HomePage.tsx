@@ -8,11 +8,12 @@ type MenuIconCardProps = {
   label: string;
   to?: string;
   href?: string;
+  onClick?: () => void;
   locked?: boolean;
   lockText?: string;
 };
 
-function MenuIconCard({ icon, label, to, href, locked, lockText }: MenuIconCardProps) {
+function MenuIconCard({ icon, label, to, href, onClick, locked, lockText }: MenuIconCardProps) {
   if (locked) {
     return (
       <button type="button" className="icon-menu-card is-locked" disabled aria-label={`${label} terkunci`}>
@@ -39,6 +40,17 @@ function MenuIconCard({ icon, label, to, href, locked, lockText }: MenuIconCardP
         </span>
         <span className="icon-label">{label}</span>
       </a>
+    );
+  }
+
+  if (onClick) {
+    return (
+      <button type="button" className="icon-menu-card" aria-label={`Buka ${label}`} onClick={onClick}>
+        <span className="icon-emoji" aria-hidden="true">
+          {icon}
+        </span>
+        <span className="icon-label">{label}</span>
+      </button>
     );
   }
 
@@ -83,12 +95,18 @@ export function HomePage() {
     navigate("/");
   };
 
+  const onOpenFlipbook = () => {
+    const firstIncomplete = flipbookPages.find((page) => !session.flipbook.completedPages.includes(page.id));
+    const pageId = firstIncomplete?.id || flipbookPages[0]?.id || "page-01";
+    navigate(`/flipbook/${pageId}`);
+  };
+
   const menuCards = useMemo(
     () => [
       {
         icon: "\u{1F4D8}",
-        label: "Menu Cerita",
-        to: pretestDone ? "/menu-cerita" : undefined,
+        label: "Mulai",
+        onClick: pretestDone ? onOpenFlipbook : undefined,
         locked: !pretestDone,
         lockText: "Pretest dulu"
       },
@@ -172,6 +190,7 @@ export function HomePage() {
             label={menu.label}
             to={menu.to}
             href={menu.href}
+            onClick={menu.onClick}
             locked={menu.locked}
             lockText={menu.lockText}
           />
