@@ -25,6 +25,10 @@ export function PowerPointViewer({ fileUrl, onSlideChange }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(100);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDirection, setFlipDirection] = useState<"next" | "prev">("next");
+  const dragStartX = useRef(0);
+  const dragStartY = useRef(0);
 
   // Load and parse PPTX
   useEffect(() => {
@@ -44,13 +48,23 @@ export function PowerPointViewer({ fileUrl, onSlideChange }: Props) {
         const unzipped = await zip.loadAsync(arrayBuffer);
         console.log("✓ PPTX unzipped successfully");
 
-        // Find slide files
+        // Debug: List all files
+        const allFiles: string[] = [];
+        unzipped.forEach((relativePath) => {
+          allFiles.push(relativePath);
+        });
+        console.log("Total files in PPTX:", allFiles.length);
+        console.log("Sample files:", allFiles.slice(0, 20));
+
+        // Find slide files - more robust approach
         const slideFiles: string[] = [];
-        unzipped.folder("ppt/slides")?.forEach((path) => {
-          if (path.endsWith(".xml") && path.match(/slide\d+\.xml/)) {
-            slideFiles.push(path);
+        unzipped.forEach((relativePath) => {
+          if (relativePath.includes("ppt/slides/slide") && relativePath.endsWith(".xml")) {
+            slideFiles.push(relativePath);
           }
         });
+
+        console.log("Found slide files:", slideFiles);
 
         slideFiles.sort((a, b) => {
           const numA = parseInt(a.match(/\d+/)![0]);
@@ -58,7 +72,11 @@ export function PowerPointViewer({ fileUrl, onSlideChange }: Props) {
           return numA - numB;
         });
 
-        console.log("✓ Found", slideFiles.length, "slides");
+        if (slideFiles.length === 0) {
+          throw new Error("No slides found in PPTX. ZIP structure: " + allFiles.slice(0, 30).join(", "));
+        }
+
+        console.log("✓ Found", slideFiles.length, "slides:", slideFiles);
 
         // Parse slide content
         const parsedSlides: Slide[] = [];
@@ -72,9 +90,10 @@ export function PowerPointViewer({ fileUrl, onSlideChange }: Props) {
             parsedSlides.push({
               index: i,
               title,
-              content,
+              content: content || "(No text content)",
               rawXML: xmlContent,
             });
+            console.log(`✓ Parsed slide ${i + 1}: "${title}"`);
           }
         }
 
@@ -189,19 +208,64 @@ export function PowerPointViewer({ fileUrl, onSlideChange }: Props) {
 
   const handleNextSlide = () => {
     if (currentSlide < slides.length - 1) {
-      const newSlide = currentSlide + 1;
-      setCurrentSlide(newSlide);
-      onSlideChange?.(newSlide);
+      setIsFlipping(true);
+      setFlipDirection("next");
+      setTimeout(() => {
+        const newSlide = currentSlide + 1;
+        setCurrentSlide(newSlide);
+        onSlideChange?.(newSlide);
+        setIsFlipping(false);
+      }, 450);
     }
   };
 
   const handlePrevSlide = () => {
     if (currentSlide > 0) {
-      const newSlide = currentSlide - 1;
-      setCurrentSlide(newSlide);
-      onSlideChange?.(newSlide);
+      setIsFlipping(true);
+      setFlipDirection("prev");
+      setTimeout(() => {
+        const newSlide = currentSlide - 1;
+        setCurrentSlide(newSlide);
+        onSlideChange?.(newSlide);
+        setIsFlipping(false);
+      }, 450);
     }
   };
+
+  // Handle mouse drag for flip gesture
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === canvasRef.current || (e.target as HTMLElement).closest(".ppt-canvas-container")) {
+      dragStartX.current = e.clientX;
+      dragStartY.current = e.clientY;
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    const dragEndX = e.clientX;
+    const dragEndY = e.clientY;
+    const dragDistanceX = dragStartX.current - dragEndX;
+    const dragDistanceY = dragStartY.current - dragEndY;
+
+    // Require significant horizontal drag (at least 50px) and more horizontal than vertical
+    if (Math.abs(dragDistanceX) > 50 && Math.abs(dragDistanceX) > Math.abs(dragDistanceY)) {
+      if (dragDistanceX > 0) {
+        handleNextSlide();
+      } else {
+        handlePrevSlide();
+      }
+    }
+  };
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") handleNextSlide();
+      if (e.key === "ArrowLeft") handlePrevSlide();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentSlide, slides.length]);
 
   const handleZoomIn = () => setZoom(Math.min(zoom + 10, 200));
   const handleZoomOut = () => setZoom(Math.max(zoom - 10, 50));
@@ -274,8 +338,15 @@ export function PowerPointViewer({ fileUrl, onSlideChange }: Props) {
         </button>
       </div>
 
-      <div className="ppt-canvas-container" ref={containerRef}>
-        <canvas ref={canvasRef} className="ppt-canvas" />
+      <div 
+        className="ppt-canvas-container" 
+        ref={containerRef}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+      >
+        <div className={`ppt-flipbook-wrapper ${isFlipping ? `ppt-flip-${flipDirection}` : ""}`}>
+          <canvas ref={canvasRef} className="ppt-canvas" />
+        </div>
       </div>
 
       <div className="ppt-footer">
