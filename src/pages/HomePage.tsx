@@ -87,8 +87,8 @@ export function HomePage() {
     () => [
       {
         icon: "\u{1F4D8}",
-        label: "Mulai",
-        to: pretestDone ? "/mulai" : undefined,
+        label: "Menu Cerita",
+        to: pretestDone ? "/menu-cerita" : undefined,
         locked: !pretestDone,
         lockText: "Pretest dulu"
       },

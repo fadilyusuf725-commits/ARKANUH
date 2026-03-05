@@ -19,7 +19,7 @@ export default function App() {
         <Route path="/biodata-penulis" element={<BiodataPage />} />
         <Route path="/panduan-penggunaan" element={<UserGuidePage />} />
         <Route path="/cp-tp-atp" element={<CurriculumPage />} />
-        <Route path="/mulai" element={<StartPage />} />
+        <Route path="/menu-cerita" element={<StartPage />} />
         <Route path="/flipbook/:pageId" element={<FlipbookReaderPage />} />
         <Route path="/posttest" element={<PosttestPage />} />
         <Route path="/hasil-akhir" element={<FinalResultPage />} />
