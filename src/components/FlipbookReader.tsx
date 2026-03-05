@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { flipbookPages } from "../data/flipbookPages";
-import { withBasePath } from "../lib/assetPaths";
 import "../styles/flipbook.css";
 
 // Page-flip library is loaded via CDN in index.html as window.St.PageFlip
@@ -178,24 +177,33 @@ export function FlipbookReader({
         flipBook.on("change", (object: any) => {
           try {
             const pageNum = object.data;
+            console.log("Page changed to:", pageNum);
             setCurrentPageIndex(pageNum);
 
-            // Determine which story page we're on (accounting for cover)
-            if (pageNum >= 2 && pageNum <= flipbookPages.length * 2 + 1) {
-              const storyPageIdx = Math.floor((pageNum - 2) / 2);
-              if (storyPageIdx >= 0 && storyPageIdx < flipbookPages.length) {
-                const page = flipbookPages[storyPageIdx];
-                onPageChange?.(page.id, storyPageIdx);
+            // Calculate story page index (account for cover and left/right pages)
+            // Page 0 = cover, pages 1-2 = story page 1 (left+right), pages 3-4 = story page 2, etc
+            let storyPageIdx = -1;
+            if (pageNum > 0) {
+              storyPageIdx = Math.floor((pageNum - 1) / 2);
+            }
+            
+            console.log("Story page index:", storyPageIdx);
 
-                if (autoPlayAudio && audioRef.current && pageNum % 2 === 1) {
-                  // Play audio on left pages (odd page numbers)
-                  audioRef.current.src = withBasePath(page.voAudio);
-                  audioRef.current.play().catch(() => {
-                    console.warn("Audio play failed");
-                    setIsPlaying(false);
-                  });
-                  setIsPlaying(true);
-                }
+            if (storyPageIdx >= 0 && storyPageIdx < flipbookPages.length) {
+              const page = flipbookPages[storyPageIdx];
+              console.log("Current story page:", page.id, page.title);
+              
+              onPageChange?.(page.id, storyPageIdx);
+
+              // Auto-load audio for this page if on left page (odd)
+              if (autoPlayAudio && audioRef.current && pageNum % 2 === 1) {
+                console.log("Loading audio from:", page.voAudio);
+                audioRef.current.src = page.voAudio;
+                audioRef.current.play().catch((err) => {
+                  console.warn("Audio play failed:", err);
+                  setIsPlaying(false);
+                });
+                setIsPlaying(true);
               }
             }
           } catch (err) {
@@ -319,7 +327,7 @@ export function FlipbookReader({
 
       {/* Page Indicator */}
       <div className="page-indicator">
-        Halaman {Math.max(0, Math.floor((currentPageIndex - 1) / 2))} / {flipbookPages.length}
+        {currentPageIndex === 0 ? "Cover" : `Halaman ${Math.floor((currentPageIndex - 1) / 2) + 1} / ${flipbookPages.length}`}
       </div>
     </div>
   );
