@@ -1,7 +1,9 @@
-declare module 'page-flip' {
+// page-flip library type definitions
+// Uses dynamic import to avoid strict TypeScript issues with UMD export
+declare module "page-flip" {
   interface PageFlipOptions {
-    width: number;
-    height: number;
+    width?: number;
+    height?: number;
     size?: "fixed" | "stretch";
     minWidth?: number;
     maxWidth?: number;
@@ -25,8 +27,8 @@ declare module 'page-flip' {
     data: number;
   }
 
-  class HTMLFlipBook {
-    constructor(container: HTMLElement, options: PageFlipOptions);
+  class PageFlip {
+    constructor(container: HTMLElement, options?: PageFlipOptions);
     addPage(page: HTMLElement, pageIndex: number): void;
     on(event: string, callback: (object: PageFlipObject) => void): void;
     off(event: string, callback: (object: PageFlipObject) => void): void;
@@ -38,5 +40,5 @@ declare module 'page-flip' {
     destroy(): void;
   }
 
-  export default HTMLFlipBook;
+  export default PageFlip;
 }

@@ -1,8 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import HTMLFlipBook from "page-flip";
 import { flipbookPages } from "../data/flipbookPages";
 import { withBasePath } from "../lib/assetPaths";
 import "../styles/flipbook.css";
+
+// Lazy load page-flip library
+let PageFlip: any = null;
+
+const loadPageFlip = async () => {
+  if (!PageFlip) {
+    try {
+      PageFlip = (await import("page-flip")).default;
+    } catch (error) {
+      console.error("Failed to load page-flip:", error);
+    }
+  }
+  return PageFlip;
+};
 
 type FlipbookReaderProps = {
   onPageChange?: (pageId: string, pageIndex: number) => void;
@@ -25,146 +38,156 @@ export function FlipbookReader({
   useEffect(() => {
     if (!containerRef.current || isInitialized) return;
 
-    try {
-      // Create canvas element for page-flip
-      const canvas = document.createElement("div");
-      canvas.id = "flipbook";
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
-      containerRef.current.appendChild(canvas);
+    const initializeFlipbook = async () => {
+      try {
+        // Load the library
+        const PF = await loadPageFlip();
+        if (!PF) {
+          throw new Error("Failed to load PageFlip library");
+        }
 
-      // Initialize page-flip
-      const flipBook = new HTMLFlipBook(canvas, {
-        width: 500,
-        height: 650,
-        size: "fixed",
-        minWidth: 300,
-        maxWidth: 900,
-        minHeight: 390,
-        maxHeight: 1350,
-        showCover: true,
-        autoSize: true,
-        maxShadowOpacity: 0.5,
-        useMouseEvents: true,
-        disableFlip: false,
-        clickEventForward: true,
-        usePortrait: true,
-        startZIndex: 0,
-        drawShadow: true,
-        flips: (flipbookPages.length + 1) * 2,
-        duration: 800,
-        mobileScrollSupport: true,
-      });
+        // Create canvas element for page-flip
+        const canvas = document.createElement("div");
+        canvas.id = "flipbook";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        containerRef.current?.appendChild(canvas);
 
-      flipBookRef.current = flipBook;
+        // Initialize page-flip
+        const flipBook = new PF(canvas, {
+          width: 500,
+          height: 650,
+          size: "fixed",
+          minWidth: 300,
+          maxWidth: 900,
+          minHeight: 390,
+          maxHeight: 1350,
+          showCover: true,
+          autoSize: true,
+          maxShadowOpacity: 0.5,
+          useMouseEvents: true,
+          disableFlip: false,
+          clickEventForward: true,
+          usePortrait: true,
+          startZIndex: 0,
+          drawShadow: true,
+          flips: (flipbookPages.length + 1) * 2,
+          duration: 800,
+          mobileScrollSupport: true,
+        });
 
-      let pageIndex = 0;
+        flipBookRef.current = flipBook;
 
-      // Create and add cover page
-      const coverDiv = document.createElement("div");
-      coverDiv.className = "flipbook-page cover-page";
-      coverDiv.innerHTML = `
-        <div class="flipbook-cover">
-          <div class="cover-content">
-            <h1>KISAH NABI NUH</h1>
-            <p>Cerita Iman & Kesabaran</p>
-            <div class="cover-decoration"></div>
-          </div>
-        </div>
-      `;
-      flipBook.addPage(coverDiv, pageIndex++);
+        let pageIndex = 0;
 
-      // Add all story pages
-      flipbookPages.forEach((page) => {
-        // Left page: text
-        const leftDiv = document.createElement("div");
-        leftDiv.className = "flipbook-page left-page";
-        leftDiv.innerHTML = `
-          <div class="page-text-content">
-            <h2 class="page-title">${page.title}</h2>
-            <div class="page-number">Halaman ${page.id}</div>
-            <p class="page-objective">${page.objective}</p>
-            <div class="page-narration">${page.narration.replace(/\n/g, "<br>")}</div>
-          </div>
-        `;
-        flipBook.addPage(leftDiv, pageIndex++);
-
-        // Right page: illustration
-        const bgGradient = getPageGradient(page.id);
-        const rightDiv = document.createElement("div");
-        rightDiv.className = "flipbook-page right-page";
-        rightDiv.innerHTML = `
-          <div class="page-illustration" style="background: ${bgGradient}">
-            <div class="illustration-placeholder">
-              <div class="illustration-icon">${getPageIcon(page.id)}</div>
-              <h3>${page.floatingText || "Ilustrasi"}</h3>
-              <p>${page.objective}</p>
+        // Create and add cover page
+        const coverDiv = document.createElement("div");
+        coverDiv.className = "flipbook-page cover-page";
+        coverDiv.innerHTML = `
+          <div class="flipbook-cover">
+            <div class="cover-content">
+              <h1>KISAH NABI NUH</h1>
+              <p>Cerita Iman & Kesabaran</p>
+              <div class="cover-decoration"></div>
             </div>
           </div>
         `;
-        flipBook.addPage(rightDiv, pageIndex++);
-      });
+        flipBook.addPage(coverDiv, pageIndex++);
 
-      // Add back cover
-      const backDiv = document.createElement("div");
-      backDiv.className = "flipbook-page back-cover-page";
-      backDiv.innerHTML = `
-        <div class="flipbook-back-cover">
-          <div class="back-cover-content">
-            <p>"Kesabaran adalah kunci kesuksesan"</p>
-            <p>- Kisah Nabi Nuh</p>
+        // Add all story pages
+        flipbookPages.forEach((page) => {
+          // Left page: text
+          const leftDiv = document.createElement("div");
+          leftDiv.className = "flipbook-page left-page";
+          leftDiv.innerHTML = `
+            <div class="page-text-content">
+              <h2 class="page-title">${page.title}</h2>
+              <div class="page-number">Halaman ${page.id}</div>
+              <p class="page-objective">${page.objective}</p>
+              <div class="page-narration">${page.narration.replace(/\n/g, "<br>")}</div>
+            </div>
+          `;
+          flipBook.addPage(leftDiv, pageIndex++);
+
+          // Right page: illustration
+          const bgGradient = getPageGradient(page.id);
+          const rightDiv = document.createElement("div");
+          rightDiv.className = "flipbook-page right-page";
+          rightDiv.innerHTML = `
+            <div class="page-illustration" style="background: ${bgGradient}">
+              <div class="illustration-placeholder">
+                <div class="illustration-icon">${getPageIcon(page.id)}</div>
+                <h3>${page.floatingText || "Ilustrasi"}</h3>
+                <p>${page.objective}</p>
+              </div>
+            </div>
+          `;
+          flipBook.addPage(rightDiv, pageIndex++);
+        });
+
+        // Add back cover
+        const backDiv = document.createElement("div");
+        backDiv.className = "flipbook-page back-cover-page";
+        backDiv.innerHTML = `
+          <div class="flipbook-back-cover">
+            <div class="back-cover-content">
+              <p>"Kesabaran adalah kunci kesuksesan"</p>
+              <p>- Kisah Nabi Nuh</p>
+            </div>
           </div>
-        </div>
-      `;
-      flipBook.addPage(backDiv, pageIndex);
+        `;
+        flipBook.addPage(backDiv, pageIndex);
 
-      // Event listeners
-      flipBook.on("change", (object: any) => {
-        try {
-          const pageNum = object.data;
-          setCurrentPageIndex(pageNum);
+        // Event listeners
+        flipBook.on("change", (object: any) => {
+          try {
+            const pageNum = object.data;
+            setCurrentPageIndex(pageNum);
 
-          // Determine which story page we're on (accounting for cover)
-          if (pageNum >= 2 && pageNum <= flipbookPages.length * 2 + 1) {
-            const storyPageIdx = Math.floor((pageNum - 2) / 2);
-            if (storyPageIdx >= 0 && storyPageIdx < flipbookPages.length) {
-              const page = flipbookPages[storyPageIdx];
-              onPageChange?.(page.id, storyPageIdx);
+            // Determine which story page we're on (accounting for cover)
+            if (pageNum >= 2 && pageNum <= flipbookPages.length * 2 + 1) {
+              const storyPageIdx = Math.floor((pageNum - 2) / 2);
+              if (storyPageIdx >= 0 && storyPageIdx < flipbookPages.length) {
+                const page = flipbookPages[storyPageIdx];
+                onPageChange?.(page.id, storyPageIdx);
 
-              if (autoPlayAudio && audioRef.current && pageNum % 2 === 1) {
-                // Play audio on left pages (odd page numbers)
-                audioRef.current.src = withBasePath(page.voAudio);
-                audioRef.current.play().catch(() => {
-                  console.warn("Audio play failed");
-                  setIsPlaying(false);
-                });
-                setIsPlaying(true);
+                if (autoPlayAudio && audioRef.current && pageNum % 2 === 1) {
+                  // Play audio on left pages (odd page numbers)
+                  audioRef.current.src = withBasePath(page.voAudio);
+                  audioRef.current.play().catch(() => {
+                    console.warn("Audio play failed");
+                    setIsPlaying(false);
+                  });
+                  setIsPlaying(true);
+                }
               }
             }
+          } catch (err) {
+            console.error("Error in flip change event:", err);
           }
-        } catch (err) {
-          console.error("Error in flip change event:", err);
-        }
-      });
+        });
 
-      flipBook.on("flip", () => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          setIsPlaying(false);
-        }
-      });
+        flipBook.on("flip", () => {
+          if (audioRef.current) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+          }
+        });
 
-      setIsInitialized(true);
-      setError(null);
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Unknown error";
-      console.error("Failed to initialize flipbook:", error);
-      setError(`Flipbook error: ${errorMsg}`);
-    }
+        setIsInitialized(true);
+        setError(null);
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : "Unknown error";
+        console.error("Failed to initialize flipbook:", err);
+        setError(`Flipbook error: ${errorMsg}`);
+      }
+    };
+
+    initializeFlipbook();
 
     return () => {
       try {
-        if (flipBookRef.current && flipBookRef.current.destroy) {
+        if (flipBookRef.current && typeof flipBookRef.current.destroy === "function") {
           flipBookRef.current.destroy();
         }
         if (containerRef.current) {
@@ -179,7 +202,7 @@ export function FlipbookReader({
   // Navigation controls
   const handlePrev = () => {
     try {
-      if (flipBookRef.current && flipBookRef.current.prevPage) {
+      if (flipBookRef.current && typeof flipBookRef.current.prevPage === "function") {
         flipBookRef.current.prevPage();
       }
     } catch (err) {
@@ -189,7 +212,7 @@ export function FlipbookReader({
 
   const handleNext = () => {
     try {
-      if (flipBookRef.current && flipBookRef.current.nextPage) {
+      if (flipBookRef.current && typeof flipBookRef.current.nextPage === "function") {
         flipBookRef.current.nextPage();
       }
     } catch (err) {
@@ -218,9 +241,12 @@ export function FlipbookReader({
 
   if (error) {
     return (
-      <div style={{ padding: "20px", color: "red" }}>
-        <h3>Flipbook Error</h3>
+      <div style={{ padding: "20px", color: "red", textAlign: "center" }}>
+        <h3>⚠️ Flipbook Error</h3>
         <p>{error}</p>
+        <p style={{ fontSize: "0.9em", marginTop: "10px" }}>
+          Trying to reload... Please refresh the page if this persists.
+        </p>
       </div>
     );
   }
