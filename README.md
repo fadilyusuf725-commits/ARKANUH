@@ -1,128 +1,90 @@
-# ARKANUH v4 (React + Unity WebGL Hybrid)
+# ARKANUH
 
-ARKANUH adalah web pembelajaran kisah Nabi Nuh untuk kelas 2 SD.
+ARKANUH adalah web pembelajaran kisah Nabi Nuh untuk kelas 2 SD dengan alur:
 
-- React mengelola alur belajar (`pretest -> flipbook -> posttest -> hasil`) dan session lokal.
-- Unity WebGL merender pop-up book 3D di modul flipbook.
+`Pretest -> Mulai -> Posttest -> Hasil`
 
-## Alur Pembelajaran
+## Arsitektur Aktif
 
-1. Beranda (`/`) berisi menu ikon: Mulai, Pretest, Posttest, Mini Game, CP TP ATP, Biodata, Hasil.
-2. Pretest wajib selesai sebelum masuk `/mulai` dan `/flipbook/:pageId`.
-3. Flipbook berjalan 10 halaman (`/flipbook/1` s.d `/flipbook/10`).
-4. Halaman terakhir memicu final close lalu lanjut `/posttest`.
-5. Hasil akhir tampil di `/hasil-akhir`.
+- Frontend: React + TypeScript + Vite
+- Routing: `BrowserRouter` dengan `basename={import.meta.env.BASE_URL}`
+- Reader: iframe Heyzine di route `/mulai`
+- Penyimpanan: `localStorage`
+- Hosting: GitHub Pages
 
-## Routing GitHub Pages
+## Route Utama
 
-Konfigurasi agar aman saat reload/deep-link:
+- `/` beranda
+- `/pretest`
+- `/mulai?page=1` sampai `/mulai?page=10`
+- `/posttest`
+- `/hasil-akhir`
+- `/cp-tp-atp`
+- `/biodata-penulis`
+- `/panduan-penggunaan`
 
-- Vite `base: /ARKANUH/`
-- `BrowserRouter basename={import.meta.env.BASE_URL}`
-- `postbuild` otomatis membuat `dist/404.html` sebagai fallback SPA
+Route lama tetap diarahkan ke flow baru:
 
-## Pipeline Flipbook dari PPTX
+- `/flipbook/:pageId` -> `/mulai?page=:pageId`
+- `/powerpoint` -> `/mulai`
+- `/cerita-nabi-nuh` -> `/mulai`
 
-1. Simpan file sumber di folder:
-   - `assets/flipbook/source/`
-   - default yang dipakai saat ini: `KISAH NABI NUH (1).pptx`
-2. Jalankan:
-   - `npm run flipbook:prepare`
-3. Output:
-   - gambar: `public/assets/flipbook/pages/page-01.webp` s.d `page-10.webp`
-   - voice: `public/assets/voice/page-01.wav` s.d `page-09.wav`
+## Cara Kerja Menu Mulai
 
-Catatan:
+- Buku dibuka melalui iframe Heyzine:
+  - `https://heyzine.com/flip-book/943e83c9d9.html`
+- Pengguna membalik buku langsung di iframe.
+- Teks cerita dan audio ada di panel bawah.
+- Sinkronisasi halaman dilakukan manual dengan memilih `Hal 1-10`.
+- Halaman dianggap selesai saat dipilih di panel bawah.
+- Posttest terbuka setelah 10 halaman selesai.
 
-- Script menggunakan PowerPoint COM untuk export slide.
-- Mapping slide dikunci: `slide 3..12` -> `page 01..10`.
-- Halaman 10 tidak punya file voice dari PPT sehingga akan otomatis fallback ke TTS browser.
-- Optimasi gambar menggunakan `sharp` (resize longest side 1600 px, WebP quality default 80).
+## Audio
 
-## Pipeline Model 3D dari Link Publik
+Audio narasi aktif berada di:
 
-1. Isi mapping URL model:
-   - `assets/model-links/page-model-links.json`
-   - format: 10 entri, `pageId` 1-10, `sourceType` (`tripo_page` / `direct_file` / `none`)
-2. Unduh model ke folder Unity Incoming:
-   - `npm run models:fetch`
-3. Hasil resolve URL disimpan ke:
-   - `assets/model-links/.resolved-model-links.json`
-4. Di Unity, jalankan menu:
-   - `ARKANUH > Models > Rebuild Page Model Registry`
+- `public/assets/voice/page-01.wav`
+- `public/assets/voice/page-02.wav`
+- `public/assets/voice/page-03.wav`
+- `public/assets/voice/page-04.wav`
+- `public/assets/voice/page-05.wav`
+- `public/assets/voice/page-06.wav`
+- `public/assets/voice/page-07.wav`
+- `public/assets/voice/page-08.wav`
+- `public/assets/voice/page-09.wav`
+- `public/assets/voice/page-10.wav`
 
-Output Unity pipeline:
-
-- model mentah: `unity/ARKANUHBook/Assets/Models/Incoming/page-XX.glb|fbx`
-- prefab final: `unity/ARKANUHBook/Assets/Prefabs/PageModels/page-01..page-09.prefab`
-- registry: `unity/ARKANUHBook/Assets/Resources/PageModelRegistry.asset`
-- halaman 10 (`sourceType: none`) sengaja tidak punya model dan dirender sebagai back-cover scene.
-
-Catatan penting:
-
-- Package Unity `com.unity.meshopt.decompress@0.1.0-preview.7` wajib terpasang agar GLB Tripo (meshopt) bisa diimport.
-- URL Tripo bertipe signed URL dan bisa kedaluwarsa, jadi jalankan ulang `npm run models:fetch` saat model gagal dibaca.
-
-## Integrasi React -> Unity Payload
-
-Setiap halaman mengirim payload:
-
-- `id`
-- `title`
-- `popupTemplate`
-- `popupAccent`
-- `floatingText`
-- `modelKey` (contoh `page-01`)
-- `pageTexture` (contoh `/assets/flipbook/pages/page-01.webp`)
-
-Jika prefab model tidak ditemukan di registry, Unity fallback ke template procedural.
-
-## Build dan Deploy
-
-Jalankan lokal:
-
-```bash
-npm install
-npm run dev
-```
-
-Build web:
-
-```bash
-npm run build
-```
-
-Build Unity release:
-
-```bash
-npm run unity:build:release
-```
-
-Siapkan semua aset sekali jalan:
-
-```bash
-npm run assets:prepare
-```
-
-## Voice Over
-
-- Prioritas audio file: `public/assets/voice/page-01.wav` s.d `page-09.wav`
-- Jika audio tidak tersedia, player fallback ke browser TTS
+Jika file audio gagal dimuat, komponen voice over akan mencoba fallback ke TTS browser.
 
 ## Session Storage
 
 - `localStorage["arkanuh_v2_session_current"]`
 - `localStorage["arkanuh_v2_session_history"]`
 
-Riwayat disimpan maksimum 25 sesi.
+Riwayat disimpan maksimal 25 sesi.
 
-## QA Checklist Sebelum Deploy
+## Menjalankan Proyek
 
-1. `npm run flipbook:prepare` menghasilkan 10 halaman WebP + 9 file WAV.
-2. `npm run models:fetch` berhasil unduh model halaman 1-9 dan skip halaman 10.
-3. `assets/model-links/.resolved-model-links.json` terisi hasil resolve terbaru.
-4. Unity menu `Rebuild Page Model Registry` sukses tanpa error.
-4. `npm run unity:build:release` selesai dan file `public/unity/Build/*` ada.
-5. `npm run build` sukses.
-6. Deep-link `/ARKANUH/pretest` dan `/ARKANUH/flipbook/1` aman saat refresh.
-7. Flipbook halaman 1-9 menampilkan model sesuai page dan halaman 10 tampil sebagai back-cover tanpa error.
+```bash
+npm install
+npm run dev
+```
+
+## Build Produksi
+
+```bash
+npm run build
+```
+
+`postbuild` otomatis membuat `dist/404.html` untuk fallback SPA di GitHub Pages.
+
+## Catatan Authoring
+
+Tool authoring yang masih dipertahankan:
+
+- `scripts/create-nabi-nuh-presentation.py`
+- `scripts/create-spa-fallback.mjs`
+
+Sumber materi presentasi disimpan di:
+
+- `assets/flipbook/source/`

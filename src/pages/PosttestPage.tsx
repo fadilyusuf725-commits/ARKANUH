@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { flipbookPages } from "../data/flipbookPages";
+import { getFirstIncompleteFlipbookPageId } from "../data/flipbookPages";
 import { posttestQuestions } from "../data/posttestQuestions";
 import { useSessionContext } from "../state/SessionContext";
 
@@ -32,8 +32,7 @@ export function PosttestPage() {
   }
 
   if (!session.flipbook.completed) {
-    const firstIncomplete = flipbookPages.find((page) => !session.flipbook.completedPages.includes(page.id));
-    return <Navigate to={firstIncomplete ? `/flipbook/${firstIncomplete.id}` : "/mulai"} replace />;
+    return <Navigate to={`/mulai?page=${getFirstIncompleteFlipbookPageId(session.flipbook.completedPages)}`} replace />;
   }
 
   if (session.posttest.completed) {

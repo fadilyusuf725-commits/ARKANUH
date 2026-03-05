@@ -61,7 +61,7 @@ export function CurriculumPage() {
             <ol>
               <li>Siswa menceritakan kembali inti kisah Nabi Nuh secara sederhana.</li>
               <li>Siswa mengidentifikasi sikap taat, sabar, dan jujur dari kisah.</li>
-              <li>Siswa menunjukkan perilaku teladan dalam situasi sederhana di sekolah/rumah.</li>
+              <li>Siswa menunjukkan perilaku teladan dalam situasi sederhana di sekolah atau rumah.</li>
             </ol>
           </div>
         )}
@@ -71,8 +71,8 @@ export function CurriculumPage() {
             <h2>Alur Tujuan Pembelajaran (ATP)</h2>
             <ol>
               <li>Aktivasi pengetahuan awal melalui pretest.</li>
-              <li>Eksplorasi cerita Nabi Nuh lewat flipbook pop-up 3D 10 halaman.</li>
-              <li>Penguatan pemahaman dengan aktivitas interaktif dan voice over.</li>
+              <li>Eksplorasi cerita Nabi Nuh lewat flipbook digital 10 halaman.</li>
+              <li>Penguatan pemahaman dengan membaca, menyimak, dan voice over.</li>
               <li>Evaluasi akhir melalui posttest dan refleksi hasil belajar.</li>
             </ol>
           </div>

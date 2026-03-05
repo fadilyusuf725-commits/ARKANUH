@@ -7,34 +7,17 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "postbuild": "node ./scripts/create-spa-fallback.mjs",
-    "preview": "vite preview",
-    "flipbook:extract": "powershell -ExecutionPolicy Bypass -File ./scripts/extract-flipbook-pptx.ps1 -SkipOptimize",
-    "flipbook:voice": "powershell -ExecutionPolicy Bypass -File ./scripts/extract-ppt-voice.ps1",
-    "flipbook:prepare": "powershell -ExecutionPolicy Bypass -File ./scripts/extract-flipbook-pptx.ps1 && powershell -ExecutionPolicy Bypass -File ./scripts/extract-ppt-voice.ps1",
-    "models:fetch": "node ./scripts/fetch-model-links.mjs",
-    "assets:prepare": "npm run flipbook:prepare && npm run models:fetch",
-    "models:download": "node ./scripts/download-models.mjs",
-    "voice:edge": "powershell -ExecutionPolicy Bypass -File ./scripts/generate-voice-edge.ps1",
-    "voice:process": "powershell -ExecutionPolicy Bypass -File ./scripts/process-voice.ps1",
-    "unity:build:dev": "powershell -ExecutionPolicy Bypass -File ./scripts/unity-build.ps1 -Mode dev",
-    "unity:build:release": "powershell -ExecutionPolicy Bypass -File ./scripts/unity-build.ps1 -Mode release",
-    "unity:build:all": "powershell -ExecutionPolicy Bypass -File ./scripts/unity-build.ps1 -Mode all"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@types/three": "^0.183.1",
-    "jszip": "^3.10.1",
-    "page-flip": "^2.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.30.1",
-    "three": "^0.183.2",
-    "three-stdlib": "^2.36.1"
+    "react-router-dom": "^6.30.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.1",
-    "sharp": "^0.34.4",
     "typescript": "^5.6.3",
     "vite": "^5.4.9"
   }

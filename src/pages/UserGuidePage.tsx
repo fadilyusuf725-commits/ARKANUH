@@ -6,216 +6,174 @@ export function UserGuidePage() {
       <section className="hero-card">
         <p className="eyebrow">Panduan Penggunaan</p>
         <h1>Tata Cara Menggunakan ARKANUH</h1>
-        <p className="subtitle">Petunjuk lengkap untuk menggunakan aplikasi pembelajaran interaktif ini.</p>
+        <p className="subtitle">Panduan singkat untuk membaca flipbook, mendengar audio, dan menyelesaikan evaluasi.</p>
       </section>
 
       <section className="card">
-        <h2>📍 Apa itu ARKANUH?</h2>
+        <h2>Apa itu ARKANUH?</h2>
         <p>
-          ARKANUH adalah aplikasi pembelajaran interaktif berbentuk pop-up book 3D yang menceritakan kisah Nabi Nuh kepada siswa kelas 2 SD. 
-          Aplikasi ini menggabungkan elemen narasi, visual 3D, pertanyaan evaluasi, dan mini game untuk menciptakan pengalaman belajar yang menyenangkan dan mendidik.
+          ARKANUH adalah media pembelajaran interaktif tentang kisah Nabi Nuh untuk siswa kelas 2 SD. Alur utamanya
+          terdiri dari pretest, membaca flipbook, posttest, lalu melihat hasil belajar.
         </p>
       </section>
 
       <section className="card">
-        <h2>🎯 Tujuan Pembelajaran</h2>
+        <h2>Tujuan Pembelajaran</h2>
         <ul>
-          <li><strong>Iman:</strong> Mengenal Nabi Nuh dan keimanan beliau kepada Allah</li>
-          <li><strong>Taat:</strong> Memahami pentingnya ketaatan pada perintah Allah</li>
-          <li><strong>Sabar:</strong> Belajar dari kesabaran Nabi Nuh dalam berdakwah</li>
-          <li><strong>Akhlak Baik:</strong> Meniru akhlak mulia Nabi Nuh dalam kehidupan sehari-hari</li>
+          <li>
+            <strong>Iman:</strong> Mengenal Nabi Nuh dan keimanan beliau kepada Allah.
+          </li>
+          <li>
+            <strong>Taat:</strong> Memahami pentingnya taat kepada perintah Allah.
+          </li>
+          <li>
+            <strong>Sabar:</strong> Meneladani kesabaran Nabi Nuh saat berdakwah.
+          </li>
+          <li>
+            <strong>Akhlak:</strong> Membiasakan sikap jujur, rendah hati, dan bertanggung jawab.
+          </li>
         </ul>
       </section>
 
       <section className="card">
-        <h2>📋 Alur Penggunaan Aplikasi</h2>
+        <h2>Alur Penggunaan Aplikasi</h2>
         <div className="usage-flow">
           <div className="flow-step">
-            <h3>1. Beranda (Home)</h3>
-            <p>
-              Halaman utama menampilkan berbagai menu pilihan. Anda bisa langsung memilih:
-            </p>
+            <h3>1. Beranda</h3>
+            <p>Beranda menampilkan menu utama yang dibutuhkan siswa.</p>
             <ul>
-              <li><strong>Mulai</strong> - Masuk ke alur pembelajaran utama</li>
-              <li><strong>Pretest</strong> - Tes awal untuk mengetahui pemahaman sebelum belajar</li>
-              <li><strong>Posttest</strong> - Tes akhir setelah menyelesaikan cerita</li>
-              <li><strong>Mini Game</strong> - Permainan interaktif untuk mengasah pemahaman</li>
-              <li><strong>CP/TP/ATP</strong> - Informasi kurikulum dan capaian pembelajaran</li>
-              <li><strong>Biodata</strong> - Profil pengembang aplikasi</li>
-              <li><strong>Hasil</strong> - Lihat skor dan hasil akhir pembelajaran</li>
+              <li>Mulai untuk membaca flipbook.</li>
+              <li>Pretest untuk tes awal.</li>
+              <li>Posttest untuk tes akhir setelah buku selesai.</li>
+              <li>Mini Game untuk latihan tambahan.</li>
             </ul>
           </div>
 
           <div className="flow-step">
-            <h3>2. Pretest (Penting!)</h3>
-            <p>
-              Sebelum mulai membaca cerita, jawab pertanyaan pretest. Ini membantu:
-            </p>
+            <h3>2. Kerjakan Pretest</h3>
+            <p>Pretest wajib diselesaikan sebelum menu Mulai terbuka.</p>
             <ul>
-              <li>Mengukur pengetahuan awal Anda</li>
-              <li>Membuka akses ke halaman pembelajaran utama</li>
-              <li>Memberikan nilai evaluasi awal</li>
-            </ul>
-            <p><strong>Tips:</strong> Jawab dengan jujur berdasarkan pemahaman Anda saat ini.</p>
-          </div>
-
-          <div className="flow-step">
-            <h3>3. Mulai / Membaca Buku</h3>
-            <p>
-              Masuk ke alur pembelajaran 10 halaman cerita Nabi Nuh:
-            </p>
-            <ul>
-              <li>Setiap halaman memiliki <strong>pop-up 3D model interaktif</strong></li>
-              <li><strong>Narasi audio</strong> yang bisa didengarkan atau di-skip</li>
-              <li><strong>Interaksi</strong> seperti tap, drag, atau pilihan jawaban</li>
-              <li>Tombol <strong>Reset View</strong> untuk me-reset sudut pandang 3D</li>
-              <li>Tombol <strong>Sebelumnya/Berikutnya</strong> untuk navigasi halaman</li>
+              <li>Mengukur pengetahuan awal siswa.</li>
+              <li>Membuka akses ke menu Mulai.</li>
+              <li>Menjadi nilai pembanding dengan posttest.</li>
             </ul>
           </div>
 
           <div className="flow-step">
-            <h3>4. Interaksi 3D</h3>
-            <p>
-              Model 3D di setiap halaman dapat diinteraksi:
-            </p>
+            <h3>3. Baca Flipbook</h3>
+            <p>Menu Mulai menampilkan buku Heyzine di bagian atas layar.</p>
             <ul>
-              <li><strong>Drag/Swipe kiri-kanan</strong> pada area 3D untuk memutar model</li>
-              <li><strong>Scroll/Pinch</strong> (mobile) untuk zoom in/out</li>
-              <li><strong>Auto-rotate:</strong> Model berputar otomatis saat tidak disentuh</li>
-              <li><strong>Reset View:</strong> Kembalikan ke sudut pandang awal</li>
+              <li>Balik halaman buku langsung di dalam iframe.</li>
+              <li>Pilih Hal 1-10 di bawah buku agar teks dan audio sesuai.</li>
+              <li>Teks cerita tampil di panel bawah.</li>
+              <li>Audio narasi bisa diputar, dijeda, dilanjutkan, dan diulang.</li>
             </ul>
           </div>
 
           <div className="flow-step">
-            <h3>5. Posttest (Tes Akhir)</h3>
-            <p>
-              Setelah menyelesaikan semua 10 halaman cerita:
-            </p>
+            <h3>4. Selesaikan Semua Halaman</h3>
+            <p>Halaman dianggap selesai saat siswa memilih halaman itu di panel bawah.</p>
             <ul>
-              <li>Buku akan menutup dengan animasi</li>
-              <li>Anda akan diarahkan ke halaman Posttest</li>
-              <li>Jawab pertanyaan posttest untuk mengukur pemahaman akhir</li>
-              <li>Hasil akan dibandingkan dengan Pretest</li>
+              <li>Progress akan bertambah setiap halaman dipilih.</li>
+              <li>Posttest baru terbuka setelah 10 halaman selesai.</li>
             </ul>
           </div>
 
           <div className="flow-step">
-            <h3>6. Hasil & Skor</h3>
-            <p>
-              Lihat ringkasan hasil pembelajaran Anda:
-            </p>
+            <h3>5. Kerjakan Posttest</h3>
+            <p>Setelah membaca semua halaman, siswa melanjutkan ke posttest.</p>
             <ul>
-              <li>Skor Pretest dan Posttest</li>
-              <li>Peningkatan pemahaman</li>
-              <li>Daftar halaman yang sudah diselesaikan</li>
-              <li>Opsi untuk memulai ulang pembelajaran</li>
+              <li>Jawaban posttest tersimpan dalam sesi yang sama.</li>
+              <li>Nilai posttest dibandingkan dengan nilai pretest.</li>
+            </ul>
+          </div>
+
+          <div className="flow-step">
+            <h3>6. Lihat Hasil</h3>
+            <p>Halaman hasil menampilkan ringkasan pencapaian belajar.</p>
+            <ul>
+              <li>Skor pretest dan posttest.</li>
+              <li>Selisih peningkatan hasil belajar.</li>
+              <li>Riwayat sesi terbaru.</li>
             </ul>
           </div>
         </div>
       </section>
 
       <section className="card">
-        <h2>🎮 Tips & Trik</h2>
+        <h2>Tips Penggunaan</h2>
         <ul>
-          <li>
-            <strong>Dengarkan Audio Narasi:</strong> Dengarkan cerita lengkap dari awal untuk pemahaman 
-            yang lebih baik. Jika ada masalah audio, teks akan tersedia sebagai fallback.
-          </li>
-          <li>
-            <strong>Eksplorasi Model 3D:</strong> Putar dan lihat model dari berbagai sudut untuk memahami 
-            visual cerita dengan lebih baik.
-          </li>
-          <li>
-            <strong>Ikuti Instruksi Interaksi:</strong> Setiap halaman memiliki interaksi berbeda 
-            (tap, drag, pilih). Ikuti petunjuk untuk menyelesaikan interaksi.
-          </li>
-          <li>
-            <strong>Jangan Skip Pretest/Posttest:</strong> Hasil tes penting untuk mengukur efektivitas 
-            pembelajaran Anda.
-          </li>
-          <li>
-            <strong>Gunakan Perangkat Lebar:</strong> Aplikasi lebih nyaman digunakan di layar lebih besar 
-            (tablet/desktop) untuk pengalaman 3D yang optimal.
-          </li>
-          <li>
-            <strong>WebGL Support:</strong> Pastikan browser Anda mendukung WebGL 2 untuk rendering 3D 
-            yang lancar. Chrome/Firefox/Safari terbaru disarankan.
-          </li>
+          <li>Dengarkan narasi sambil melihat halaman yang sama pada buku.</li>
+          <li>Pilih nomor halaman di bawah buku setiap kali pindah halaman.</li>
+          <li>Gunakan tombol ulang jika ingin mendengar cerita sekali lagi.</li>
+          <li>Selesaikan pretest dan posttest dalam sesi yang sama agar hasil tersimpan rapi.</li>
         </ul>
       </section>
 
       <section className="card">
-        <h2>❓ Pertanyaan yang Sering Diajukan</h2>
-        
+        <h2>Pertanyaan yang Sering Diajukan</h2>
+
         <div className="faq-item">
-          <h3>Model 3D tidak muncul?</h3>
+          <h3>Buku tidak tampil?</h3>
           <p>
-            Coba: Refresh halaman (F5 atau Ctrl+R), bersihkan cache browser, gunakan browser terbaru 
-            yang support WebGL 2. Jika masih tidak muncul, cek koneksi internet Anda.
+            Coba refresh halaman, lalu pastikan koneksi internet stabil. Jika iframe tetap kosong, buka buku melalui
+            tombol <strong>Buka Buku di Tab Baru</strong>.
           </p>
         </div>
 
         <div className="faq-item">
           <h3>Audio tidak terdengar?</h3>
           <p>
-            Periksa volume perangkat Anda, izin audio browser, dan koneksi internet. Aplikasi akan 
-            otomatis menggunakan text-to-speech sebagai fallback jika file audio tidak tersedia.
+            Periksa volume perangkat dan tombol audio di browser. Jika file audio tidak tersedia, aplikasi akan mencoba
+            memakai suara TTS browser sebagai cadangan.
           </p>
         </div>
 
         <div className="faq-item">
-          <h3>Bagaimana jika lupa password/login?</h3>
-          <p>
-            Aplikasi ini menggunakan penyimpanan lokal (local storage), jadi tidak perlu login. 
-            Data tersimpan di perangkat Anda. Jika ingin reset, bersihkan cache browser.
-          </p>
+          <h3>Apakah perlu login?</h3>
+          <p>Tidak. Aplikasi menyimpan data sesi di browser perangkat melalui local storage.</p>
         </div>
 
         <div className="faq-item">
           <h3>Bisa digunakan di mobile?</h3>
-          <p>
-            Ya, aplikasi responsive dan bisa diakses dari smartphone/tablet. Namun pengalaman 
-            3D lebih optimal di perangkat dengan layar lebih besar.
-          </p>
+          <p>Ya. Tampilan dibuat mobile-first dan tetap bisa dibuka di desktop atau tablet.</p>
         </div>
 
         <div className="faq-item">
           <h3>Data pembelajaran saya tersimpan di mana?</h3>
-          <p>
-            Data tersimpan secara lokal di perangkat Anda (browser local storage). Data tidak 
-            dikirim ke server, jadi privasi Anda terjaga.
-          </p>
+          <p>Data tersimpan lokal di browser perangkat dan tidak memerlukan server tambahan.</p>
         </div>
 
         <div className="faq-item">
-          <h3>Bagaimana cara menghapus progress dan mulai ulang?</h3>
-          <p>
-            Buka halaman Hasil (Hasil) dan klik tombol untuk reset pembelajaran. Atau bersihkan 
-            cache/cookies browser.
-          </p>
+          <h3>Bagaimana cara mulai ulang?</h3>
+          <p>Gunakan tombol <strong>Sesi Baru</strong> di beranda atau di halaman Mulai.</p>
         </div>
       </section>
 
       <section className="card">
-        <h2>📱 Kompatibilitas & Requirement</h2>
+        <h2>Kompatibilitas</h2>
         <ul>
-          <li><strong>Browser:</strong> Chrome, Firefox, Safari, atau Edge terbaru</li>
-          <li><strong>WebGL 2:</strong> Diperlukan untuk rendering 3D (kebanyakan browser modern mendukung)</li>
-          <li><strong>Internet:</strong> Koneksi stabil untuk loading model 3D dan audio</li>
-          <li><strong>Perangkat:</strong> Desktop, tablet, atau smartphone (landscape mode disarankan untuk mobile)</li>
-          <li><strong>RAM:</strong> Minimal 2GB untuk performa optimal</li>
+          <li>
+            <strong>Browser:</strong> Chrome, Firefox, Safari, atau Edge terbaru
+          </li>
+          <li>
+            <strong>Internet:</strong> Dibutuhkan untuk membuka flipbook Heyzine dan memuat audio
+          </li>
+          <li>
+            <strong>Perangkat:</strong> Desktop, tablet, atau smartphone
+          </li>
         </ul>
       </section>
 
       <section className="card">
-        <h2>🆘 Bantuan & Dukungan</h2>
+        <h2>Bantuan & Dukungan</h2>
         <p>
-          Jika mengalami masalah atau memiliki saran untuk improvement aplikasi, hubungi pengembang melalui:
+          Jika mengalami masalah atau memiliki saran pengembangan, gunakan halaman biodata untuk melihat informasi tim
+          pengembang.
         </p>
         <ul>
-          <li>Halaman Biodata (tersedia di menu Beranda)</li>
+          <li>Halaman Biodata Penulis</li>
           <li>Email yang tercantum di profil pengembang</li>
-          <li>Gunakan browser dev tools (F12 → Console) untuk laporan error teknis</li>
         </ul>
       </section>
 

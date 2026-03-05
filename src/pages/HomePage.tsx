@@ -1,6 +1,6 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { flipbookPages } from "../data/flipbookPages";
+import { flipbookPages, getFirstIncompleteFlipbookPageId } from "../data/flipbookPages";
 import { useSessionContext } from "../state/SessionContext";
 
 type MenuIconCardProps = {
@@ -84,6 +84,7 @@ export function HomePage() {
   const pretestDone = session.pretest.completed;
   const flipbookDone = session.flipbook.completed;
   const posttestDone = session.posttest.completed;
+  const firstIncompletePageId = getFirstIncompleteFlipbookPageId(session.flipbook.completedPages);
 
   const onSaveIdentity = (event: FormEvent) => {
     event.preventDefault();
@@ -96,71 +97,64 @@ export function HomePage() {
   };
 
   const onOpenFlipbook = () => {
-    // Always start from the first incomplete page, or first page if all completed
-    const firstIncomplete = flipbookPages.find((page) => !session.flipbook.completedPages.includes(page.id));
-    const pageId = firstIncomplete?.id || flipbookPages[0]?.id || "1";
-    console.log('Navigating to flipbook page:', pageId, 'Incomplete:', firstIncomplete?.id);
-    navigate(`/flipbook/${pageId}`, { replace: true });
+    navigate(`/mulai?page=${firstIncompletePageId}`, { replace: true });
   };
 
-  const menuCards = useMemo(
-    () => [
-      {
-        icon: "\u{1F4D8}",
-        label: "Mulai",
-        onClick: pretestDone ? onOpenFlipbook : undefined,
-        locked: !pretestDone,
-        lockText: pretestDone ? undefined : "Pretest dulu"
-      },
-      {
-        icon: "\u{1F9E0}",
-        label: "Pretest",
-        to: "/pretest"
-      },
-      {
-        icon: "\u{1F3C1}",
-        label: "Posttest",
-        to: flipbookDone ? "/posttest" : undefined,
-        locked: !flipbookDone,
-        lockText: "Selesaikan buku"
-      },
-      {
-        icon: "\u{1F3AE}",
-        label: "Mini Game",
-        href: "https://quiz.zep.us/id/play/EgQEOp"
-      },
-      {
-        icon: "\u{1F4DA}",
-        label: "CP TP ATP",
-        to: "/cp-tp-atp"
-      },
-      {
-        icon: "\u{1F4D6}",
-        label: "Panduan",
-        to: "/panduan-penggunaan"
-      },
-      {
-        icon: "\u{270D}\u{FE0F}",
-        label: "Biodata",
-        to: "/biodata-penulis"
-      },
-      {
-        icon: "\u{1F3C6}",
-        label: "Hasil",
-        to: posttestDone ? "/hasil-akhir" : undefined,
-        locked: !posttestDone,
-        lockText: "Posttest dulu"
-      }
-    ],
-    [flipbookDone, posttestDone, pretestDone]
-  );
+  const menuCards = [
+    {
+      icon: "\u{1F4D8}",
+      label: "Mulai",
+      onClick: pretestDone ? onOpenFlipbook : undefined,
+      locked: !pretestDone,
+      lockText: pretestDone ? undefined : "Pretest dulu"
+    },
+    {
+      icon: "\u{1F9E0}",
+      label: "Pretest",
+      to: "/pretest"
+    },
+    {
+      icon: "\u{1F3C1}",
+      label: "Posttest",
+      to: flipbookDone ? "/posttest" : undefined,
+      locked: !flipbookDone,
+      lockText: "Selesaikan buku"
+    },
+    {
+      icon: "\u{1F3AE}",
+      label: "Mini Game",
+      href: "https://quiz.zep.us/id/play/EgQEOp"
+    },
+    {
+      icon: "\u{1F4DA}",
+      label: "CP TP ATP",
+      to: "/cp-tp-atp"
+    },
+    {
+      icon: "\u{1F4D6}",
+      label: "Panduan",
+      to: "/panduan-penggunaan"
+    },
+    {
+      icon: "\u{270D}\u{FE0F}",
+      label: "Biodata",
+      to: "/biodata-penulis"
+    },
+    {
+      icon: "\u{1F3C6}",
+      label: "Hasil",
+      to: posttestDone ? "/hasil-akhir" : undefined,
+      locked: !posttestDone,
+      lockText: "Posttest dulu"
+    }
+  ];
 
   return (
     <main className="home-shell">
       <section className="home-topbar">
         <div className="home-brand">
           <h1>ARKANUH</h1>
-          <p>Flipbook Pop-up 3D</p>
+          <p>Flipbook Kisah Nabi Nuh</p>
         </div>
         <form className="mini-identity-form" onSubmit={onSaveIdentity}>
           <label htmlFor="nickname">Nama</label>

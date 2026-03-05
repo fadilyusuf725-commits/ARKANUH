@@ -1,81 +1,179 @@
-import { Navigate, useNavigate } from "react-router-dom";
-import { flipbookPages } from "../data/flipbookPages";
+import { useEffect, useMemo } from "react";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
+import { ProgressTracker } from "../components/ProgressTracker";
+import { VoiceNarration } from "../components/VoiceNarration";
+import {
+  flipbookPages,
+  flipbookPageMap,
+  getFirstIncompleteFlipbookPageId,
+  totalFlipbookPages
+} from "../data/flipbookPages";
+import { getVoiceAssetByPageId } from "../data/voiceManifest";
 import { useSessionContext } from "../state/SessionContext";
 
+const HEYZINE_EMBED_URL = "https://heyzine.com/flip-book/943e83c9d9.html";
+
 export function StartPage() {
-  const navigate = useNavigate();
-  const { session, restartSession } = useSessionContext();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { session, markFlipbookPageCompleted, restartSession } = useSessionContext();
+
+  const fallbackPageId = useMemo(
+    () => getFirstIncompleteFlipbookPageId(session.flipbook.completedPages),
+    [session.flipbook.completedPages]
+  );
+
+  const requestedPageId = searchParams.get("page");
+  const activePageId = requestedPageId && flipbookPageMap.has(requestedPageId) ? requestedPageId : fallbackPageId;
+  const activePage = flipbookPageMap.get(activePageId) ?? flipbookPages[0];
+  const activeIndex = flipbookPages.findIndex((page) => page.id === activePage.id);
+  const nextPage = activeIndex >= 0 ? flipbookPages[activeIndex + 1] : undefined;
+  const activeVoice = getVoiceAssetByPageId(activePage.id);
+  const nextVoice = nextPage ? getVoiceAssetByPageId(nextPage.id) : undefined;
+
+  useEffect(() => {
+    if (requestedPageId === activePageId) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("page", activePageId);
+    setSearchParams(nextParams, { replace: true });
+  }, [activePageId, requestedPageId, searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (!session.pretest.completed) {
+      return;
+    }
+
+    markFlipbookPageCompleted(activePage.id, totalFlipbookPages);
+  }, [activePage.id, markFlipbookPageCompleted, session.pretest.completed]);
 
   if (!session.pretest.completed) {
     return <Navigate to="/pretest" replace />;
   }
 
   const onSelectPage = (pageId: string) => {
-    navigate(`/flipbook/${pageId}`);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("page", pageId);
+    setSearchParams(nextParams);
   };
 
   const onRestart = () => {
     restartSession(session.profile.nickname);
-    navigate("/");
   };
 
   return (
-    <main className="page-shell">
-      <section className="hero-card">
-        <p className="eyebrow">Menu Cerita</p>
-        <h1>Pilih Cerita yang Ingin Dibaca</h1>
-        <p className="subtitle">Pilih halaman cerita untuk melanjutkan perjalanan Nabi Nuh</p>
+    <main className="page-shell reader-page">
+      <section className="hero-card reader-focus-hero">
+        <p className="eyebrow">Mulai Membaca</p>
+        <h1>Flipbook ARKANUH</h1>
+        <p className="subtitle">
+          Buka bukunya di panel ini, lalu pilih Hal 1-10 di bawah agar teks dan audio sesuai dengan halaman yang sedang
+          kamu baca.
+        </p>
       </section>
 
-      <section className="card">
-        <h2>Halaman Cerita</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1rem" }}>
+      <section className="card heyzine-stage">
+        <div className="heyzine-frame">
+          <iframe
+            allow="clipboard-write"
+            allowFullScreen
+            className="heyzine-iframe"
+            scrolling="no"
+            src={HEYZINE_EMBED_URL}
+            title="Flipbook ARKANUH"
+          />
+        </div>
+        <p className="reader-helper">Pilih halaman di bawah setelah membalik buku agar narasi dan audio tetap sinkron.</p>
+        <div className="button-row reader-toolbar">
+          <a
+            href={HEYZINE_EMBED_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-outline inline-btn-link"
+          >
+            Buka Buku di Tab Baru
+          </a>
+          <Link to="/" className="btn btn-outline inline-btn-link">
+            Kembali ke Menu
+          </Link>
+          <button type="button" className="btn btn-outline" onClick={onRestart}>
+            Sesi Baru
+          </button>
+        </div>
+      </section>
+
+      <section className="card page-selector-card">
+        <div className="progress-top-row">
+          <div>
+            <p className="eyebrow">Pilih Halaman</p>
+            <h2>Hal {activePage.id}</h2>
+          </div>
+          <strong>
+            {session.flipbook.completedPages.length}/{totalFlipbookPages}
+          </strong>
+        </div>
+        <div className="page-selector" role="tablist" aria-label="Pilih halaman cerita">
           {flipbookPages.map((page) => {
+            const isActive = page.id === activePage.id;
             const isCompleted = session.flipbook.completedPages.includes(page.id);
+
             return (
               <button
                 key={page.id}
                 type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={`page-chip ${isActive ? "is-active" : ""} ${isCompleted ? "is-complete" : ""}`.trim()}
                 onClick={() => onSelectPage(page.id)}
-                style={{
-                  padding: "1rem",
-                  border: "2px solid var(--color-primary)",
-                  borderRadius: "8px",
-                  background: isCompleted ? "var(--color-success-light)" : "white",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 200ms ease"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(59, 130, 246, 0.3)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
               >
-                <strong>{page.title}</strong>
-                {isCompleted && (
-                  <p style={{ color: "var(--color-success)", marginTop: "0.5rem", fontSize: "0.9em" }}>
-                    ✓ Sudah dibaca
-                  </p>
-                )}
+                {page.pageTexture ? <img src={page.pageTexture} alt="" className="page-chip-thumb" /> : null}
+                <span className="page-chip-meta">Hal {page.id}</span>
+                <strong className="page-chip-label">{page.title}</strong>
               </button>
             );
           })}
         </div>
       </section>
 
-      <section className="card">
-        <div className="button-row">
-          <button type="button" className="btn btn-outline" onClick={() => navigate("/")}>
-            Kembali ke Menu
-          </button>
-          <button type="button" className="btn btn-outline" onClick={onRestart}>
-            Mulai Sesi Baru
-          </button>
+      <section className="card story-panel">
+        <p className="eyebrow">Cerita Halaman {activePage.id}</p>
+        <h2>{activePage.title}</h2>
+        <p className="story-objective">
+          <strong>Tujuan belajar:</strong> {activePage.objective}
+        </p>
+        <div className="story-copy">
+          {activePage.narration.split("\n\n").map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
         </div>
+      </section>
+
+      <VoiceNarration
+        title={activePage.title}
+        text={activePage.narration}
+        audioSrc={activeVoice?.src}
+        nextAudioSrc={nextVoice?.src}
+        showText={false}
+      />
+
+      <ProgressTracker
+        completedPages={session.flipbook.completedPages}
+        currentPageId={activePage.id}
+        totalPages={totalFlipbookPages}
+      />
+
+      <section className="card story-actions">
+        {session.flipbook.completed ? (
+          <>
+            <p className="muted">Semua halaman sudah dibaca. Kamu bisa lanjut ke posttest.</p>
+            <Link to="/posttest" className="btn btn-primary inline-btn-link">
+              Lanjut ke Posttest
+            </Link>
+          </>
+        ) : (
+          <p className="muted">Baca semua 10 halaman agar menu Posttest terbuka.</p>
+        )}
       </section>
     </main>
   );

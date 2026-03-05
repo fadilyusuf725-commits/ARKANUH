@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getFirstIncompleteFlipbookPageId } from "../data/flipbookPages";
 import { pretestQuestions } from "../data/pretestQuestions";
-import { flipbookPages } from "../data/flipbookPages";
 import { useSessionContext } from "../state/SessionContext";
 
 const PRETEST_TOTAL = pretestQuestions.length;
@@ -37,14 +37,10 @@ export function PretestPage() {
         </section>
         <section className="card">
           <div className="button-row">
-            <button 
-              type="button" 
-              className="btn btn-primary" 
-              onClick={() => {
-                const firstIncomplete = flipbookPages.find((page) => !session.flipbook.completedPages.includes(page.id));
-                const pageId = firstIncomplete?.id || flipbookPages[0]?.id || "1";
-                navigate(`/flipbook/${pageId}`);
-              }}
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => navigate(`/mulai?page=${getFirstIncompleteFlipbookPageId(session.flipbook.completedPages)}`)}
             >
               Mulai Baca Cerita
             </button>
@@ -80,12 +76,11 @@ export function PretestPage() {
     const score = orderedQuestions.reduce((total, question, index) => {
       return total + (question.correctIndex === session.pretest.answers[index] ? 1 : 0);
     }, 0);
+
     finalizeAssessment("pretest", score);
-    // Navigate directly to first flipbook page after pretest
+
     setTimeout(() => {
-      const firstIncomplete = flipbookPages.find((page) => !session.flipbook.completedPages.includes(page.id));
-      const pageId = firstIncomplete?.id || flipbookPages[0]?.id || "1";
-      navigate(`/flipbook/${pageId}`);
+      navigate(`/mulai?page=${getFirstIncompleteFlipbookPageId(session.flipbook.completedPages)}`);
     }, 300);
   };
 

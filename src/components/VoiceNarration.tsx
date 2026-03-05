@@ -5,6 +5,7 @@ type VoiceNarrationProps = {
   title: string;
   audioSrc?: string;
   nextAudioSrc?: string;
+  showText?: boolean;
 };
 
 type VoiceStatus = "idle" | "loading" | "playing" | "paused";
@@ -24,7 +25,7 @@ function pickIndonesianVoice(): SpeechSynthesisVoice | null {
   return voices.find((voice) => voice.lang.toLowerCase().startsWith("id")) ?? null;
 }
 
-export function VoiceNarration({ text, title, audioSrc, nextAudioSrc }: VoiceNarrationProps) {
+export function VoiceNarration({ text, title, audioSrc, nextAudioSrc, showText = true }: VoiceNarrationProps) {
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [engine, setEngine] = useState<PlaybackEngine>("browser_tts");
   const [audioReady, setAudioReady] = useState(false);
@@ -270,7 +271,7 @@ export function VoiceNarration({ text, title, audioSrc, nextAudioSrc }: VoiceNar
         </div>
       </div>
 
-      <p aria-label={narrationLabel}>{text}</p>
+      {showText ? <p aria-label={narrationLabel}>{text}</p> : null}
 
       <div className="button-row">
         <button type="button" className="btn btn-primary" onClick={play} disabled={status === "loading"}>
