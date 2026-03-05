@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "models:fetch": "node ./scripts/fetch-tripo-models.mjs",
+    "models:optimize": "node ./scripts/optimize-tripo-models.mjs",
     "postbuild": "node ./scripts/create-spa-fallback.mjs",
     "preview": "vite preview"
   },
