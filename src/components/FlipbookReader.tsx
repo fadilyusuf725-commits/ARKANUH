@@ -2,38 +2,44 @@ import { useEffect, useRef, useState } from "react";
 import { flipbookPages } from "../data/flipbookPages";
 import "../styles/flipbook.css";
 
-// Page-flip library is loaded via CDN in index.html as window.St.PageFlip
+// Page-flip library loaded from npm
 let PageFlip: any = null;
 
 const loadPageFlip = async () => {
   if (PageFlip) return PageFlip;
   
-  // Page-flip from CDN is already loaded as window.St.PageFlip
-  if ((window as any).St && (window as any).St.PageFlip) {
-    PageFlip = (window as any).St.PageFlip;
-    console.log("PageFlip loaded from window.St.PageFlip (CDN)", PageFlip);
-    return PageFlip;
-  }
-  
-  // Fallback: try to load from npm if CDN fails
   try {
     const mod = await import("page-flip");
-    console.log("page-flip module fallback loaded:", mod);
+    console.log("page-flip module loaded:", mod);
+    console.log("module keys:", Object.keys(mod));
     console.log("mod.PageFlip:", mod.PageFlip);
     console.log("mod.default:", mod.default);
     
+    // Try different export patterns that page-flip v2.0.7 might use
     if (mod.PageFlip && typeof mod.PageFlip === "function") {
       PageFlip = mod.PageFlip;
+      console.log("✓ Using mod.PageFlip");
     } else if (mod.default && typeof mod.default === "function") {
       PageFlip = mod.default;
-    } else {
+      console.log("✓ Using mod.default");
+    } else if (typeof mod === "function") {
       PageFlip = mod;
+      console.log("✓ Using mod directly as function");
+    } else {
+      // If module exports an object with PageFlip inside
+      const exportObj = mod as any;
+      if (exportObj.PageFlip && typeof exportObj.PageFlip === "function") {
+        PageFlip = exportObj.PageFlip;
+        console.log("✓ Using exportObj.PageFlip");
+      } else {
+        throw new Error(`PageFlip not found. Module exports: ${JSON.stringify(Object.keys(exportObj))}`);
+      }
     }
     
-    console.log("Selected PageFlip (fallback):", PageFlip);
+    console.log("PageFlip loaded successfully:", PageFlip.name || "anonymous");
     return PageFlip;
   } catch (e) {
-    console.error("Failed to load page-flip:", e);
+    console.error("Failed to load page-flip from npm:", e);
     return null;
   }
 };
@@ -64,21 +70,28 @@ export function FlipbookReader({
         const PF = PageFlip || (await loadPageFlip());
 
         if (!PF || typeof PF !== "function") {
-          throw new Error(`PageFlip invalid: ${typeof PF}`);
+          throw new Error(`PageFlip invalid: ${typeof PF}. Expected "function" as constructor.`);
         }
+
+        console.log("✓ PageFlip constructor loaded");
 
         // Create container div for pages
         const flipbookContainer = document.createElement("div");
         flipbookContainer.id = "flipbook";
         flipbookContainer.style.width = "100%";
         flipbookContainer.style.height = "100%";
+        flipbookContainer.style.display = "flex";
+        flipbookContainer.style.flexWrap = "wrap";
+        flipbookContainer.style.margin = "0";
+        flipbookContainer.style.padding = "0";
         
         // Create all page elements first
         const pages: HTMLElement[] = [];
         
-        // Add cover page
+        // Add cover page (right page only, will be shown as single page)
         const coverDiv = document.createElement("div");
         coverDiv.className = "flipbook-page cover-page";
+        coverDiv.style.flex = "0 0 50%";
         coverDiv.innerHTML = `
           <div class="flipbook-cover">
             <div class="cover-content">
@@ -90,11 +103,12 @@ export function FlipbookReader({
         `;
         pages.push(coverDiv);
 
-        // Add all story pages
+        // Add all story pages (left page + right page pairs)
         flipbookPages.forEach((page) => {
           // Left page: text
           const leftDiv = document.createElement("div");
           leftDiv.className = "flipbook-page left-page";
+          leftDiv.style.flex = "0 0 50%";
           leftDiv.innerHTML = `
             <div class="page-text-content">
               <h2 class="page-title">${page.title}</h2>
@@ -109,6 +123,7 @@ export function FlipbookReader({
           const bgGradient = getPageGradient(page.id);
           const rightDiv = document.createElement("div");
           rightDiv.className = "flipbook-page right-page";
+          rightDiv.style.flex = "0 0 50%";
           rightDiv.innerHTML = `
             <div class="page-illustration" style="background: ${bgGradient}">
               <div class="illustration-placeholder">
@@ -124,6 +139,7 @@ export function FlipbookReader({
         // Add back cover
         const backDiv = document.createElement("div");
         backDiv.className = "flipbook-page back-cover-page";
+        backDiv.style.flex = "0 0 50%";
         backDiv.innerHTML = `
           <div class="flipbook-back-cover">
             <div class="back-cover-content">
@@ -134,17 +150,20 @@ export function FlipbookReader({
         `;
         pages.push(backDiv);
 
-        // Append all pages to container
+        console.log(`✓ Created ${pages.length} page elements`);
+
+        // Append all pages to container BEFORE creating PageFlip
         for (const page of pages) {
           flipbookContainer.appendChild(page);
         }
         
         // Append container to the ref
         containerRef.current?.appendChild(flipbookContainer);
+        console.log("✓ Pages appended to DOM");
 
-        // Create PageFlip instance with loadFromHTML
-        console.log("Creating PageFlip instance with", pages.length, "pages");
-        const flipBook = new PF(flipbookContainer, {
+        // Create PageFlip instance with explicit configuration
+        console.log("Creating PageFlip instance with following options:");
+        const options = {
           width: 500,
           height: 650,
           size: "fixed",
@@ -153,7 +172,7 @@ export function FlipbookReader({
           minHeight: 390,
           maxHeight: 1350,
           showCover: true,
-          autoSize: true,
+          autoSize: false,
           maxShadowOpacity: 0.5,
           useMouseEvents: true,
           disableFlip: false,
@@ -161,43 +180,31 @@ export function FlipbookReader({
           usePortrait: true,
           startZIndex: 0,
           drawShadow: true,
-          flips: pages.length * 2,
+          flips: pages.length,
           duration: 800,
           mobileScrollSupport: true,
-        });
-
-        flipBookRef.current = flipBook;
-        console.log("PageFlip instance created:", flipBook);
-        console.log("Available methods:", Object.getOwnPropertyNames(Object.getPrototypeOf(flipBook)));
+          pages: pages,
+        };
+        console.log("Options:", JSON.stringify(options, null, 2));
         
-        // Try to load pages using loadFromHTML
-        try {
-          if (typeof flipBook.loadFromHTML === "function") {
-            console.log("Calling loadFromHTML with", pages.length, "pages");
-            flipBook.loadFromHTML(pages);
-          } else {
-            console.warn("loadFromHTML not available, trying alternative methods");
-            // Fallback: add pages individually
-            if (typeof flipBook.addPage === "function") {
-              console.log("Using addPage() method as fallback");
-              pages.forEach((pageEl, idx) => {
-                flipBook.addPage(pageEl, idx);
-              });
-            } else {
-              throw new Error("Neither loadFromHTML nor addPage is available");
-            }
-          }
-          console.log("Pages loaded successfully");
-        } catch (err) {
-          console.error("Error loading pages:", err);
-          throw err;
+        const flipBook = new PF(flipbookContainer, options);
+        flipBookRef.current = flipBook;
+        console.log("✓ PageFlip instance created successfully");
+        console.log("  Methods available:", Object.getOwnPropertyNames(Object.getPrototypeOf(flipBook)).filter((m) => !m.startsWith("_")));
+        
+        // The pages should now be loaded automatically with options.pages
+        // But let's verify and try alternatives if needed
+        if (typeof flipBook.load === "function") {
+          console.log("Calling flipBook.load()");
+          flipBook.load();
         }
+        console.log("✓ Flipbook initialization complete");
 
         // Event listeners
         flipBook.on("change", (object: any) => {
           try {
             const pageNum = object.data;
-            console.log("Page changed to:", pageNum);
+            console.log("Page changed event fired - page:", pageNum);
             setCurrentPageIndex(pageNum);
 
             // Calculate story page index (account for cover and left/right pages)
@@ -238,11 +245,21 @@ export function FlipbookReader({
           }
         });
 
+        flipBook.on("init", () => {
+          console.log("✓ PageFlip 'init' event fired - ready for interaction");
+        });
+
+        flipBook.on("error", (err: any) => {
+          console.error("✗ PageFlip error event:", err);
+          setError(`Flipbook error: ${err}`);
+        });
+
         setIsInitialized(true);
         setError(null);
+        console.log("✓✓✓ ALL SET - Flipbook ready!");
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Unknown error";
-      console.error("Failed to initialize flipbook:", err);
+      console.error("✗ Failed to initialize flipbook:", err);
       setError(`Flipbook error: ${errorMsg}`);
     }
     })();
@@ -250,6 +267,7 @@ export function FlipbookReader({
     return () => {
       try {
         if (flipBookRef.current && typeof flipBookRef.current.destroy === "function") {
+          console.log("Destroying flipbook instance");
           flipBookRef.current.destroy();
         }
         if (containerRef.current) {
