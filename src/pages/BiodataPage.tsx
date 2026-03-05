@@ -13,7 +13,7 @@ export function BiodataPage() {
         <h2>👨‍🏫 Pembimbing</h2>
         <div className="biodata-team-member team-with-photo">
           <div className="team-photo">
-            <img src="/ARKANUH/assets/team-photos/ani-nur-aeni.jpg" alt="Dr. Ani Nur Aeni, M.Pd." />
+            <img src="/ARKANUH/assets/team-photos/aninuraeni.jpg" alt="Dr. Ani Nur Aeni, M.Pd." />
           </div>
           <div className="team-info">
             <h3>Dr. Ani Nur Aeni, M.Pd.</h3>
