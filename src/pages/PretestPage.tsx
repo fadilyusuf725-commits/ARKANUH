@@ -72,7 +72,10 @@ export function PretestPage() {
       return total + (question.correctIndex === session.pretest.answers[index] ? 1 : 0);
     }, 0);
     finalizeAssessment("pretest", score);
-    navigate("/mulai");
+    // Wait for state update before navigating
+    setTimeout(() => {
+      navigate("/mulai");
+    }, 300);
   };
 
   return (
