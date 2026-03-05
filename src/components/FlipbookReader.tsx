@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import HTMLFlipBook from "page-flip";
-import { FlipbookPage } from "../types/domain";
 import { flipbookPages } from "../data/flipbookPages";
 import { withBasePath } from "../lib/assetPaths";
 import "../styles/flipbook.css";
@@ -15,25 +14,34 @@ export function FlipbookReader({
   autoPlayAudio = true,
 }: FlipbookReaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const flipBookRef = useRef<HTMLFlipBook | null>(null);
+  const flipBookRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Initialize Flipbook
   useEffect(() => {
     if (!containerRef.current || isInitialized) return;
 
     try {
-      const flipBook = new HTMLFlipBook(containerRef.current, {
-        width: 550,
-        height: 733,
+      // Create canvas element for page-flip
+      const canvas = document.createElement("div");
+      canvas.id = "flipbook";
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      containerRef.current.appendChild(canvas);
+
+      // Initialize page-flip
+      const flipBook = new HTMLFlipBook(canvas, {
+        width: 500,
+        height: 650,
         size: "fixed",
-        minWidth: 315,
-        maxWidth: 1000,
-        minHeight: 420,
-        maxHeight: 1533,
+        minWidth: 300,
+        maxWidth: 900,
+        minHeight: 390,
+        maxHeight: 1350,
         showCover: true,
         autoSize: true,
         maxShadowOpacity: 0.5,
@@ -43,60 +51,99 @@ export function FlipbookReader({
         usePortrait: true,
         startZIndex: 0,
         drawShadow: true,
-        flips: flipbookPages.length * 2, // Each page = 2 sides
+        flips: (flipbookPages.length + 1) * 2,
         duration: 800,
         mobileScrollSupport: true,
       });
 
       flipBookRef.current = flipBook;
 
-      // Add cover page
-      const coverPage = document.createElement("div");
-      coverPage.className = "flipbook-cover";
-      coverPage.innerHTML = `
-        <div class="cover-content">
-          <h1>KISAH NABI NUH</h1>
-          <p>Cerita Iman & Kesabaran</p>
-          <div class="cover-decoration"></div>
+      let pageIndex = 0;
+
+      // Create and add cover page
+      const coverDiv = document.createElement("div");
+      coverDiv.className = "flipbook-page cover-page";
+      coverDiv.innerHTML = `
+        <div class="flipbook-cover">
+          <div class="cover-content">
+            <h1>KISAH NABI NUH</h1>
+            <p>Cerita Iman & Kesabaran</p>
+            <div class="cover-decoration"></div>
+          </div>
         </div>
       `;
-      flipBook.addPage(coverPage, 0);
+      flipBook.addPage(coverDiv, pageIndex++);
 
-      // Add content pages
-      flipbookPages.forEach((page, index) => {
-        const leftPage = createPageContent(page, "left");
-        const rightPage = createPageContent(page, "right");
+      // Add all story pages
+      flipbookPages.forEach((page) => {
+        // Left page: text
+        const leftDiv = document.createElement("div");
+        leftDiv.className = "flipbook-page left-page";
+        leftDiv.innerHTML = `
+          <div class="page-text-content">
+            <h2 class="page-title">${page.title}</h2>
+            <div class="page-number">Halaman ${page.id}</div>
+            <p class="page-objective">${page.objective}</p>
+            <div class="page-narration">${page.narration.replace(/\n/g, "<br>")}</div>
+          </div>
+        `;
+        flipBook.addPage(leftDiv, pageIndex++);
 
-        flipBook.addPage(leftPage, index * 2 + 1);
-        flipBook.addPage(rightPage, index * 2 + 2);
+        // Right page: illustration
+        const bgGradient = getPageGradient(page.id);
+        const rightDiv = document.createElement("div");
+        rightDiv.className = "flipbook-page right-page";
+        rightDiv.innerHTML = `
+          <div class="page-illustration" style="background: ${bgGradient}">
+            <div class="illustration-placeholder">
+              <div class="illustration-icon">${getPageIcon(page.id)}</div>
+              <h3>${page.floatingText || "Ilustrasi"}</h3>
+              <p>${page.objective}</p>
+            </div>
+          </div>
+        `;
+        flipBook.addPage(rightDiv, pageIndex++);
       });
 
       // Add back cover
-      const backCover = document.createElement("div");
-      backCover.className = "flipbook-back-cover";
-      backCover.innerHTML = `
-        <div class="back-cover-content">
-          <p>"Kesabaran adalah kunci kesuksesan"</p>
-          <p>- Kisah Nabi Nuh</p>
+      const backDiv = document.createElement("div");
+      backDiv.className = "flipbook-page back-cover-page";
+      backDiv.innerHTML = `
+        <div class="flipbook-back-cover">
+          <div class="back-cover-content">
+            <p>"Kesabaran adalah kunci kesuksesan"</p>
+            <p>- Kisah Nabi Nuh</p>
+          </div>
         </div>
       `;
-      flipBook.addPage(backCover, flipbookPages.length * 2 + 1);
+      flipBook.addPage(backDiv, pageIndex);
 
       // Event listeners
       flipBook.on("change", (object: any) => {
-        const pageNum = object.data;
-        setCurrentPageIndex(pageNum);
-        
-        if (pageNum > 0 && pageNum <= flipbookPages.length) {
-          const actualPageIndex = Math.floor((pageNum - 1) / 2);
-          const page = flipbookPages[actualPageIndex];
-          onPageChange?.(page.id, actualPageIndex);
-          
-          if (autoPlayAudio && audioRef.current) {
-            audioRef.current.src = withBasePath(page.voAudio);
-            audioRef.current.play();
-            setIsPlaying(true);
+        try {
+          const pageNum = object.data;
+          setCurrentPageIndex(pageNum);
+
+          // Determine which story page we're on (accounting for cover)
+          if (pageNum >= 2 && pageNum <= flipbookPages.length * 2 + 1) {
+            const storyPageIdx = Math.floor((pageNum - 2) / 2);
+            if (storyPageIdx >= 0 && storyPageIdx < flipbookPages.length) {
+              const page = flipbookPages[storyPageIdx];
+              onPageChange?.(page.id, storyPageIdx);
+
+              if (autoPlayAudio && audioRef.current && pageNum % 2 === 1) {
+                // Play audio on left pages (odd page numbers)
+                audioRef.current.src = withBasePath(page.voAudio);
+                audioRef.current.play().catch(() => {
+                  console.warn("Audio play failed");
+                  setIsPlaying(false);
+                });
+                setIsPlaying(true);
+              }
+            }
           }
+        } catch (err) {
+          console.error("Error in flip change event:", err);
         }
       });
 
@@ -108,48 +155,88 @@ export function FlipbookReader({
       });
 
       setIsInitialized(true);
+      setError(null);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
       console.error("Failed to initialize flipbook:", error);
+      setError(`Flipbook error: ${errorMsg}`);
     }
 
     return () => {
-      if (flipBookRef.current) {
-        flipBookRef.current = null;
+      try {
+        if (flipBookRef.current && flipBookRef.current.destroy) {
+          flipBookRef.current.destroy();
+        }
+        if (containerRef.current) {
+          containerRef.current.innerHTML = "";
+        }
+      } catch (err) {
+        console.error("Cleanup error:", err);
       }
     };
   }, [isInitialized, onPageChange, autoPlayAudio]);
 
   // Navigation controls
   const handlePrev = () => {
-    if (flipBookRef.current) {
-      flipBookRef.current.prevPage();
+    try {
+      if (flipBookRef.current && flipBookRef.current.prevPage) {
+        flipBookRef.current.prevPage();
+      }
+    } catch (err) {
+      console.error("Error going to prev page:", err);
     }
   };
 
   const handleNext = () => {
-    if (flipBookRef.current) {
-      flipBookRef.current.nextPage();
+    try {
+      if (flipBookRef.current && flipBookRef.current.nextPage) {
+        flipBookRef.current.nextPage();
+      }
+    } catch (err) {
+      console.error("Error going to next page:", err);
     }
   };
 
   const handleToggleAudio = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        audioRef.current.play();
-        setIsPlaying(true);
+    try {
+      if (audioRef.current) {
+        if (isPlaying) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        } else {
+          audioRef.current.play().catch(() => {
+            console.warn("Audio play failed");
+            setIsPlaying(false);
+          });
+          setIsPlaying(true);
+        }
       }
+    } catch (err) {
+      console.error("Error toggling audio:", err);
     }
   };
 
+  if (error) {
+    return (
+      <div style={{ padding: "20px", color: "red" }}>
+        <h3>Flipbook Error</h3>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flipbook-reader">
-      {/* Flipbook Container */}
-      <div className="flipbook-container">
-        <div ref={containerRef} className="flipbook" />
-      </div>
+      {/* Hidden audio element */}
+      <audio
+        ref={audioRef}
+        onEnded={() => setIsPlaying(false)}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+
+      {/* Flipbook Canvas Container */}
+      <div className="flipbook-canvas" ref={containerRef} />
 
       {/* Controls */}
       <div className="flipbook-controls">
@@ -157,21 +244,13 @@ export function FlipbookReader({
           ← Sebelumnya
         </button>
 
-        <div className="audio-controls">
-          <audio
-            ref={audioRef}
-            onEnded={() => setIsPlaying(false)}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-          />
-          <button
-            onClick={handleToggleAudio}
-            className={`audio-btn ${isPlaying ? "playing" : ""}`}
-            title={isPlaying ? "Hentikan Audio" : "Putar Audio"}
-          >
-            {isPlaying ? "🔊 Pause" : "🔇 Play"}
-          </button>
-        </div>
+        <button
+          onClick={handleToggleAudio}
+          className={`audio-btn ${isPlaying ? "playing" : ""}`}
+          title={isPlaying ? "Hentikan Audio" : "Putar Audio"}
+        >
+          {isPlaying ? "🔊 Pause" : "🔇 Play"}
+        </button>
 
         <button onClick={handleNext} className="control-btn next-btn" title="Halaman Berikutnya">
           Berikutnya →
@@ -180,46 +259,10 @@ export function FlipbookReader({
 
       {/* Page Indicator */}
       <div className="page-indicator">
-        Halaman {Math.floor((currentPageIndex - 1) / 2) + 1} / {flipbookPages.length}
+        Halaman {Math.max(0, Math.floor((currentPageIndex - 1) / 2))} / {flipbookPages.length}
       </div>
     </div>
   );
-}
-
-// Helper function to create page content with text and illustration
-function createPageContent(
-  page: FlipbookPage,
-  side: "left" | "right"
-): HTMLDivElement {
-  const pageDiv = document.createElement("div");
-  pageDiv.className = `flipbook-page ${side}-page`;
-
-  if (side === "left") {
-    // Left page: Text content
-    pageDiv.innerHTML = `
-      <div class="page-text-content">
-        <h2 class="page-title">${page.title}</h2>
-        <div class="page-number">Halaman ${page.id}</div>
-        <p class="page-objective">${page.objective}</p>
-        <div class="page-narration">${page.narration.replace(/\n/g, "<br>")}</div>
-      </div>
-    `;
-  } else {
-    // Right page: Illustration/Background
-    const bgGradient = getPageGradient(page.id);
-    
-    pageDiv.innerHTML = `
-      <div class="page-illustration" style="background: ${bgGradient}">
-        <div class="illustration-placeholder">
-          <div class="illustration-icon">${getPageIcon(page.id)}</div>
-          <h3>${page.floatingText || "Ilustrasi"}</h3>
-          <p>${page.objective}</p>
-        </div>
-      </div>
-    `;
-  }
-
-  return pageDiv;
 }
 
 // Get gradient colors per page theme
