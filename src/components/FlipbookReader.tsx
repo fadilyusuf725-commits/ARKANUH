@@ -68,37 +68,16 @@ export function FlipbookReader({
           throw new Error(`PageFlip invalid: ${typeof PF}`);
         }
 
-        const canvas = document.createElement("div");
-        canvas.id = "flipbook";
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        containerRef.current?.appendChild(canvas);
-
-        const flipBook = new PF(canvas, {
-        width: 500,
-        height: 650,
-        size: "fixed",
-        minWidth: 300,
-        maxWidth: 900,
-        minHeight: 390,
-        maxHeight: 1350,
-        showCover: true,
-        autoSize: true,
-        maxShadowOpacity: 0.5,
-        useMouseEvents: true,
-        disableFlip: false,
-        clickEventForward: true,
-        usePortrait: true,
-        startZIndex: 0,
-        drawShadow: true,
-        flips: (flipbookPages.length + 1) * 2,
-        duration: 800,
-        mobileScrollSupport: true,
-      });
-
-      flipBookRef.current = flipBook;
-
-        // Create and add cover page
+        // Create container div for pages
+        const flipbookContainer = document.createElement("div");
+        flipbookContainer.id = "flipbook";
+        flipbookContainer.style.width = "100%";
+        flipbookContainer.style.height = "100%";
+        
+        // Create all page elements first
+        const pages: HTMLElement[] = [];
+        
+        // Add cover page
         const coverDiv = document.createElement("div");
         coverDiv.className = "flipbook-page cover-page";
         coverDiv.innerHTML = `
@@ -110,9 +89,7 @@ export function FlipbookReader({
             </div>
           </div>
         `;
-        flipBook.addPage(coverDiv, 0);
-
-        let pageIndex = 1;
+        pages.push(coverDiv);
 
         // Add all story pages
         flipbookPages.forEach((page) => {
@@ -127,7 +104,7 @@ export function FlipbookReader({
               <div class="page-narration">${page.narration.replace(/\n/g, "<br>")}</div>
             </div>
           `;
-          flipBook.addPage(leftDiv, pageIndex++);
+          pages.push(leftDiv);
 
           // Right page: illustration
           const bgGradient = getPageGradient(page.id);
@@ -142,7 +119,7 @@ export function FlipbookReader({
               </div>
             </div>
           `;
-          flipBook.addPage(rightDiv, pageIndex++);
+          pages.push(rightDiv);
         });
 
         // Add back cover
@@ -156,7 +133,46 @@ export function FlipbookReader({
             </div>
           </div>
         `;
-        flipBook.addPage(backDiv, pageIndex);
+        pages.push(backDiv);
+
+        // Append all pages to container
+        for (const page of pages) {
+          flipbookContainer.appendChild(page);
+        }
+        
+        // Append container to the ref
+        containerRef.current?.appendChild(flipbookContainer);
+
+        // Create PageFlip instance with loadFromHTML
+        console.log("Creating PageFlip instance with", pages.length, "pages");
+        const flipBook = new PF(flipbookContainer, {
+          width: 500,
+          height: 650,
+          size: "fixed",
+          minWidth: 300,
+          maxWidth: 900,
+          minHeight: 390,
+          maxHeight: 1350,
+          showCover: true,
+          autoSize: true,
+          maxShadowOpacity: 0.5,
+          useMouseEvents: true,
+          disableFlip: false,
+          clickEventForward: true,
+          usePortrait: true,
+          startZIndex: 0,
+          drawShadow: true,
+          flips: pages.length * 2,
+          duration: 800,
+          mobileScrollSupport: true,
+        });
+
+        flipBookRef.current = flipBook;
+        console.log("PageFlip instance created:", flipBook);
+        console.log("Calling loadFromHTML with", pages.length, "pages");
+        
+        // Load pages using loadFromHTML API
+        flipBook.loadFromHTML(pages);
 
         // Event listeners
         flipBook.on("change", (object: any) => {
