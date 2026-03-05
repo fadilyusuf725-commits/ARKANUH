@@ -853,6 +853,16 @@
   order: 3;
 }
 
+.control-btn.back-btn {
+  order: 4;
+  background: linear-gradient(135deg, #1a7f82 0%, #2b9e8e 100%);
+  box-shadow: 0 4px 12px rgba(26, 127, 130, 0.4);
+}
+
+.control-btn.back-btn:hover {
+  box-shadow: 0 6px 20px rgba(26, 127, 130, 0.6);
+}
+
 .audio-controls {
   order: 2;
   display: flex;

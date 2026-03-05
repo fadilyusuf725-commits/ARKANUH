@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { flipbookPages } from "../data/flipbookPages";
 import "../styles/flipbook.css";
 
@@ -46,6 +47,7 @@ export function FlipbookReader({
   onPageChange,
   autoPlayAudio = true,
 }: FlipbookReaderProps) {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const flipBookRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -321,6 +323,19 @@ export function FlipbookReader({
     }
   };
 
+  const handleBackToMenu = () => {
+    try {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Error navigating back:", err);
+      navigate("/");
+    }
+  };
+
   if (error) {
     return (
       <div style={{ padding: "20px", color: "red", textAlign: "center" }}>
@@ -362,6 +377,10 @@ export function FlipbookReader({
 
         <button onClick={handleNext} className="control-btn next-btn" title="Halaman Berikutnya">
           Berikutnya →
+        </button>
+
+        <button onClick={handleBackToMenu} className="control-btn back-btn" title="Kembali ke Menu Utama">
+          🏠 Kembali
         </button>
       </div>
 
