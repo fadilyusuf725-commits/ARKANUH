@@ -1,14 +1,21 @@
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { FlipbookReader } from "../components/FlipbookReader";
-import { totalFlipbookPages } from "../data/flipbookPages";
+import { flipbookPageMap, totalFlipbookPages } from "../data/flipbookPages";
 import { useSessionContext } from "../state/SessionContext";
 
 export function FlipbookReaderPage() {
   const navigate = useNavigate();
+  const { pageId } = useParams<{ pageId: string }>();
   const { session, markFlipbookPageCompleted } = useSessionContext();
 
   if (!session.pretest.completed) {
     return <Navigate to="/pretest" replace />;
+  }
+
+  // Validate pageId exists
+  if (!pageId || !flipbookPageMap.has(pageId)) {
+    console.warn("Invalid page ID:", pageId, "Redirecting to first page");
+    return <Navigate to="/flipbook/1" replace />;
   }
 
   const handlePageChange = (pageId: string, pageIndex: number) => {

@@ -96,9 +96,11 @@ export function HomePage() {
   };
 
   const onOpenFlipbook = () => {
+    // Always start from the first incomplete page, or first page if all completed
     const firstIncomplete = flipbookPages.find((page) => !session.flipbook.completedPages.includes(page.id));
-    const pageId = firstIncomplete?.id || flipbookPages[0]?.id || "page-01";
-    navigate(`/flipbook/${pageId}`);
+    const pageId = firstIncomplete?.id || flipbookPages[0]?.id || "1";
+    console.log('Navigating to flipbook page:', pageId, 'Incomplete:', firstIncomplete?.id);
+    navigate(`/flipbook/${pageId}`, { replace: true });
   };
 
   const menuCards = useMemo(
@@ -108,7 +110,7 @@ export function HomePage() {
         label: "Mulai",
         onClick: pretestDone ? onOpenFlipbook : undefined,
         locked: !pretestDone,
-        lockText: "Pretest dulu"
+        lockText: pretestDone ? undefined : "Pretest dulu"
       },
       {
         icon: "\u{1F9E0}",
