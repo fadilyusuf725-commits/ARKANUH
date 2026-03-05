@@ -8,6 +8,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { PosttestPage } from "./pages/PosttestPage";
 import { PretestPage } from "./pages/PretestPage";
 import { StartPage } from "./pages/StartPage";
+import { UserGuidePage } from "./pages/UserGuidePage";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/pretest" element={<PretestPage />} />
         <Route path="/biodata-penulis" element={<BiodataPage />} />
+        <Route path="/panduan-penggunaan" element={<UserGuidePage />} />
         <Route path="/cp-tp-atp" element={<CurriculumPage />} />
         <Route path="/mulai" element={<StartPage />} />
         <Route path="/flipbook/:pageId" element={<FlipbookReaderPage />} />

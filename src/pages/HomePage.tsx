@@ -115,6 +115,11 @@ export function HomePage() {
         to: "/cp-tp-atp"
       },
       {
+        icon: "\u{1F4D6}",
+        label: "Panduan",
+        to: "/panduan-penggunaan"
+      },
+      {
         icon: "\u{270D}\u{FE0F}",
         label: "Biodata",
         to: "/biodata-penulis"
