@@ -309,6 +309,42 @@ input[type="text"] {
   gap: 14px;
 }
 
+.welcome-shell {
+  min-height: calc(100dvh - 32px);
+  align-content: center;
+}
+
+.welcome-card {
+  text-align: center;
+  gap: 14px;
+  justify-items: center;
+  background: linear-gradient(180deg, #f5fbff 0%, #e8f7ff 100%);
+}
+
+.welcome-card h1 {
+  font-size: clamp(2.3rem, 6vw, 4rem);
+}
+
+.welcome-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.welcome-badge {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--blue-700);
+  font-weight: 700;
+}
+
+.welcome-actions {
+  justify-content: center;
+}
+
 .reader-focus-hero {
   background: linear-gradient(180deg, #f5fbff 0%, #eef8ff 100%);
 }

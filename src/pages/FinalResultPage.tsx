@@ -62,7 +62,7 @@ export function FinalResultPage() {
           <button type="button" className="btn btn-primary" onClick={onNewSession}>
             Mulai Sesi Baru
           </button>
-          <button type="button" className="btn btn-outline" onClick={() => navigate("/")}>
+          <button type="button" className="btn btn-outline" onClick={() => navigate("/menu")}>
             Kembali ke Menu
           </button>
         </div>

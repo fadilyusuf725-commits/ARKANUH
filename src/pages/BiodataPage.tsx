@@ -197,8 +197,8 @@ export function BiodataPage() {
           <Link to="/panduan-penggunaan" className="btn btn-outline">
             Baca Panduan
           </Link>
-          <Link to="/" className="btn btn-outline">
-            Kembali ke Home
+          <Link to="/menu" className="btn btn-outline">
+            Kembali ke Menu
           </Link>
         </div>
       </section>

@@ -15,7 +15,7 @@ async function runOptimize(inputFile, outputFile) {
       inputFile,
       outputFile,
       "--compress",
-      "meshopt",
+      "false",
       "--texture-compress",
       "webp",
       "--texture-size",

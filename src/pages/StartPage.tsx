@@ -12,7 +12,7 @@ import {
 import { getVoiceAssetByPageId } from "../data/voiceManifest";
 import { useSessionContext } from "../state/SessionContext";
 
-const HEYZINE_EMBED_URL = "https://heyzine.com/flip-book/943e83c9d9.html";
+const HEYZINE_EMBED_URL = "https://heyzine.com/flip-book/88f0fa4179.html#page/20";
 
 export function StartPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -95,7 +95,7 @@ export function StartPage() {
           >
             Buka Buku di Tab Baru
           </a>
-          <Link to="/" className="btn btn-outline inline-btn-link">
+          <Link to="/menu" className="btn btn-outline inline-btn-link">
             Kembali ke Menu
           </Link>
           <button type="button" className="btn btn-outline" onClick={onRestart}>

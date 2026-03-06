@@ -80,7 +80,7 @@ export function CurriculumPage() {
       </section>
 
       <section className="card">
-        <Link to="/" className="btn btn-outline inline-btn-link">
+        <Link to="/menu" className="btn btn-outline inline-btn-link">
           Kembali ke Menu
         </Link>
       </section>

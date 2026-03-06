@@ -93,7 +93,7 @@ export function HomePage() {
 
   const onStartNewSession = () => {
     restartSession(nicknameInput);
-    navigate("/");
+    navigate("/menu");
   };
 
   const onOpenFlipbook = () => {
