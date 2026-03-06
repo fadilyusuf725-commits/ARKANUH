@@ -88,11 +88,19 @@ export function InlineModelViewer({ title, modelSrc, posterSrc, assetPageUrl }: 
             src={modelSrc}
             poster={posterSrc}
             camera-controls
+            camera-target="auto auto auto"
+            camera-orbit="0deg 78deg 82%"
+            min-camera-orbit="auto auto 55%"
+            max-camera-orbit="auto auto 165%"
+            field-of-view="24deg"
+            min-field-of-view="18deg"
+            max-field-of-view="32deg"
             auto-rotate
             rotation-per-second="18deg"
             shadow-intensity="0.9"
             environment-image="neutral"
             exposure="1"
+            disable-pan
             interaction-prompt="none"
             loading="eager"
             className="model-viewer-canvas"
