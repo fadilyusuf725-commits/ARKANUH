@@ -6,6 +6,7 @@ type VoiceNarrationProps = {
   audioSrc?: string;
   nextAudioSrc?: string;
   showText?: boolean;
+  variant?: "card" | "compact";
 };
 
 type VoiceStatus = "idle" | "loading" | "playing" | "paused";
@@ -25,7 +26,14 @@ function pickIndonesianVoice(): SpeechSynthesisVoice | null {
   return voices.find((voice) => voice.lang.toLowerCase().startsWith("id")) ?? null;
 }
 
-export function VoiceNarration({ text, title, audioSrc, nextAudioSrc, showText = true }: VoiceNarrationProps) {
+export function VoiceNarration({
+  text,
+  title,
+  audioSrc,
+  nextAudioSrc,
+  showText = true,
+  variant = "card"
+}: VoiceNarrationProps) {
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [engine, setEngine] = useState<PlaybackEngine>("browser_tts");
   const [audioReady, setAudioReady] = useState(false);
@@ -35,6 +43,18 @@ export function VoiceNarration({ text, title, audioSrc, nextAudioSrc, showText =
   const narrationLabel = useMemo(() => `Narasi: ${title}`, [title]);
   const engineLabel = useMemo(() => (engine === "audio_file" ? "Audio File" : "TTS Browser"), [engine]);
   const canUseVoice = audioReady || ttsSupported;
+  const statusLabel = useMemo(() => {
+    switch (status) {
+      case "loading":
+        return "Memuat suara";
+      case "playing":
+        return "Sedang diputar";
+      case "paused":
+        return "Dijeda";
+      default:
+        return "Siap diputar";
+    }
+  }, [status]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -253,10 +273,69 @@ export function VoiceNarration({ text, title, audioSrc, nextAudioSrc, showText =
   };
 
   if (!canUseVoice) {
+    if (variant === "compact") {
+      return (
+        <section className="reader-voice-inline is-disabled" aria-label={`Voice over ${title}`}>
+          <div className="reader-voice-inline-meta">
+            <span className="voice-mini-badge">VO</span>
+            <span className="reader-voice-inline-status">Audio belum tersedia</span>
+          </div>
+        </section>
+      );
+    }
+
     return (
       <section className="card">
         <p className="eyebrow">Voice Over</p>
         <p>Perangkat ini belum mendukung audio file maupun text-to-speech.</p>
+      </section>
+    );
+  }
+
+  if (variant === "compact") {
+    return (
+      <section className="reader-voice-inline" aria-label={narrationLabel}>
+        <div className="reader-voice-inline-meta">
+          <span className="voice-mini-badge">VO</span>
+          <div className="reader-voice-inline-text">
+            <strong>Voice Over</strong>
+            <span>
+              {statusLabel} · {engineLabel}
+            </span>
+          </div>
+        </div>
+        <div className="voice-icon-strip">
+          <button
+            type="button"
+            className="voice-icon-button is-primary"
+            onClick={status === "paused" ? resume : play}
+            disabled={status === "loading"}
+            aria-label={status === "paused" ? "Lanjutkan voice over" : "Putar voice over"}
+            title={status === "paused" ? "Lanjutkan" : "Putar"}
+          >
+            <span aria-hidden="true">{status === "paused" ? "▶" : "▶"}</span>
+          </button>
+          <button
+            type="button"
+            className="voice-icon-button"
+            onClick={pause}
+            disabled={status !== "playing"}
+            aria-label="Jeda voice over"
+            title="Jeda"
+          >
+            <span aria-hidden="true">⏸</span>
+          </button>
+          <button
+            type="button"
+            className="voice-icon-button"
+            onClick={replay}
+            disabled={status === "loading"}
+            aria-label="Ulangi voice over"
+            title="Ulang"
+          >
+            <span aria-hidden="true">↻</span>
+          </button>
+        </div>
       </section>
     );
   }

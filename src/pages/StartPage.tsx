@@ -85,23 +85,28 @@ export function StartPage() {
             title="Flipbook ARKANUH"
           />
         </div>
-        <p className="reader-helper">Pilih halaman di bawah setelah membalik buku agar narasi dan audio tetap sinkron.</p>
-        <div className="button-row reader-toolbar">
-          <a
-            href={HEYZINE_EMBED_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-outline inline-btn-link"
-          >
-            Buka Buku di Tab Baru
-          </a>
-          <Link to="/menu" className="btn btn-outline inline-btn-link">
-            Kembali ke Menu
-          </Link>
-          <button type="button" className="btn btn-outline" onClick={onRestart}>
-            Sesi Baru
-          </button>
+        <div className="reader-story-inline">
+          <div className="reader-story-head">
+            <div className="reader-story-titleblock">
+              <p className="eyebrow">Cerita Halaman {activePage.id}</p>
+              <h2>{activePage.title}</h2>
+            </div>
+            <p className="reader-story-objective">{activePage.objective}</p>
+          </div>
+          <div className="reader-story-copy">
+            {activePage.narration.split("\n\n").map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
         </div>
+        <VoiceNarration
+          title={activePage.title}
+          text={activePage.narration}
+          audioSrc={activeVoice?.src}
+          nextAudioSrc={nextVoice?.src}
+          showText={false}
+          variant="compact"
+        />
       </section>
 
       <section className="card page-selector-card">
@@ -137,32 +142,11 @@ export function StartPage() {
         </div>
       </section>
 
-      <section className="card story-panel">
-        <p className="eyebrow">Cerita Halaman {activePage.id}</p>
-        <h2>{activePage.title}</h2>
-        <p className="story-objective">
-          <strong>Tujuan belajar:</strong> {activePage.objective}
-        </p>
-        <div className="story-copy">
-          {activePage.narration.split("\n\n").map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
-      </section>
-
       <InlineModelViewer
         title={activePage.title}
         modelSrc={activePage.id ? `${import.meta.env.BASE_URL}assets/models/page-${activePage.id.padStart(2, "0")}.glb` : undefined}
         posterSrc={activePage.pageTexture}
         assetPageUrl={activePage.asset3dUrl}
-      />
-
-      <VoiceNarration
-        title={activePage.title}
-        text={activePage.narration}
-        audioSrc={activeVoice?.src}
-        nextAudioSrc={nextVoice?.src}
-        showText={false}
       />
 
       <ProgressTracker
@@ -172,6 +156,22 @@ export function StartPage() {
       />
 
       <section className="card story-actions">
+        <div className="button-row">
+          <a
+            href={HEYZINE_EMBED_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-outline inline-btn-link"
+          >
+            Buka Buku di Tab Baru
+          </a>
+          <Link to="/menu" className="btn btn-outline inline-btn-link">
+            Kembali ke Menu
+          </Link>
+          <button type="button" className="btn btn-outline" onClick={onRestart}>
+            Sesi Baru
+          </button>
+        </div>
         {session.flipbook.completed ? (
           <>
             <p className="muted">Semua halaman sudah dibaca. Kamu bisa lanjut ke posttest.</p>
