@@ -14,7 +14,8 @@ ARKANUH adalah web pembelajaran kisah Nabi Nuh untuk kelas 2 SD dengan alur:
 
 ## Route Utama
 
-- `/` beranda
+- `/` halaman sambutan
+- `/menu`
 - `/pretest`
 - `/mulai?page=1` sampai `/mulai?page=10`
 - `/posttest`
@@ -32,12 +33,13 @@ Route lama tetap diarahkan ke flow baru:
 ## Cara Kerja Menu Mulai
 
 - Buku dibuka melalui iframe Heyzine:
-  - `https://heyzine.com/flip-book/943e83c9d9.html`
+  - `https://heyzine.com/flip-book/88f0fa4179.html#page/20`
 - Pengguna membalik buku langsung di iframe.
 - Teks cerita dan audio ada di panel bawah.
 - Sinkronisasi halaman dilakukan manual dengan memilih `Hal 1-10`.
 - Halaman dianggap selesai saat dipilih di panel bawah.
 - Posttest terbuka setelah 10 halaman selesai.
+- Link referensi aset 3D tetap tersedia per halaman, tetapi viewer 3D inline dinonaktifkan sementara demi stabilitas.
 
 ## Audio
 

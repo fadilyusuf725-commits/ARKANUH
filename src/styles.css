@@ -472,60 +472,6 @@ input[type="text"] {
   line-height: 1.3;
 }
 
-.asset-panel {
-  display: grid;
-  gap: 10px;
-  background: #f8fcff;
-}
-
-.model-viewer-shell {
-  position: relative;
-  width: 100%;
-  min-height: clamp(380px, 52vh, 560px);
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: linear-gradient(180deg, #eef9ff 0%, #dff2ff 100%);
-}
-
-.model-viewer-canvas {
-  width: 100%;
-  height: 100%;
-  min-height: clamp(380px, 52vh, 560px);
-  background: transparent;
-}
-
-.model-viewer-overlay,
-.model-viewer-loading,
-.model-viewer-fallback {
-  display: grid;
-  gap: 12px;
-  justify-items: center;
-}
-
-.model-viewer-overlay {
-  position: absolute;
-  inset: 0;
-  align-content: center;
-  padding: 20px;
-  background: linear-gradient(180deg, rgba(248, 252, 255, 0.92), rgba(223, 242, 255, 0.85));
-  z-index: 1;
-}
-
-.model-viewer-poster,
-.model-viewer-loading-thumb {
-  width: min(100%, 320px);
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-}
-
-.model-viewer-status {
-  font-weight: 700;
-  color: var(--blue-700);
-  text-align: center;
-}
-
 .story-objective {
   padding: 12px 14px;
   border-radius: var(--radius-md);

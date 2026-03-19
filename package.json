@@ -6,13 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "models:fetch": "node ./scripts/fetch-tripo-models.mjs",
-    "models:optimize": "node ./scripts/optimize-tripo-models.mjs",
     "postbuild": "node ./scripts/create-spa-fallback.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/model-viewer": "^4.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.1"

@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
-import { InlineModelViewer } from "../components/InlineModelViewer";
 import { ProgressTracker } from "../components/ProgressTracker";
 import { VoiceNarration } from "../components/VoiceNarration";
 import {
@@ -142,13 +141,6 @@ export function StartPage() {
         </div>
       </section>
 
-      <InlineModelViewer
-        title={activePage.title}
-        modelSrc={activePage.id ? `${import.meta.env.BASE_URL}assets/models/page-${activePage.id.padStart(2, "0")}.glb` : undefined}
-        posterSrc={activePage.pageTexture}
-        assetPageUrl={activePage.asset3dUrl}
-      />
-
       <ProgressTracker
         completedPages={session.flipbook.completedPages}
         currentPageId={activePage.id}
@@ -157,6 +149,16 @@ export function StartPage() {
 
       <section className="card story-actions">
         <div className="button-row">
+          {activePage.asset3dUrl ? (
+            <a
+              href={activePage.asset3dUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-outline inline-btn-link"
+            >
+              Buka Referensi 3D
+            </a>
+          ) : null}
           <a
             href={HEYZINE_EMBED_URL}
             target="_blank"
