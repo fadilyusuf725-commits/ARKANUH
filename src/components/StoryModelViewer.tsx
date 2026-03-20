@@ -20,10 +20,11 @@ type ModelViewerElement = HTMLElement & {
   updateFraming?: () => Promise<void>;
 };
 
-const DEFAULT_CAMERA_ORBIT = "0deg 75deg 82%";
+const DEFAULT_CAMERA_ORBIT = "0deg 70deg 58%";
 const DEFAULT_CAMERA_TARGET = "auto auto auto";
-const DEFAULT_MIN_CAMERA_ORBIT = "auto auto 55%";
-const DEFAULT_MAX_CAMERA_ORBIT = "auto auto 250%";
+const DEFAULT_MIN_CAMERA_ORBIT = "auto auto 40%";
+const DEFAULT_MAX_CAMERA_ORBIT = "auto auto 200%";
+const DEFAULT_FIELD_OF_VIEW = "23deg";
 
 export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, canPrev, canNext }: StoryModelViewerProps) {
   const modelViewerRef = useRef<ModelViewerElement | null>(null);
@@ -157,7 +158,7 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
             camera-target={DEFAULT_CAMERA_TARGET}
             min-camera-orbit={DEFAULT_MIN_CAMERA_ORBIT}
             max-camera-orbit={DEFAULT_MAX_CAMERA_ORBIT}
-            field-of-view="28deg"
+            field-of-view={DEFAULT_FIELD_OF_VIEW}
           />
         ) : (
           <div className="story-model-placeholder" role="status">
