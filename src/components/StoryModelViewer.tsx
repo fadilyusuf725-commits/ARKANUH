@@ -20,15 +20,20 @@ type ModelViewerElement = HTMLElement & {
   updateFraming?: () => Promise<void>;
 };
 
-const DEFAULT_CAMERA_ORBIT = "0deg 70deg 58%";
+const DEFAULT_CAMERA_ORBIT = "0deg 75deg 62%";
 const DEFAULT_CAMERA_TARGET = "auto auto auto";
-const DEFAULT_MIN_CAMERA_ORBIT = "auto auto 40%";
-const DEFAULT_MAX_CAMERA_ORBIT = "auto auto 200%";
-const DEFAULT_FIELD_OF_VIEW = "23deg";
+const DEFAULT_MIN_CAMERA_ORBIT = "auto auto 44%";
+const DEFAULT_MAX_CAMERA_ORBIT = "auto auto 140%";
+const DEFAULT_FIELD_OF_VIEW = "20deg";
+const DEFAULT_MODEL_SCALE = "1.24 1.24 1.24";
 
 export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, canPrev, canNext }: StoryModelViewerProps) {
   const modelViewerRef = useRef<ModelViewerElement | null>(null);
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
+  const cameraOrbitRef = useRef(DEFAULT_CAMERA_ORBIT);
+  const cameraTargetRef = useRef(DEFAULT_CAMERA_TARGET);
+  const minCameraOrbitRef = useRef(DEFAULT_MIN_CAMERA_ORBIT);
+  const maxCameraOrbitRef = useRef(DEFAULT_MAX_CAMERA_ORBIT);
   const [viewerState, setViewerState] = useState<ViewerState>(() => {
     if (!modelEntry || modelEntry.status === "missing") {
       return "missing";
@@ -47,6 +52,11 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
 
     const onLoad = async () => {
       try {
+        cameraOrbitRef.current = DEFAULT_CAMERA_ORBIT;
+        cameraTargetRef.current = DEFAULT_CAMERA_TARGET;
+        minCameraOrbitRef.current = DEFAULT_MIN_CAMERA_ORBIT;
+        maxCameraOrbitRef.current = DEFAULT_MAX_CAMERA_ORBIT;
+        node.setAttribute("scale", DEFAULT_MODEL_SCALE);
         await node.updateFraming?.();
         if (cancelled) {
           return;
@@ -111,15 +121,16 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
       return;
     }
 
-    node.setAttribute("camera-target", DEFAULT_CAMERA_TARGET);
-    node.setAttribute("camera-orbit", DEFAULT_CAMERA_ORBIT);
-    node.setAttribute("min-camera-orbit", DEFAULT_MIN_CAMERA_ORBIT);
-    node.setAttribute("max-camera-orbit", DEFAULT_MAX_CAMERA_ORBIT);
+    node.setAttribute("camera-target", cameraTargetRef.current);
+    node.setAttribute("camera-orbit", cameraOrbitRef.current);
+    node.setAttribute("min-camera-orbit", minCameraOrbitRef.current);
+    node.setAttribute("max-camera-orbit", maxCameraOrbitRef.current);
+    node.setAttribute("scale", DEFAULT_MODEL_SCALE);
     node.jumpCameraToGoal?.();
   };
 
   return (
-    <section className="card story-model-card">
+    <section className="card story-model-card story-model-card-3d">
       <div className="story-model-topbar">
         <p className="eyebrow">Viewer 3D Halaman {pageId}</p>
         <div className="button-row story-model-nav">
@@ -135,7 +146,8 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
         </div>
       </div>
 
-      <div className="story-model-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <div className="story-model-stage story-model-stage-3d" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        <div className="story-model-stage-label">Panggung 3D</div>
         {modelEntry?.src && modelEntry.status === "ready" ? (
           <model-viewer
             ref={modelViewerRef}
@@ -154,6 +166,7 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
             loading="eager"
             reveal="auto"
             bounds="tight"
+            scale={DEFAULT_MODEL_SCALE}
             camera-orbit={DEFAULT_CAMERA_ORBIT}
             camera-target={DEFAULT_CAMERA_TARGET}
             min-camera-orbit={DEFAULT_MIN_CAMERA_ORBIT}
@@ -185,7 +198,13 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
         ) : null}
       </div>
 
-      <p className="muted story-model-help">Geser kiri atau kanan di kanvas, lalu pakai tombol untuk pindah halaman.</p>
+      <div className="story-model-meta">
+        <p className="muted story-model-help">Geser kiri atau kanan di kanvas, lalu pakai tombol untuk pindah halaman.</p>
+        <div className="story-model-tips" aria-label="Petunjuk viewer 3D">
+          <span className="story-model-tip">Putar dengan sentuhan</span>
+          <span className="story-model-tip">Reset bila arah berubah</span>
+        </div>
+      </div>
     </section>
   );
 }
