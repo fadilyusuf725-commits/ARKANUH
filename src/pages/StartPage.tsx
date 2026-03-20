@@ -1,50 +1,80 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { ProgressTracker } from "../components/ProgressTracker";
+import { StoryModelViewer } from "../components/StoryModelViewer";
 import { VoiceNarration } from "../components/VoiceNarration";
-import {
-  flipbookPages,
-  flipbookPageMap,
-  getFirstIncompleteFlipbookPageId,
-  totalFlipbookPages
-} from "../data/flipbookPages";
+import { flipbookPageMap, flipbookPages, getFirstIncompleteFlipbookPageId, totalFlipbookPages } from "../data/flipbookPages";
+import { loadModelManifest, ModelManifestEntry } from "../data/modelManifest";
 import { getVoiceAssetByPageId } from "../data/voiceManifest";
 import { useSessionContext } from "../state/SessionContext";
 
-const HEYZINE_EMBED_URL = "https://heyzine.com/flip-book/88f0fa4179.html#page/20";
+type ViewerMode = "heyzine" | "3d";
+
+const HEYZINE_VIEWER_URL = "https://heyzine.com/flip-book/88f0fa4179.html";
+
+function clampStoryPageId(pageId: string | null, fallbackPageId: string): string {
+  if (pageId && flipbookPageMap.has(pageId)) {
+    return pageId;
+  }
+  return fallbackPageId;
+}
+
+function clampViewerMode(mode: string | null): ViewerMode {
+  return mode === "3d" ? "3d" : "heyzine";
+}
 
 export function StartPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { session, markFlipbookPageCompleted, restartSession } = useSessionContext();
+  const [modelManifest, setModelManifest] = useState<Map<string, ModelManifestEntry>>(new Map());
 
   const fallbackPageId = useMemo(
     () => getFirstIncompleteFlipbookPageId(session.flipbook.completedPages),
     [session.flipbook.completedPages]
   );
-
-  const requestedPageId = searchParams.get("page");
-  const activePageId = requestedPageId && flipbookPageMap.has(requestedPageId) ? requestedPageId : fallbackPageId;
+  const activePageId = clampStoryPageId(searchParams.get("page"), fallbackPageId);
+  const viewerMode = clampViewerMode(searchParams.get("viewer"));
   const activePage = flipbookPageMap.get(activePageId) ?? flipbookPages[0];
-  const activeIndex = flipbookPages.findIndex((page) => page.id === activePage.id);
-  const nextPage = activeIndex >= 0 ? flipbookPages[activeIndex + 1] : undefined;
+  const activeIndex = Math.max(
+    0,
+    flipbookPages.findIndex((page) => page.id === activePage.id)
+  );
+  const nextPage = flipbookPages[activeIndex + 1];
+  const prevPage = flipbookPages[activeIndex - 1];
   const activeVoice = getVoiceAssetByPageId(activePage.id);
   const nextVoice = nextPage ? getVoiceAssetByPageId(nextPage.id) : undefined;
+  const modelEntry = modelManifest.get(activePage.id);
+  const heyzinePageUrl = `${HEYZINE_VIEWER_URL}#page/${activePage.id}`;
 
   useEffect(() => {
-    if (requestedPageId === activePageId) {
+    let mounted = true;
+    loadModelManifest().then((manifest) => {
+      if (mounted) {
+        setModelManifest(manifest);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const requested = searchParams.get("page");
+    const requestedViewer = searchParams.get("viewer");
+    if (requested === activePageId && requestedViewer === viewerMode) {
       return;
     }
 
     const nextParams = new URLSearchParams(searchParams);
     nextParams.set("page", activePageId);
+    nextParams.set("viewer", viewerMode);
     setSearchParams(nextParams, { replace: true });
-  }, [activePageId, requestedPageId, searchParams, setSearchParams]);
+  }, [activePageId, searchParams, setSearchParams, viewerMode]);
 
   useEffect(() => {
     if (!session.pretest.completed) {
       return;
     }
-
     markFlipbookPageCompleted(activePage.id, totalFlipbookPages);
   }, [activePage.id, markFlipbookPageCompleted, session.pretest.completed]);
 
@@ -52,38 +82,110 @@ export function StartPage() {
     return <Navigate to="/pretest" replace />;
   }
 
-  const onSelectPage = (pageId: string) => {
+  const goToPage = (pageId: string) => {
     const nextParams = new URLSearchParams(searchParams);
     nextParams.set("page", pageId);
-    setSearchParams(nextParams);
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const onNextPage = () => {
+    if (!nextPage) {
+      return;
+    }
+    goToPage(nextPage.id);
+  };
+
+  const onPrevPage = () => {
+    if (!prevPage) {
+      return;
+    }
+    goToPage(prevPage.id);
   };
 
   const onRestart = () => {
     restartSession(session.profile.nickname);
   };
 
+  const setViewerMode = (mode: ViewerMode) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("page", activePage.id);
+    nextParams.set("viewer", mode);
+    setSearchParams(nextParams, { replace: true });
+  };
+
   return (
     <main className="page-shell reader-page">
       <section className="hero-card reader-focus-hero">
         <p className="eyebrow">Mulai Membaca</p>
-        <h1>Flipbook ARKANUH</h1>
-        <p className="subtitle">
-          Buka bukunya di panel ini, lalu pilih Hal 1-10 di bawah agar teks dan audio sesuai dengan halaman yang sedang
-          kamu baca.
-        </p>
+        <h1>Flipbook 3D ARKANUH</h1>
+        <p className="subtitle">Pilih mode viewer, lalu lanjutkan sampai halaman 10 untuk membuka posttest.</p>
       </section>
 
-      <section className="card heyzine-stage">
-        <div className="heyzine-frame">
-          <iframe
-            allow="clipboard-write"
-            allowFullScreen
-            className="heyzine-iframe"
-            scrolling="no"
-            src={HEYZINE_EMBED_URL}
-            title="Flipbook ARKANUH"
-          />
+      <section className="reader-stage">
+        <div className="viewer-mode-switch-wrap">
+          <div className="viewer-mode-switch" role="tablist" aria-label="Pilih mode viewer">
+            <button
+              type="button"
+              className={`mode-chip ${viewerMode === "heyzine" ? "is-active" : ""}`}
+              onClick={() => setViewerMode("heyzine")}
+              role="tab"
+              aria-selected={viewerMode === "heyzine"}
+            >
+              Heyzine
+            </button>
+            <button
+              type="button"
+              className={`mode-chip ${viewerMode === "3d" ? "is-active" : ""}`}
+              onClick={() => setViewerMode("3d")}
+              role="tab"
+              aria-selected={viewerMode === "3d"}
+            >
+              Viewer 3D
+            </button>
+          </div>
         </div>
+
+        {viewerMode === "heyzine" ? (
+          <section className="card story-model-card">
+            <div className="story-model-topbar">
+              <p className="eyebrow">Heyzine Halaman {activePage.id}</p>
+              <div className="button-row story-model-nav">
+                <button type="button" className="btn btn-outline" onClick={onPrevPage} disabled={!prevPage}>
+                  Sebelumnya
+                </button>
+                <button type="button" className="btn btn-outline" onClick={onNextPage} disabled={!nextPage}>
+                  Berikutnya
+                </button>
+                <a href={heyzinePageUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline inline-btn-link">
+                  Buka Tab Baru
+                </a>
+              </div>
+            </div>
+            <div className="story-model-stage">
+              <iframe
+                className="reader-embed-frame"
+                src={heyzinePageUrl}
+                title={`Heyzine halaman ${activePage.id}`}
+                loading="lazy"
+                allowFullScreen
+              />
+            </div>
+            <p className="muted story-model-help">
+              Geser halaman di Heyzine, lalu pakai tombol Sebelumnya/Berikutnya agar progres pembelajaran sinkron.
+            </p>
+          </section>
+        ) : (
+          <StoryModelViewer
+            pageId={activePage.id}
+            title={activePage.title}
+            modelEntry={modelEntry}
+            onPrev={onPrevPage}
+            onNext={onNextPage}
+            canPrev={Boolean(prevPage)}
+            canNext={Boolean(nextPage)}
+          />
+        )}
+
         <div className="reader-story-inline">
           <div className="reader-story-head">
             <div className="reader-story-titleblock">
@@ -98,6 +200,7 @@ export function StartPage() {
             ))}
           </div>
         </div>
+
         <VoiceNarration
           title={activePage.title}
           text={activePage.narration}
@@ -108,39 +211,6 @@ export function StartPage() {
         />
       </section>
 
-      <section className="card page-selector-card">
-        <div className="progress-top-row">
-          <div>
-            <p className="eyebrow">Pilih Halaman</p>
-            <h2>Hal {activePage.id}</h2>
-          </div>
-          <strong>
-            {session.flipbook.completedPages.length}/{totalFlipbookPages}
-          </strong>
-        </div>
-        <div className="page-selector" role="tablist" aria-label="Pilih halaman cerita">
-          {flipbookPages.map((page) => {
-            const isActive = page.id === activePage.id;
-            const isCompleted = session.flipbook.completedPages.includes(page.id);
-
-            return (
-              <button
-                key={page.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                className={`page-chip ${isActive ? "is-active" : ""} ${isCompleted ? "is-complete" : ""}`.trim()}
-                onClick={() => onSelectPage(page.id)}
-              >
-                {page.pageTexture ? <img src={page.pageTexture} alt="" className="page-chip-thumb" /> : null}
-                <span className="page-chip-meta">Hal {page.id}</span>
-                <strong className="page-chip-label">{page.title}</strong>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
       <ProgressTracker
         completedPages={session.flipbook.completedPages}
         currentPageId={activePage.id}
@@ -149,24 +219,6 @@ export function StartPage() {
 
       <section className="card story-actions">
         <div className="button-row">
-          {activePage.asset3dUrl ? (
-            <a
-              href={activePage.asset3dUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-outline inline-btn-link"
-            >
-              Buka Referensi 3D
-            </a>
-          ) : null}
-          <a
-            href={HEYZINE_EMBED_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-outline inline-btn-link"
-          >
-            Buka Buku di Tab Baru
-          </a>
           <Link to="/menu" className="btn btn-outline inline-btn-link">
             Kembali ke Menu
           </Link>
