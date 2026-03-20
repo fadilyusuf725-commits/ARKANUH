@@ -15,8 +15,8 @@ type StoryModelViewerProps = {
 
 type ViewerState = "loading" | "ready" | "error" | "missing";
 
-const DEFAULT_CAMERA_ORBIT = "0deg 75deg 2.6m";
-const DEFAULT_CAMERA_TARGET = "0m 0.7m 0m";
+const DEFAULT_CAMERA_ORBIT = "35deg 70deg 0.18m";
+const DEFAULT_CAMERA_TARGET = "auto auto auto";
 
 export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, canPrev, canNext }: StoryModelViewerProps) {
   const modelViewerRef = useRef<HTMLElement | null>(null);
@@ -129,8 +129,10 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
             interaction-prompt="none"
             loading="eager"
             reveal="auto"
+            scale="10 10 10"
             camera-orbit={DEFAULT_CAMERA_ORBIT}
             camera-target={DEFAULT_CAMERA_TARGET}
+            field-of-view="28deg"
           />
         ) : (
           <div className="story-model-placeholder" role="status">
