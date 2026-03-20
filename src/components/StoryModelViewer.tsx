@@ -1,5 +1,5 @@
 import "@google/model-viewer";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { TouchEvent } from "react";
 import type { ModelManifestEntry } from "../data/modelManifest";
 
@@ -15,11 +15,18 @@ type StoryModelViewerProps = {
 
 type ViewerState = "loading" | "ready" | "error" | "missing";
 
-const DEFAULT_CAMERA_ORBIT = "35deg 70deg 0.18m";
+type ModelViewerElement = HTMLElement & {
+  jumpCameraToGoal?: () => void;
+  updateFraming?: () => Promise<void>;
+};
+
+const DEFAULT_CAMERA_ORBIT = "0deg 75deg 82%";
 const DEFAULT_CAMERA_TARGET = "auto auto auto";
+const DEFAULT_MIN_CAMERA_ORBIT = "auto auto 55%";
+const DEFAULT_MAX_CAMERA_ORBIT = "auto auto 250%";
 
 export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, canPrev, canNext }: StoryModelViewerProps) {
-  const modelViewerRef = useRef<HTMLElement | null>(null);
+  const modelViewerRef = useRef<ModelViewerElement | null>(null);
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const [viewerState, setViewerState] = useState<ViewerState>(() => {
     if (!modelEntry || modelEntry.status === "missing") {
@@ -28,38 +35,51 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
     return "loading";
   });
 
-  const modelSrc = useMemo(() => {
-    if (!modelEntry || modelEntry.status !== "ready" || !modelEntry.src) {
-      return undefined;
-    }
-    return modelEntry.src;
-  }, [modelEntry]);
-
   useEffect(() => {
-    if (!modelSrc) {
+    const node = modelViewerRef.current;
+    if (!node || !modelEntry?.src || modelEntry.status !== "ready") {
       setViewerState("missing");
       return;
     }
+
+    let cancelled = false;
+
+    const onLoad = async () => {
+      try {
+        await node.updateFraming?.();
+        if (cancelled) {
+          return;
+        }
+
+        node.setAttribute("camera-target", DEFAULT_CAMERA_TARGET);
+        node.setAttribute("camera-orbit", DEFAULT_CAMERA_ORBIT);
+        node.setAttribute("min-camera-orbit", DEFAULT_MIN_CAMERA_ORBIT);
+        node.setAttribute("max-camera-orbit", DEFAULT_MAX_CAMERA_ORBIT);
+        node.jumpCameraToGoal?.();
+        setViewerState("ready");
+      } catch {
+        if (!cancelled) {
+          setViewerState("error");
+        }
+      }
+    };
+
+    const onError = () => {
+      if (!cancelled) {
+        setViewerState("error");
+      }
+    };
+
     setViewerState("loading");
-  }, [modelSrc, pageId]);
-
-  useEffect(() => {
-    const node = modelViewerRef.current;
-    if (!node || !modelSrc) {
-      return;
-    }
-
-    const onLoad = () => setViewerState("ready");
-    const onError = () => setViewerState("error");
-
     node.addEventListener("load", onLoad);
     node.addEventListener("error", onError);
 
     return () => {
+      cancelled = true;
       node.removeEventListener("load", onLoad);
       node.removeEventListener("error", onError);
     };
-  }, [modelSrc, pageId]);
+  }, [modelEntry?.src, modelEntry?.status, pageId]);
 
   const onTouchStart = (event: TouchEvent<HTMLDivElement>) => {
     const touch = event.changedTouches[0];
@@ -85,13 +105,15 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
   };
 
   const resetView = () => {
-    const node = modelViewerRef.current as (HTMLElement & { jumpCameraToGoal?: () => void }) | null;
+    const node = modelViewerRef.current;
     if (!node) {
       return;
     }
 
-    node.setAttribute("camera-orbit", DEFAULT_CAMERA_ORBIT);
     node.setAttribute("camera-target", DEFAULT_CAMERA_TARGET);
+    node.setAttribute("camera-orbit", DEFAULT_CAMERA_ORBIT);
+    node.setAttribute("min-camera-orbit", DEFAULT_MIN_CAMERA_ORBIT);
+    node.setAttribute("max-camera-orbit", DEFAULT_MAX_CAMERA_ORBIT);
     node.jumpCameraToGoal?.();
   };
 
@@ -113,13 +135,14 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
       </div>
 
       <div className="story-model-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-        {modelSrc ? (
+        {modelEntry?.src && modelEntry.status === "ready" ? (
           <model-viewer
             ref={modelViewerRef}
             className="story-model-viewer"
-            src={modelSrc}
+            src={modelEntry.src}
             alt={`Model 3D ${title}`}
             camera-controls=""
+            disable-pan=""
             auto-rotate=""
             auto-rotate-delay="1000"
             rotation-per-second="20deg"
@@ -129,9 +152,11 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
             interaction-prompt="none"
             loading="eager"
             reveal="auto"
-            scale="10 10 10"
+            bounds="tight"
             camera-orbit={DEFAULT_CAMERA_ORBIT}
             camera-target={DEFAULT_CAMERA_TARGET}
+            min-camera-orbit={DEFAULT_MIN_CAMERA_ORBIT}
+            max-camera-orbit={DEFAULT_MAX_CAMERA_ORBIT}
             field-of-view="28deg"
           />
         ) : (
@@ -146,7 +171,7 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
           </div>
         )}
 
-        {viewerState === "loading" && modelSrc ? <p className="story-model-overlay">Memuat model 3D...</p> : null}
+        {viewerState === "loading" && modelEntry?.src ? <p className="story-model-overlay">Memuat model 3D...</p> : null}
         {viewerState === "error" ? (
           <div className="story-model-overlay is-error">
             Gagal memuat model 3D untuk halaman ini.
@@ -159,7 +184,7 @@ export function StoryModelViewer({ pageId, title, modelEntry, onPrev, onNext, ca
         ) : null}
       </div>
 
-      <p className="muted story-model-help">Geser kiri/kanan di kanvas atau gunakan tombol untuk pindah halaman.</p>
+      <p className="muted story-model-help">Geser kiri atau kanan di kanvas, lalu pakai tombol untuk pindah halaman.</p>
     </section>
   );
 }
