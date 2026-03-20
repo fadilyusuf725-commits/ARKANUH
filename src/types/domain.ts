@@ -10,8 +10,7 @@ export type FlipbookPage = {
   title: string;
   objective: string;
   narration: string;
-  pageTexture?: string;
-  asset3dUrl?: string;
+  modelId: string;
 };
 
 export type VoiceAssetManifest = {

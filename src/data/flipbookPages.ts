@@ -1,4 +1,3 @@
-import { withBasePath } from "../lib/assetPaths";
 import { FlipbookPage } from "../types/domain";
 
 export const flipbookPages: FlipbookPage[] = [
@@ -11,8 +10,7 @@ export const flipbookPages: FlipbookPage[] = [
 Kaum Nabi Nuh tidak menyembah Allah. Mereka menyembah patung-patung. Patung itu diberi nama Wadd, Suwa', Yaghuts, Ya'uq, dan Nasr. Mereka lupa kepada Allah yang menciptakan mereka.
 
 Nabi Nuh sedih melihat kaumnya yang sesat. Beliau ingin mengajak mereka kembali menyembah Allah. Dengan sabar, Nabi Nuh mulai berdakwah kepada kaumnya.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-01.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/ac1160db-5473-4df9-9d05-98bce22955e3?invite_code=LKAST7"
+    modelId: "page-01"
   },
   {
     id: "2",
@@ -25,8 +23,7 @@ Kaum Nabi Nuh menolak ajakan beliau. Mereka berkata, "Wahai Nuh, kamu hanya manu
 Mereka menertawakan Nabi Nuh. Namun Nabi Nuh tidak marah. Beliau tetap sabar mengajak mereka beriman.
 
 Nabi Nuh berdakwah selama 950 tahun lamanya. Wah, lama sekali, ya!`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-02.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/13a00c36-367b-4371-8740-b1d8bc5390b2?invite_code=LKAST7"
+    modelId: "page-02"
   },
   {
     id: "3",
@@ -37,8 +34,7 @@ Nabi Nuh berdakwah selama 950 tahun lamanya. Wah, lama sekali, ya!`,
 Mereka tidak percaya bahwa Nabi Nuh utusan Allah. Mereka menganggap pengikut Nabi Nuh hanyalah orang-orang miskin dan hina.
 
 Para pemuka kaum berkata, "Kami tidak akan beriman seperti orang-orang hina itu." Mereka tetap menyembah patung dan menolak kebenaran.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-03.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/72294589-9b8c-4554-9bf7-c6ea880c9360?invite_code=QCYWGH"
+    modelId: "page-03"
   },
   {
     id: "4",
@@ -49,8 +45,7 @@ Para pemuka kaum berkata, "Kami tidak akan beriman seperti orang-orang hina itu.
 Mereka percaya bahwa Nabi Nuh adalah utusan Allah. Mereka rajin beribadah dan mengikuti ajaran Nabi Nuh.
 
 Nabi Nuh sangat bersyukur memiliki pengikut yang setia. Beliau membimbing mereka dengan sabar dan penuh kasih sayang.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-04.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/716b3922-1112-4456-941d-dad7f25b495e?invite_code=QCYWGH"
+    modelId: "page-04"
   },
   {
     id: "5",
@@ -63,8 +58,7 @@ Allah mengabulkan doa Nabi Nuh. Allah memerintahkan Nabi Nuh membuat kapal yang 
 Padahal, tempat tinggal Nabi Nuh jauh dari laut. Di sekitarnya hanya ada daratan kering dan pasir.
 
 Nabi Nuh segera melaksanakan perintah Allah. Beliau mulai mengumpulkan kayu yang kuat.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-05.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/081f023b-8053-4c46-b240-db0462e4d637?invite_code=QCYWGH"
+    modelId: "page-05"
   },
   {
     id: "6",
@@ -77,8 +71,7 @@ Kaum kafir melihat mereka membuat kapal. Mereka tertawa dan mengejek, "Hai Nuh! 
 Nabi Nuh menjawab dengan tenang, "Kalian boleh mengejek sekarang. Kelak kalian akan tahu siapa yang benar."
 
 Beliau terus bekerja tanpa marah. Kapal besar itu akhirnya selesai dibuat.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-06.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/228e64d9-651b-453d-b626-4e3864e069b1?invite_code=QCYWGH"
+    modelId: "page-06"
   },
   {
     id: "7",
@@ -91,8 +84,7 @@ Langit menjadi gelap. Hujan lebat turun belum pernah terjadi sebelumnya. Air mul
 Nabi Nuh segera memerintahkan pengikutnya naik ke kapal. Beliau juga membawa hewan-hewan, sepasang jantan dan betina.
 
 Beliau memanggil keluarganya untuk naik. Istrinya naik, tetapi istri yang lain tidak mau beriman.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-07.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/2bd377ae-fbd0-4ca4-9006-ece3d2ec772c?invite_code=LKAST7"
+    modelId: "page-07"
   },
   {
     id: "8",
@@ -105,8 +97,7 @@ Kan'an menolak. Ia berkata sombong, "Aku tidak perlu kapal, Ayah! Aku akan pergi
 Nabi Nuh berkata lagi, "Tidak ada yang bisa melindungi dari azab Allah, Nak. Naiklah!"
 
 Kan'an tetap menolak. Ia berlari menuju gunung. Nabi Nuh sedih sekali melihat anaknya durhaka.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-08.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/6f41fe0b-7cce-40d8-8b72-93d4b01264e0?invite_code=31OFKB"
+    modelId: "page-08"
   },
   {
     id: "9",
@@ -119,8 +110,7 @@ Gunung-gunung tinggi pun tenggelam. Kan'an ikut tenggelam bersama orang-orang ka
 Kapal Nabi Nuh terapung dengan selamat. Di dalam kapal, Nabi Nuh dan pengikutnya berdoa kepada Allah.
 
 Allah berfirman, "Hai bumi, telanlah airmu! Hai langit, berhentilah hujan!" Air pun surut.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-09.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/941a73af-5d63-4312-b1cb-23994ba41cc6?invite_code=LKAST7"
+    modelId: "page-09"
   },
   {
     id: "10",
@@ -129,8 +119,7 @@ Allah berfirman, "Hai bumi, telanlah airmu! Hai langit, berhentilah hujan!" Air 
     narration: `Kapal Nabi Nuh berlabuh di atas sebuah gunung. Gunung itu bernama Gunung Judi.
 
 Nabi Nuh dan semua pengikutnya turun dari kapal. Mereka bersyukur kepada Allah. Hanya orang beriman yang selamat. Orang kafir yang sombong telah binasa.`,
-    pageTexture: withBasePath("assets/flipbook/pages/page-10.webp"),
-    asset3dUrl: "https://studio.tripo3d.ai/3d-model/b5d24a9f-55a9-4931-b774-fead65d02b10?invite_code=LKAST7"
+    modelId: "page-10"
   }
 ];
 

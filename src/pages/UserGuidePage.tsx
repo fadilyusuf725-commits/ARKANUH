@@ -61,10 +61,10 @@ export function UserGuidePage() {
 
           <div className="flow-step">
             <h3>3. Baca Flipbook</h3>
-            <p>Menu Mulai menampilkan buku Heyzine di bagian atas layar.</p>
+            <p>Menu Mulai menampilkan viewer 3D untuk tiap halaman cerita.</p>
             <ul>
-              <li>Balik halaman buku langsung di dalam iframe.</li>
-              <li>Pilih Hal 1-10 di bawah buku agar teks dan audio sesuai.</li>
+              <li>Gunakan swipe kiri/kanan atau tombol navigasi halaman.</li>
+              <li>Model 3D akan berganti sesuai halaman cerita aktif.</li>
               <li>Teks cerita tampil di panel bawah.</li>
               <li>Audio narasi bisa diputar, dijeda, dilanjutkan, dan diulang.</li>
             </ul>
@@ -72,9 +72,9 @@ export function UserGuidePage() {
 
           <div className="flow-step">
             <h3>4. Selesaikan Semua Halaman</h3>
-            <p>Halaman dianggap selesai saat siswa memilih halaman itu di panel bawah.</p>
+            <p>Halaman dianggap selesai saat siswa membuka halaman cerita itu.</p>
             <ul>
-              <li>Progress akan bertambah setiap halaman dipilih.</li>
+              <li>Progress bertambah otomatis saat pindah halaman.</li>
               <li>Posttest baru terbuka setelah 10 halaman selesai.</li>
             </ul>
           </div>
@@ -116,8 +116,8 @@ export function UserGuidePage() {
         <div className="faq-item">
           <h3>Buku tidak tampil?</h3>
           <p>
-            Coba refresh halaman, lalu pastikan koneksi internet stabil. Jika iframe tetap kosong, buka buku melalui
-            tombol <strong>Buka Buku di Tab Baru</strong>.
+            Coba refresh halaman. Jika model 3D halaman tertentu gagal muncul, lanjutkan ke halaman lain dulu lalu
+            kembali lagi. Aplikasi akan tetap berjalan dengan narasi dan audio.
           </p>
         </div>
 
@@ -157,7 +157,7 @@ export function UserGuidePage() {
             <strong>Browser:</strong> Chrome, Firefox, Safari, atau Edge terbaru
           </li>
           <li>
-            <strong>Internet:</strong> Dibutuhkan untuk membuka flipbook Heyzine dan memuat audio
+            <strong>Internet:</strong> Dibutuhkan saat awal akses untuk memuat aset aplikasi
           </li>
           <li>
             <strong>Perangkat:</strong> Desktop, tablet, atau smartphone

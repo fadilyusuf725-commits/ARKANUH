@@ -8,7 +8,7 @@ ARKANUH adalah web pembelajaran kisah Nabi Nuh untuk kelas 2 SD dengan alur:
 
 - Frontend: React + TypeScript + Vite
 - Routing: `BrowserRouter` dengan `basename={import.meta.env.BASE_URL}`
-- Reader: iframe Heyzine di route `/mulai`
+- Reader: viewer asset 3D lokal di route `/mulai`
 - Penyimpanan: `localStorage`
 - Hosting: GitHub Pages
 
@@ -32,14 +32,13 @@ Route lama tetap diarahkan ke flow baru:
 
 ## Cara Kerja Menu Mulai
 
-- Buku dibuka melalui iframe Heyzine:
-  - `https://heyzine.com/flip-book/88f0fa4179.html#page/20`
-- Pengguna membalik buku langsung di iframe.
+- Viewer 3D menampilkan model per halaman cerita (1-10).
+- Pengguna berpindah halaman dengan swipe atau tombol `Sebelumnya/Berikutnya`.
+- Model bersumber dari file lokal `.glb` di `public/assets/models/`.
+- Manifest model berada di `public/assets/models/model-manifest.json`.
 - Teks cerita dan audio ada di panel bawah.
-- Sinkronisasi halaman dilakukan manual dengan memilih `Hal 1-10`.
-- Halaman dianggap selesai saat dipilih di panel bawah.
+- Halaman cerita aktif mengikuti `?page=1..10`.
 - Posttest terbuka setelah 10 halaman selesai.
-- Link referensi aset 3D tetap tersedia per halaman, tetapi viewer 3D inline dinonaktifkan sementara demi stabilitas.
 
 ## Audio
 
@@ -69,8 +68,22 @@ Riwayat disimpan maksimal 25 sesi.
 
 ```bash
 npm install
-npm run dev
+npm run dev:local
 ```
+
+Script yang tersedia:
+
+- `npm run dev` untuk menjalankan Vite dan langsung membuka route `/ARKANUH/`
+- `npm run dev:local` untuk uji lokal di komputer sendiri
+- `npm run dev:network` untuk uji dari HP pada jaringan Wi-Fi yang sama
+- `npm run preview:local` untuk melihat hasil build produksi secara lokal
+- `npm run models:prepare` untuk mengambil model dari link Tripo dan membuat manifest lokal
+
+## Penting Saat Menjalankan Lokal
+
+- Jangan membuka [index.html](d:/ARKANUH/index.html) langsung dengan `Live Preview`.
+- Aplikasi ini adalah `React + Vite + BrowserRouter`, jadi harus dijalankan lewat server Vite.
+- Jika `index.html` dibuka langsung, halaman bisa tampak putih karena script module dan route app tidak diproses seperti saat runtime normal.
 
 ## Build Produksi
 
@@ -80,13 +93,10 @@ npm run build
 
 `postbuild` otomatis membuat `dist/404.html` untuk fallback SPA di GitHub Pages.
 
-## Catatan Authoring
+## Catatan Workspace
 
-Tool authoring yang masih dipertahankan:
+Folder asset runtime yang dipakai aplikasi:
 
-- `scripts/create-nabi-nuh-presentation.py`
-- `scripts/create-spa-fallback.mjs`
-
-Sumber materi presentasi disimpan di:
-
-- `assets/flipbook/source/`
+- `public/assets/voice/`
+- `public/assets/team-photos/`
+- `public/assets/models/`
