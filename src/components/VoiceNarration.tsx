@@ -4,7 +4,9 @@ type VoiceNarrationProps = {
   text: string;
   title: string;
   audioSrc?: string;
+  fallbackAudioSrc?: string;
   nextAudioSrc?: string;
+  nextFallbackAudioSrc?: string;
   showText?: boolean;
   variant?: "card" | "compact";
 };
@@ -30,7 +32,9 @@ export function VoiceNarration({
   text,
   title,
   audioSrc,
+  fallbackAudioSrc,
   nextAudioSrc,
+  nextFallbackAudioSrc,
   showText = true,
   variant = "card"
 }: VoiceNarrationProps) {
@@ -111,6 +115,7 @@ export function VoiceNarration({
 
   useEffect(() => {
     const audio = audioRef.current;
+    const candidateSources = [audioSrc, fallbackAudioSrc].filter(Boolean) as string[];
     if (!audio) {
       setEngine("browser_tts");
       setAudioReady(false);
@@ -122,10 +127,12 @@ export function VoiceNarration({
     setStatus("idle");
     setAudioReady(false);
 
-    if (!audioSrc) {
+    if (candidateSources.length === 0) {
       setEngine("browser_tts");
       return;
     }
+
+    let sourceIndex = 0;
 
     const onCanPlay = () => {
       setAudioReady(true);
@@ -134,6 +141,13 @@ export function VoiceNarration({
     };
 
     const onError = () => {
+      sourceIndex += 1;
+      if (candidateSources[sourceIndex]) {
+        audio.src = candidateSources[sourceIndex];
+        audio.load();
+        return;
+      }
+
       setAudioReady(false);
       setEngine("browser_tts");
       setStatus("idle");
@@ -142,29 +156,30 @@ export function VoiceNarration({
     audio.addEventListener("canplaythrough", onCanPlay);
     audio.addEventListener("error", onError);
     setStatus("loading");
-    audio.src = audioSrc;
+    audio.src = candidateSources[sourceIndex];
     audio.load();
 
     return () => {
       audio.removeEventListener("canplaythrough", onCanPlay);
       audio.removeEventListener("error", onError);
     };
-  }, [audioSrc]);
+  }, [audioSrc, fallbackAudioSrc]);
 
   useEffect(() => {
-    if (!nextAudioSrc) {
+    const preloadSrc = nextAudioSrc ?? nextFallbackAudioSrc;
+    if (!preloadSrc) {
       return;
     }
 
     const preloader = new Audio();
     preloader.preload = "auto";
-    preloader.src = nextAudioSrc;
+    preloader.src = preloadSrc;
     preloader.load();
 
     return () => {
       preloader.src = "";
     };
-  }, [nextAudioSrc]);
+  }, [nextAudioSrc, nextFallbackAudioSrc]);
 
   const stopAllPlayback = () => {
     const audio = audioRef.current;

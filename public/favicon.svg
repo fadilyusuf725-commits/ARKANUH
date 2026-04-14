@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ARKANUH">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dbf4ff" />
+      <stop offset="100%" stop-color="#87cfff" />
+    </linearGradient>
+    <linearGradient id="boat" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1779d8" />
+      <stop offset="100%" stop-color="#0d4ca2" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="url(#bg)" />
+  <path d="M13 41c4.6 4.7 10.5 7 17.9 7 7.7 0 13.6-2.3 20.1-7l-4.2 11H18.4L13 41Z" fill="url(#boat)" />
+  <path d="M30 14l9 7H30v-7Z" fill="#0d4ca2" />
+  <path d="M29 14h3v26h-3z" fill="#0d4ca2" />
+  <path d="M12 41c4 2.6 8 3.9 12 3.9s8-1.3 12-3.9c4 2.6 8 3.9 12 3.9s8-1.3 12-3.9" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-width="3" />
+</svg>

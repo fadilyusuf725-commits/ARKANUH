@@ -16,6 +16,7 @@ export type FlipbookPage = {
 export type VoiceAssetManifest = {
   pageId: string;
   src: string;
+  fallbackSrc?: string;
   durationHintSec?: number;
 };
 

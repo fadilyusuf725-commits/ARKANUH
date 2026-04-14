@@ -4,6 +4,7 @@ dist/
 *.log
 *.tsbuildinfo
 test-results/
+output/
 playwright-*.png
 __pycache__/
 *.pyc
