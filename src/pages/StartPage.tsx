@@ -176,8 +176,9 @@ export function StartPage() {
           <p className="eyebrow">Mulai Membaca</p>
           <h1>Flipbook 3D ARKANUH</h1>
           <p className="subtitle">
-            Buku kembali menjadi panel utama agar lebih lega dibaca, sementara viewer 3D tetap menemani di sisi yang
-            sama. Halaman aktif akan menyinkronkan buku, model, narasi, audio, dan progres belajarmu.
+            Buku diprioritaskan agar spread dua halaman tetap nyaman terlihat, sementara viewer 3D akan tetap sinkron
+            dan berpindah ke bawah bila ruang baca perlu diperlebar. Halaman aktif akan menyinkronkan buku, model,
+            narasi, audio, dan progres belajarmu.
           </p>
         </div>
         <div className="reader-hero-meta">
@@ -271,8 +272,9 @@ export function StartPage() {
               </div>
 
               <p className="muted reader-book-note">
-                Buku ini mengikuti halaman aktif dan sekarang menjadi area baca utama. Viewer 3D tetap sinkron sebagai
-                pendamping visual di sisi kanan.
+                Buku ini mengikuti halaman aktif dan diprioritaskan sebagai area baca utama agar dua halaman tetap
+                terlihat. Viewer 3D tetap sinkron sebagai pendamping visual di bawah atau di samping, tergantung lebar
+                layar.
               </p>
             </section>
 

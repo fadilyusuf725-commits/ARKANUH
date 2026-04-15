@@ -18,12 +18,14 @@ type StoryModelViewerProps = {
 type ViewerState = "booting" | "loading" | "ready" | "error" | "missing";
 
 type ModelViewerElement = HTMLElement & {
+  getBoundingBoxCenter?: () => { x: number; y: number; z: number; toString(): string };
   jumpCameraToGoal?: () => void;
   updateFraming?: () => Promise<void>;
 };
 
-const DEFAULT_FIELD_OF_VIEW = "22deg";
-const DEFAULT_MODEL_SCALE = "1.42 1.42 1.42";
+const DEFAULT_FIELD_OF_VIEW = "16deg";
+const DEFAULT_MODEL_SCALE = "1.68 1.68 1.68";
+const DEFAULT_CAMERA_ORBIT = "0deg 75deg 58%";
 const MODEL_VIEWER_SCRIPT_ID = "arkanuh-model-viewer-script";
 const MODEL_VIEWER_SCRIPT_SRC = withBasePath("vendor/model-viewer.min.js");
 
@@ -47,6 +49,18 @@ export function StoryModelViewer({
     }
     return "booting";
   });
+
+  const applyDefaultView = async (node: ModelViewerElement) => {
+    node.setAttribute("scale", DEFAULT_MODEL_SCALE);
+    await node.updateFraming?.();
+    const center = node.getBoundingBoxCenter?.();
+    if (center) {
+      node.setAttribute("camera-target", center.toString());
+    }
+    node.setAttribute("field-of-view", DEFAULT_FIELD_OF_VIEW);
+    node.setAttribute("camera-orbit", DEFAULT_CAMERA_ORBIT);
+    node.jumpCameraToGoal?.();
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -119,12 +133,10 @@ export function StoryModelViewer({
 
     const onLoad = async () => {
       try {
-        node.setAttribute("scale", DEFAULT_MODEL_SCALE);
-        await node.updateFraming?.();
+        await applyDefaultView(node);
         if (cancelled) {
           return;
         }
-        node.jumpCameraToGoal?.();
         setViewerState("ready");
       } catch {
         if (!cancelled) {
@@ -179,13 +191,7 @@ export function StoryModelViewer({
       return;
     }
 
-    node.setAttribute("scale", DEFAULT_MODEL_SCALE);
-    void node
-      .updateFraming?.()
-      ?.then(() => {
-        node.jumpCameraToGoal?.();
-      })
-      .catch(() => undefined);
+    void applyDefaultView(node).catch(() => undefined);
   };
 
   return (
@@ -231,6 +237,8 @@ export function StoryModelViewer({
             reveal="auto"
             bounds="tight"
             scale={DEFAULT_MODEL_SCALE}
+            camera-target="auto auto auto"
+            camera-orbit={DEFAULT_CAMERA_ORBIT}
             field-of-view={DEFAULT_FIELD_OF_VIEW}
           />
         ) : (

@@ -198,22 +198,22 @@ export function HomePage() {
   return (
     <main className="home-shell">
       <section className="home-topbar home-hero-panel">
-        <div className="home-brand">
+        <div className="home-brand home-intro">
           <p className="eyebrow">Menu Utama</p>
           <h1>ARKANUH</h1>
           <p>Flipbook Kisah Nabi Nuh dengan viewer 3D utama, buku mini, dan evaluasi belajar.</p>
-          <div className="home-primary-panel">
-            <p className="eyebrow">Langkah Berikutnya</p>
-            <h2>{primaryAction.label}</h2>
-            <p>{primaryAction.supporting}</p>
-            <div className="button-row">
-              <Link to={primaryAction.to} className="btn btn-primary inline-btn-link">
-                {primaryAction.label}
-              </Link>
-              <Link to="/panduan-penggunaan" className="btn btn-outline inline-btn-link">
-                Lihat Panduan
-              </Link>
-            </div>
+        </div>
+        <div className="home-primary-panel">
+          <p className="eyebrow">Langkah Berikutnya</p>
+          <h2>{primaryAction.label}</h2>
+          <p>{primaryAction.supporting}</p>
+          <div className="button-row">
+            <Link to={primaryAction.to} className="btn btn-primary inline-btn-link">
+              {primaryAction.label}
+            </Link>
+            <Link to="/panduan-penggunaan" className="btn btn-outline inline-btn-link">
+              Lihat Panduan
+            </Link>
           </div>
         </div>
         <form className="mini-identity-form home-identity-card" onSubmit={onSaveIdentity}>
