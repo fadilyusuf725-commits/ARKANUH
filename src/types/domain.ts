@@ -10,6 +10,7 @@ export type FlipbookPage = {
   title: string;
   objective: string;
   narration: string;
+  ttsText?: string;
   modelId: string;
 };
 

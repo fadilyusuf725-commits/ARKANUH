@@ -22,17 +22,18 @@ SLIDES = [
     {
         "title": "Nabi Nuh dan Kaumnya",
         "content": (
-            "Pada zaman dahulu, hiduplah Nabi Nuh yang saleh dan baik hati. "
-            "Beliau tinggal di tengah kaum yang sudah lupa kepada Allah.\n\n"
-            "Kaum Nabi Nuh justru menyembah patung-patung dan tidak mau mengikuti ajaran yang benar."
+            "Pada zaman dahulu, hiduplah seorang nabi yang bernama Nuh. "
+            "Beliau tinggal di negeri Babilonia dan dikenal saleh serta baik hati.\n\n"
+            "Kaum Nabi Nuh menyembah patung-patung seperti Wadd, Suwa', Yaghuts, Ya'uq, dan Nasr. "
+            "Nabi Nuh pun sedih lalu mulai mengajak mereka kembali menyembah Allah."
         ),
     },
     {
         "title": "Dakwah Nabi Nuh",
         "content": (
-            "Nabi Nuh mengajak kaumnya kembali menyembah Allah. "
-            "Beliau berdakwah dengan sabar dan penuh kasih sayang.\n\n"
-            "Setiap hari Nabi Nuh mengingatkan bahwa hanya Allah yang pantas disembah."
+            "Nabi Nuh berdakwah setiap hari dan mengajak kaumnya hanya menyembah Allah.\n\n"
+            "Kaumnya menolak dan menertawakan beliau, tetapi Nabi Nuh tetap sabar. "
+            "Beliau terus berdakwah selama 950 tahun lamanya."
         ),
     },
     {
@@ -52,8 +53,9 @@ SLIDES = [
     {
         "title": "Perintah Membuat Kapal",
         "content": (
-            "Allah memerintahkan Nabi Nuh untuk membuat kapal yang sangat besar.\n\n"
-            "Walaupun tempat itu jauh dari laut, Nabi Nuh tetap taat dan langsung memulai pekerjaannya."
+            'Nabi Nuh berdoa, "Ya Tuhanku, jangan biarkan seorang pun dari orang kafir tinggal di bumi."\n\n'
+            "Allah lalu memerintahkan Nabi Nuh membuat kapal besar. "
+            "Walaupun tempat itu jauh dari laut dan hanya ada daratan kering, Nabi Nuh segera taat menjalankan perintah Allah."
         ),
     },
     {
@@ -64,10 +66,10 @@ SLIDES = [
         ),
     },
     {
-        "title": "Banjir Besar Datang",
+        "title": "Tanda Datangnya Banjir",
         "content": (
-            "Air memancar dari bumi dan hujan turun sangat lebat dari langit.\n\n"
-            "Nabi Nuh segera membawa orang-orang beriman dan hewan-hewan ke dalam kapal."
+            "Tanda azab Allah pun datang. Air memancar dari dalam tanah dan hujan lebat turun dari langit.\n\n"
+            "Nabi Nuh segera memerintahkan orang-orang beriman naik ke kapal serta membawa hewan-hewan berpasangan."
         ),
     },
     {
@@ -85,10 +87,10 @@ SLIDES = [
         ),
     },
     {
-        "title": "Air Surut dan Hikmah",
+        "title": "Kapal Berlabuh",
         "content": (
-            "Setelah banjir surut, kapal Nabi Nuh berlabuh dengan selamat.\n\n"
-            "Kita belajar untuk taat kepada Allah, sabar saat menghadapi cobaan, dan tidak sombong."
+            "Kapal Nabi Nuh berlabuh di atas Gunung Judi. Nabi Nuh dan para pengikutnya turun lalu bersujud syukur kepada Allah.\n\n"
+            "Hanya orang-orang beriman yang selamat, sedangkan orang-orang kafir yang sombong binasa."
         ),
     },
 ]

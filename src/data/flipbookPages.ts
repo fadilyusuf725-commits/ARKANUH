@@ -4,10 +4,15 @@ export const flipbookPages: FlipbookPage[] = [
   {
     id: "1",
     title: "Nabi Nuh dan Kaumnya",
-    objective: "Mengenal Nabi Nuh dan melihat kesalahan kaum yang menyembah patung.",
+    objective: "Mengenal Nabi Nuh, kesesatan kaumnya, dan ajakan beliau untuk kembali menyembah Allah.",
     narration: `Pada zaman dahulu, hiduplah seorang nabi yang bernama Nuh. Beliau tinggal di negeri Babilonia. Nabi Nuh adalah hamba Allah yang saleh dan baik hati.
 
 Kaum Nabi Nuh tidak menyembah Allah. Mereka menyembah patung-patung. Patung itu diberi nama Wadd, Suwa', Yaghuts, Ya'uq, dan Nasr. Mereka lupa kepada Allah yang menciptakan mereka.
+
+Allah berfirman dalam Al-Qur'an:
+وَقَالُوا لَا تَذَرُنَّ اٰلِهَتَكُمْ وَلَا تَذَرُنَّ وَدًّا وَّلَا سُوَاعًا ەۙ وَلَا يَغُوْثَ وَيَعُوْقَ وَنَسْرًا ۚ
+
+Artinya: "Dan mereka berkata: 'Jangan sekali-kali kamu meninggalkan tuhan-tuhan kamu, dan jangan pula sekali-kali kamu meninggalkan (penyembahan) Wadd, Suwa', Yaghus, Ya'uq, dan Nasr'." (QS Nuh: 23)
 
 Nabi Nuh sedih melihat kaumnya yang sesat. Beliau ingin mengajak mereka kembali menyembah Allah. Dengan sabar, Nabi Nuh mulai berdakwah kepada kaumnya.`,
     modelId: "page-01"
@@ -15,14 +20,19 @@ Nabi Nuh sedih melihat kaumnya yang sesat. Beliau ingin mengajak mereka kembali 
   {
     id: "2",
     title: "Dakwah Nabi Nuh",
-    objective: "Memahami bahwa Nabi Nuh berdakwah setiap hari dengan sabar.",
+    objective: "Memahami bahwa Nabi Nuh berdakwah dengan sabar walau ditolak dan ditertawakan kaumnya.",
     narration: `Nabi Nuh berdakwah setiap hari. Beliau berkata, "Wahai kaumku, sembahlah Allah. Tidak ada Tuhan selain Dia. Aku takut kalian akan mendapat azab jika tidak taat."
 
 Kaum Nabi Nuh menolak ajakan beliau. Mereka berkata, "Wahai Nuh, kamu hanya manusia biasa seperti kami. Kami tidak percaya kepadamu!"
 
 Mereka menertawakan Nabi Nuh. Namun Nabi Nuh tidak marah. Beliau tetap sabar mengajak mereka beriman.
 
-Nabi Nuh berdakwah selama 950 tahun lamanya. Wah, lama sekali, ya!`,
+Rasulullah Shallallahu 'Alaihi Wasallam bersabda tentang kesabaran:
+وَمَا أُعْطِيَ أَحَدٌ عَطَاءً خَيْرًا وَأَوْسَعَ مِنَ الصَّبْرِ
+
+Artinya: "Tidaklah seseorang diberi suatu pemberian yang lebih baik dan lebih luas daripada kesabaran." (HR Bukhari dan Muslim)
+
+Nabi Nuh berdakwah selama 950 tahun lamanya.`,
     modelId: "page-02"
   },
   {
@@ -50,14 +60,19 @@ Nabi Nuh sangat bersyukur memiliki pengikut yang setia. Beliau membimbing mereka
   {
     id: "5",
     title: "Perintah Membuat Kapal",
-    objective: "Memahami bahwa Nabi Nuh segera taat saat Allah memerintahkan membuat kapal besar.",
+    objective: "Memahami bahwa Nabi Nuh segera taat saat Allah memerintahkan beliau membuat kapal besar.",
     narration: `Nabi Nuh berdoa kepada Allah, "Ya Tuhanku, jangan biarkan seorang pun dari orang kafir tinggal di bumi."
 
 Allah mengabulkan doa Nabi Nuh. Allah memerintahkan Nabi Nuh membuat kapal yang besar.
 
+Allah berfirman:
+وَاصْنَعِ الْفُلْكَ بِاَعْيُنِنَا وَوَحْيِنَا
+
+Artinya: "Dan buatlah kapal itu dengan pengawasan dan petunjuk wahyu Kami." (QS Hud: 37)
+
 Padahal, tempat tinggal Nabi Nuh jauh dari laut. Di sekitarnya hanya ada daratan kering dan pasir.
 
-Nabi Nuh segera melaksanakan perintah Allah. Beliau mulai mengumpulkan kayu yang kuat.`,
+Nabi Nuh segera melaksanakan perintah Allah.`,
     modelId: "page-05"
   },
   {
@@ -76,10 +91,15 @@ Beliau terus bekerja tanpa marah. Kapal besar itu akhirnya selesai dibuat.`,
   {
     id: "7",
     title: "Tanda Datangnya Banjir",
-    objective: "Mengenal tanda azab Allah ketika banjir besar mulai datang.",
-    narration: `Tiba-tiba datang tanda azab dari Allah. Dari dalam tanah, dari tempat pembakaran roti, memancar air dengan deras.
+    objective: "Mengenal tanda datangnya banjir besar dan perintah Nabi Nuh untuk naik ke kapal.",
+    narration: `Tiba-tiba datang tanda azab dari Allah. Dari dalam tanah memancar air dengan deras.
 
 Langit menjadi gelap. Hujan lebat turun belum pernah terjadi sebelumnya. Air mulai naik ke mana-mana.
+
+Allah berfirman:
+حَتّٰىٓ اِذَا جَاۤءَ اَمْرُنَا وَفَارَ التَّنُّوْرُۙ قُلْنَا احْمِلْ فِيْهَا مِنْ كُلٍّ زَوْجَيْنِ اثْنَيْنِ وَاَهْلَكَ اِلَّا مَنْ سَبَقَ عَلَيْهِ الْقَوْلُ وَمَنْ اٰمَنَ ۗوَمَآ اٰمَنَ مَعَهٗٓ اِلَّا قَلِيْلٌ
+
+Artinya: "Hingga apabila perintah Kami datang dan tannur (dapur) telah memancarkan air, Kami berfirman, 'Muatkanlah ke dalam kapal itu dari setiap jenis hewan sepasang (jantan dan betina), dan (juga) keluargamu, kecuali orang yang telah lebih dahulu ditetapkan (akan ditimpa azab) dan (muatkan pula) orang-orang yang beriman.' Dan tidak beriman bersama Nuh itu kecuali sedikit." (QS Hud: 40)
 
 Nabi Nuh segera memerintahkan pengikutnya naik ke kapal. Beliau juga membawa hewan-hewan, sepasang jantan dan betina.
 
@@ -118,7 +138,14 @@ Allah berfirman, "Hai bumi, telanlah airmu! Hai langit, berhentilah hujan!" Air 
     objective: "Memahami bahwa kapal Nabi Nuh berlabuh dan orang beriman bersyukur kepada Allah.",
     narration: `Kapal Nabi Nuh berlabuh di atas sebuah gunung. Gunung itu bernama Gunung Judi.
 
-Nabi Nuh dan semua pengikutnya turun dari kapal. Mereka bersyukur kepada Allah. Hanya orang beriman yang selamat. Orang kafir yang sombong telah binasa.`,
+Nabi Nuh dan semua pengikutnya turun dari kapal. Mereka bersujud syukur kepada Allah.
+
+Rasulullah SAW bersabda bahwa Nabi Nuh adalah nabi pertama yang mengucapkan Bismillah saat naik kapal:
+كَانَ نُوحٌ عَلَيْهِ السَّلَامُ إِذَا رَكِبَ السَّفِينَةَ قَالَ بِسْمِ اللَّهِ مَجْرَاهَا وَمُرْسَاهَا
+
+Artinya: "Adalah Nuh 'alaihis salam, apabila menaiki kapal, beliau mengucapkan 'Bismillahi majreha wa mursaha'." (HR Hakim)
+
+Hanya orang beriman yang selamat. Orang kafir yang sombong telah binasa.`,
     modelId: "page-10"
   }
 ];
